@@ -10,30 +10,31 @@
 
 @using (Html.BeginForm())
 {
-    @Html.Hidden("EvalId",Model.eval.EvalId)
+    @Html.Hidden("Id", Model.eval.NetId)
+    @Html.Hidden("Type", Model.eval.EvalCode)
 
     <h1>Questions</h1>
 
-    <ul>
+    <ol>
         @foreach (StaffEvaluations.Models.Question q in Model.questions)
         {
-        <li>
-            @Html.Hidden("Question.Index",q.Index)
-            <div>
-                @q.QuestionText
-            </div>
-            <div>
-                <select id="@(q.namePrefixId + "QuestionRating")" name="@(q.namePrefix + "QuestionRating")">
-                    <option value="Outstanding">Outstanding</option>
-                    <option value="Solid Performer">Solid Performer</option>
-                    <option value="Needs Improvement">Needs Improvement</option>
-                    <option value="Not Applicable">Not Applicable</option>
-                </select>
-                <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")"></textarea>
-            </div>
-        </li>
+            <li>
+                @Html.Hidden("Question.Index", q.Index)
+                @Html.Hidden(q.namePrefix + "QuestionCode", q.QuestionCode)
+                <div>
+                    @q.QuestionText
+                </div>
+                <div>
+                    @Html.DropDownList(q.namePrefix + "QuestionRating",(List<SelectListItem>)ViewData["RatingList"])
+                </div>
+                <div>
+                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")"></textarea>
+                </div>
+            </li>
         }
-    </ul>
+    </ol>
+
+    <input type="submit" value="Save"/>
 }
 
 
