@@ -12,10 +12,10 @@ namespace StaffEvaluations.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class StaffPerformanceEvaluation
+    public partial class StaffPerformanceEvaluationxxx
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public StaffPerformanceEvaluation()
+        public StaffPerformanceEvaluationxxx()
         {
             this.StaffPerformanceQuestions = new HashSet<StaffPerformanceQuestion>();
         }

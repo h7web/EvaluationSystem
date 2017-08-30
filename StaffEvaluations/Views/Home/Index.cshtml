@@ -8,22 +8,30 @@
     Welcome, @Model.NetId
 </div>
 
-@if (Model.MyEvaluation != null)
+@if (Model.MyEvaluations.Count>0)
 {
-    <div>
-        @Html.ActionLink("Go to your evaluation", "OpenEval", new { id = Model.MyEvaluation.EvalId })
-    </div>
+    <h2>Evaluations from your supervisor</h2>
+    <ul>
+        @foreach (StaffEvaluations.Models.StaffPerformanceEvaluationxxx eval in Model.MyEvaluations)
+        {
+            <li>
+                @Html.ActionLink("Go to your evaluation", "OpenEval", new { id = eval.EvalId })
+            </li>
+        }
+    </ul>
 } 
 
+<h2>Evaluations for your staff</h2>
 <ul>
     @foreach (StaffEvaluations.Models.Person directReport in Model.DirectReports)
     {
         if (Model.MyStaffEvaluations.Any(e => e.NetId == directReport.NetId))
         {
+            var eid = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.NetId).Single().EvalId;
             <li>
                 <strong>@directReport.Name</strong>
-                @Html.ActionLink("Edit Evaluation", "EditEval",new { id=directReport.NetId })
-                @Html.ActionLink("Delete Evaluation", "DeleteEval", new { id = directReport.NetId })
+                @Html.ActionLink("Edit Evaluation", "EditEval",new { id= eid })
+                @Html.ActionLink("Delete Evaluation", "DeleteEval", new { id = eid })
             </li>
         }
         else

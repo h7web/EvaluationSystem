@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace StaffEvaluations.Models
 {
     public class Question
     {
+        public int EvalId { get; set; }
 
         public string QuestionCode { get; set; }
 
@@ -38,5 +40,10 @@ namespace StaffEvaluations.Models
         {
             Index = Guid.NewGuid().ToString();
         }
+
+        public List<SelectListItem> RatingSelectList(string type)
+        {
+            return QuestionHelper.GetRatings(type, this.QuestionRating);
+        } 
     }
 }

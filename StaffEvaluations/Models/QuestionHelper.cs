@@ -9,11 +9,9 @@ namespace StaffEvaluations.Models
     public class QuestionHelper
     {
 
-        public static List<Question> GetQuestions(StaffEvaluationsEntities db, string type)
+        public static List<Question> GetQuestions(string type)
         {
             List<Question> ret = new List<Question>();
-
-            //var listofquestions = from q in db.StaffPerformanceQuestions
 
             if (type == "AP")
             {
@@ -32,13 +30,27 @@ namespace StaffEvaluations.Models
             return ret;
         }
 
-        public static List<SelectListItem> GetRatings(StaffEvaluationsEntities db, string type, string selected = "")
+        public static List<Question> GetQuestions(string type, List<StaffPerformanceQuestion> answers)
+        {
+            List<Question> qs = QuestionHelper.GetQuestions(type);
+
+            foreach (StaffPerformanceQuestion q in answers)
+            {
+                Question current = qs.Where(qq => qq.QuestionCode == q.QuestionCode).Single();
+                current.QuestionRating = q.Rating;
+                current.QuestionComment = q.Comment;
+                current.EvalId = q.EvalId;
+            }
+
+            return qs;
+        }
+
+
+        public static List<SelectListItem> GetRatings( string type, string selected = "")
         {
             List<SelectListItem> ret = new List<SelectListItem>();
 
             string val;
-
-            var ratingset = "";
 
             if (type == "AP")
             {
