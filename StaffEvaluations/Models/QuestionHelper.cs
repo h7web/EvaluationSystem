@@ -9,9 +9,11 @@ namespace StaffEvaluations.Models
     public class QuestionHelper
     {
 
-        public static List<Question> GetQuestions(string type)
+        public static List<Question> GetQuestions(StaffEvaluationsEntities db, string type)
         {
             List<Question> ret = new List<Question>();
+
+            //var listofquestions = from q in db.StaffPerformanceQuestions
 
             if (type == "AP")
             {
@@ -25,14 +27,18 @@ namespace StaffEvaluations.Models
                 //etc
             }
 
+            //ret.
+
             return ret;
         }
 
-        public static List<SelectListItem> GetRatings(string type, string selected = "")
+        public static List<SelectListItem> GetRatings(StaffEvaluationsEntities db, string type, string selected = "")
         {
             List<SelectListItem> ret = new List<SelectListItem>();
 
             string val;
+
+            var ratingset = "";
 
             if (type == "AP")
             {

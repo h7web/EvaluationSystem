@@ -55,9 +55,9 @@ namespace StaffEvaluations.Controllers
             CreateEvalViewModel crvm = new CreateEvalViewModel();
 
             crvm.eval = newEval;
-            crvm.questions = QuestionHelper.GetQuestions(type);
+            crvm.questions = QuestionHelper.GetQuestions(db,type);
 
-            ViewData["RatingList"] = QuestionHelper.GetRatings(type);
+            ViewData["RatingList"] = QuestionHelper.GetRatings(db,type);
 
             return View(crvm);
         }
@@ -91,7 +91,21 @@ namespace StaffEvaluations.Controllers
             db.SaveChanges();
 
 
-            return View();
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult EditEval(string id, string type)
+        {
+            var getEval = (from e in db.StaffPerformanceEvaluations where e.NetId == id select e).First();
+
+            CreateEvalViewModel crvm = new CreateEvalViewModel();
+
+            crvm.eval = getEval;
+            crvm.questions = QuestionHelper.GetQuestions(db, type);
+
+            ViewData["RatingList"] = QuestionHelper.GetRatings(db, type);
+
+            return View(crvm);
         }
 
 

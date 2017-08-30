@@ -1,0 +1,45 @@
+﻿@model StaffEvaluations.Models.CreateEvalViewModel
+
+@{
+    ViewBag.Title = "EditEval";
+}
+
+<h2>EditEval</h2>
+
+<div>Evaluation for @Model.eval.NetId</div>
+
+@using (Html.BeginForm())
+{
+    @Html.Hidden("Id", Model.eval.NetId)
+    @Html.Hidden("Type", Model.eval.EvalCode)
+
+    <h1>Questions</h1>
+
+    <ol>
+        @foreach (StaffEvaluations.Models.Question q in Model.questions)
+        {
+            <li>
+                @Html.Hidden("Question.Index", q.Index)
+                @Html.Hidden(q.namePrefix + "QuestionCode", q.QuestionCode)
+                <div>
+                    @q.QuestionText
+                </div>
+                <div>
+                    @Html.DropDownList(q.namePrefix + "QuestionRating", (List<SelectListItem>)ViewData["RatingList"])
+                </div>
+                <div>
+                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")">@q.QuestionComment</textarea>
+                </div>
+            </li>
+        }
+    </ol>
+
+    @Html.TextArea("EvaluatorComments", Model.eval.EvaluatorComments)
+
+    <input type="submit" value="Save" />
+}
+
+
+
+
+

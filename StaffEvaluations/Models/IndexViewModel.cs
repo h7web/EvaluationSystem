@@ -12,6 +12,8 @@ namespace StaffEvaluations.Models
             get; set;
         }
 
+        public int EvalId { get; set; }
+
         public List<Person> DirectReports {
             get; set;
         }
