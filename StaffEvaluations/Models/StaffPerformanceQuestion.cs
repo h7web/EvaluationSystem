@@ -22,6 +22,6 @@ namespace StaffEvaluations.Models
         public System.DateTime FirstAnsweredDate { get; set; }
         public Nullable<System.DateTime> LastUpdateDate { get; set; }
     
-        public virtual StaffPerformanceEvaluation StaffPerformanceEvaluation { get; set; }
+        public virtual StaffPerformanceEvaluationxxx StaffPerformanceEvaluation { get; set; }
     }
 }

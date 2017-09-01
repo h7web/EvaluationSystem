@@ -1,4 +1,4 @@
-﻿@model StaffEvaluations.Models.CreateEvalViewModel
+﻿@model StaffEvaluations.Models.CreateEditEvalViewModel
 
 @{
     ViewBag.Title = "EditEval";
@@ -10,8 +10,7 @@
 
 @using (Html.BeginForm())
 {
-    @Html.Hidden("Id", Model.eval.NetId)
-    @Html.Hidden("Type", Model.eval.EvalCode)
+    @Html.Hidden("Id", Model.eval.EvalId)
 
     <h1>Questions</h1>
 
@@ -25,7 +24,7 @@
                     @q.QuestionText
                 </div>
                 <div>
-                    @Html.DropDownList(q.namePrefix + "QuestionRating", (List<SelectListItem>)ViewData["RatingList"])
+                    @Html.DropDownList(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode))
                 </div>
                 <div>
                     <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")">@q.QuestionComment</textarea>

@@ -35,11 +35,11 @@ namespace StaffEvaluations.Controllers
             vm.DirectReports = reportees;
             vm.NetId = HttpContext.User.Identity.Name.Substring(5);
 
-            var myEval = (from e in db.StaffPerformanceEvaluations where e.Status == Constants.ReadyForReview && e.NetId == vm.NetId select e).SingleOrDefault();
+            var myEvals = from e in db.StaffPerformanceEvaluations where e.Status == Constants.ReadyForReview && e.NetId == vm.NetId select e;
 
             var myStaffEvals = from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == vm.NetId select e;
 
-            vm.MyEvaluation = myEval;
+            vm.MyEvaluations = myEvals.ToList();
             vm.MyStaffEvaluations = myStaffEvals.ToList();
 
 
@@ -48,16 +48,16 @@ namespace StaffEvaluations.Controllers
 
         public ActionResult CreateEval(string id, string type)
         {
-            StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
+            StaffPerformanceEvaluationxxx newEval = new StaffPerformanceEvaluationxxx();
             newEval.NetId = id;
             newEval.EvalCode = type;
 
-            CreateEvalViewModel crvm = new CreateEvalViewModel();
+            CreateEditEvalViewModel crvm = new CreateEditEvalViewModel();
 
             crvm.eval = newEval;
-            crvm.questions = QuestionHelper.GetQuestions(db,type);
+            crvm.questions = QuestionHelper.GetQuestions(type);
 
-            ViewData["RatingList"] = QuestionHelper.GetRatings(db,type);
+            ViewData["RatingList"] = QuestionHelper.GetRatings(type);
 
             return View(crvm);
         }
@@ -65,7 +65,7 @@ namespace StaffEvaluations.Controllers
         [HttpPost]
         public ActionResult CreateEval(string id, string type, List<Question> question)
         {
-            StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
+            StaffPerformanceEvaluationxxx newEval = new StaffPerformanceEvaluationxxx();
             newEval.NetId = id;
             newEval.EvaluatorNetid = HttpContext.User.Identity.Name.Substring(5);
             newEval.Year = DateTime.Now.Year;
@@ -75,14 +75,14 @@ namespace StaffEvaluations.Controllers
             db.StaffPerformanceEvaluations.Add(newEval);
             db.SaveChanges();
 
-            foreach (Question q in question)
+            foreach (Question myQuestion in question)
             {
                 StaffPerformanceQuestion newQuestion = new Models.StaffPerformanceQuestion()
                 {
                     EvalId = newEval.EvalId,
-                    Comment = q.QuestionComment,
-                    Rating = q.QuestionRating,
-                    QuestionCode = q.QuestionCode,
+                    Comment = myQuestion.QuestionComment,
+                    Rating = myQuestion.QuestionRating,
+                    QuestionCode = myQuestion.QuestionCode,
                     FirstAnsweredDate = DateTime.Now
                 };
                 db.StaffPerformanceQuestions.Add(newQuestion);
@@ -94,16 +94,16 @@ namespace StaffEvaluations.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult EditEval(string id, string type)
+        public ActionResult EditEval(int id)
         {
-            var getEval = (from e in db.StaffPerformanceEvaluations where e.NetId == id select e).First();
+            var getEval = (from e in db.StaffPerformanceEvaluations where e.EvalId == id select e).Single();
 
-            CreateEvalViewModel crvm = new CreateEvalViewModel();
+            CreateEditEvalViewModel crvm = new CreateEditEvalViewModel();
 
             crvm.eval = getEval;
-            crvm.questions = QuestionHelper.GetQuestions(db, type);
+            crvm.questions = QuestionHelper.GetQuestions(getEval.EvalCode,getEval.StaffPerformanceQuestions.ToList());
 
-            ViewData["RatingList"] = QuestionHelper.GetRatings(db, type);
+            ViewData["RatingList"] = QuestionHelper.GetRatings(getEval.EvalCode);
 
             return View(crvm);
         }

@@ -18,12 +18,12 @@ namespace StaffEvaluations.Models
             get; set;
         }
 
-        public StaffPerformanceEvaluation MyEvaluation
+        public List<StaffPerformanceEvaluationxxx> MyEvaluations
         {
             get; set;
         }
 
-        public List<StaffPerformanceEvaluation> MyStaffEvaluations
+        public List<StaffPerformanceEvaluationxxx> MyStaffEvaluations
         {
             get; set;
         }
