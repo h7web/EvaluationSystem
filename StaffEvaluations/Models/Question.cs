@@ -7,7 +7,7 @@ namespace StaffEvaluations.Models
 {
     public class Question
     {
-
+        public int QuestionId { get; set; }
         public string QuestionCode { get; set; }
 
         public string QuestionText { get; set; }

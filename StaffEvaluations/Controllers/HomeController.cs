@@ -108,6 +108,24 @@ namespace StaffEvaluations.Controllers
             return View(crvm);
         }
 
+        [HttpPost]
+        public ActionResult EditEval(StaffPerformanceEvaluation eval, List<Question> question)
+        {
+
+            foreach (Question q in question)
+            {
+                var orig = db.StaffPerformanceQuestions.Find(q.QuestionId);
+                    orig.Comment = q.QuestionComment;
+                    orig.Rating = q.QuestionRating;
+                    orig.LastUpdateDate = DateTime.Now;
+                db.SaveChanges();
+            }
+
+
+
+            return RedirectToAction("Index");
+        }
+
 
     }
 }
