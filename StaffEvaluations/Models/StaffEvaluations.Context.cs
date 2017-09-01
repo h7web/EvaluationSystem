@@ -25,7 +25,7 @@ namespace StaffEvaluations.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<StaffPerformanceEvaluationxxx> StaffPerformanceEvaluations { get; set; }
+        public virtual DbSet<StaffPerformanceEvaluation> StaffPerformanceEvaluations { get; set; }
         public virtual DbSet<StaffPerformanceQuestion> StaffPerformanceQuestions { get; set; }
     }
 }

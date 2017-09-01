@@ -2,40 +2,90 @@
 
 @{
     ViewBag.Title = "EditEval";
+
+    var evaltypedesc = "";
+
+    if (Model.eval.EvalCode=="AP")
+    {
+        evaltypedesc = "Academic Professional";
+    }
+    else if (Model.eval.EvalCode == "CA")
+    {
+        evaltypedesc = "Civil Service";
+    }
+    else if (Model.eval.EvalCode == "CC")
+    {
+        evaltypedesc = "Civil Service - Exempt";
+    }
 }
-
-<h2>EditEval</h2>
-
-<div>Evaluation for @Model.eval.NetId</div>
 
 @using (Html.BeginForm())
 {
     @Html.Hidden("Id", Model.eval.EvalId)
 
-    <h1>Questions</h1>
+    <h2>@Model.eval.Year @evaltypedesc Performance Evaluation for @Model.eval.NetId</h2>
 
     <ol>
         @foreach (StaffEvaluations.Models.Question q in Model.questions)
         {
             <li>
                 @Html.Hidden("Question.Index", q.Index)
-                @Html.Hidden(q.namePrefix + "QuestionCode", q.QuestionCode)
+                @Html.Hidden(q.namePrefix + "QuestionId", q.QuestionId)
                 <div>
-                    @q.QuestionText
+                    @Html.Raw(q.QuestionText)
                 </div>
                 <div>
-                    @Html.DropDownList(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode))
+                    <br />
+                    @if (Model.eval.Status == "" || Model.eval.Status == "In-Work")
+                    {
+                        @Html.DropDownList(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode))
+                    }
+                    else
+                    {
+                        @Html.DropDownList(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode), new { @readonly="readonly", @style="background-color:lightgray" })
+                    }
                 </div>
-                <div>
-                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")">@q.QuestionComment</textarea>
+                <div><br /> Comments: <br>
+                    @if (Model.eval.Status == "" || Model.eval.Status == "In-Work")
+                    {
+                        <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100">@q.QuestionComment</textarea>
+                    }
+                    else
+                    {
+                        <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" readonly style="background-color:lightgray" cols="100">@q.QuestionComment</textarea>
+                    }
                 </div>
+                <br />
+                <br />
             </li>
         }
     </ol>
 
-    @Html.TextArea("EvaluatorComments", Model.eval.EvaluatorComments)
-
-    <input type="submit" value="Save" />
+    if (Model.eval.Status == "Submitted" && Model.eval.NetId == User.Identity.Name.Substring(5))
+    {
+        <div> Employee Comments: @Html.TextArea("EmployeeComments", Model.eval.EmployeeComments)</div>
+        <div><input type="submit" name="button" class="btn" value="Accept" /></div>
+    }
+    else if (Model.eval.Status == "Accepted")
+    {
+        <div>Employee Comments: @Html.TextArea("EmployeeComments", Model.eval.EmployeeComments, new { @readonly = "readonly", @style = "background-color:lightgray" })</div>
+        <div>Evaluator Comments: @Html.TextArea("EvaluatorComments", Model.eval.EvaluatorComments)</div>
+    }
+    else if (Model.eval.Status == "Complete")
+    {
+        <div>Employee Comments: @Html.TextArea("EmployeeComments", Model.eval.EmployeeComments, new { @readonly = "readonly", @style = "background-color:lightgray" })</div>
+        <div>Evaluator Comments: @Html.TextArea("EvaluatorComments", Model.eval.EvaluatorComments, new { @readonly = "readonly", @style = "background-color:lightgray" })</div>
+    }
+    <div>
+    @if (Model.eval.Status == "" || Model.eval.Status == "In-Work")
+    {
+        <input type="submit" name="button" value="Save" class="btn" />
+    }
+    else if (Model.eval.Status == "Accepted")
+    {
+        <input type="submit" name="button" value="Complete" class="btn" onclick="confirm('Really Complete?\n\r No further comments can be added and the evaluation will be marked for processing by HR.')" />
+    }
+    </div>
 }
 
 

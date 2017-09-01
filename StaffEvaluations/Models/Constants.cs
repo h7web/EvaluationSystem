@@ -9,12 +9,11 @@ namespace StaffEvaluations.Models
     {
         public const string InWork = "In-work";
 
-        public const string ReadyForReview = "Ready for review";
+        public const string Submitted = "Submitted";
+
+        public const string Accepted = "Accepted";
 
         public const string Complete = "Complete";
-
-
-
 
     }
 }

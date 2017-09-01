@@ -8,6 +8,8 @@ namespace StaffEvaluations.Models
 {
     public class Question
     {
+        public int QuestionId { get; set; }
+
         public int EvalId { get; set; }
 
         public string QuestionCode { get; set; }

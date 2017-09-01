@@ -15,9 +15,10 @@
           <Property Name="NetId" Type="nvarchar" MaxLength="64" Nullable="false" />
           <Property Name="StartDate" Type="datetime" Nullable="false" />
           <Property Name="EvaluatorNetid" Type="nvarchar" MaxLength="64" Nullable="false" />
-          <Property Name="CompleteDate" Type="datetime" />
           <Property Name="Status" Type="nvarchar" MaxLength="10" />
+          <Property Name="SubmittedDate" Type="datetime" />
           <Property Name="AcceptedDate" Type="datetime" />
+          <Property Name="CompleteDate" Type="datetime" />
           <Property Name="EmployeeComments" Type="nvarchar(max)" />
           <Property Name="EvaluatorComments" Type="nvarchar(max)" />
         </EntityType>
@@ -75,6 +76,7 @@
           <Property Name="EmployeeComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="EvaluatorComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="StaffPerformanceQuestions" Relationship="StaffEvaluationsModel.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" FromRole="StaffPerformanceEvaluation" ToRole="StaffPerformanceQuestion" />
+          <Property Name="SubmittedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityContainer Name="StaffEvaluationsEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="StaffPerformanceEvaluations" EntityType="Self.StaffPerformanceEvaluation" />
@@ -120,6 +122,7 @@
           <EntitySetMapping Name="StaffPerformanceEvaluations">
             <EntityTypeMapping TypeName="StaffEvaluationsModel.StaffPerformanceEvaluation">
               <MappingFragment StoreEntitySet="StaffPerformanceEvaluations">
+                <ScalarProperty Name="SubmittedDate" ColumnName="SubmittedDate" />
                 <ScalarProperty Name="EvaluatorComments" ColumnName="EvaluatorComments" />
                 <ScalarProperty Name="EmployeeComments" ColumnName="EmployeeComments" />
                 <ScalarProperty Name="EvalId" ColumnName="EvalId" />

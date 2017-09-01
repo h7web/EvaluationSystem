@@ -4,22 +4,23 @@
     ViewBag.Title = "Home Page";
 }
 
-<div>
-    Welcome, @Model.NetId
-</div>
+<h2>Evaluations from your supervisor</h2>
 
-@if (Model.MyEvaluations.Count>0)
+@if (Model.MyEvaluations.Count > 0)
 {
-    <h2>Evaluations from your supervisor</h2>
     <ul>
-        @foreach (StaffEvaluations.Models.StaffPerformanceEvaluationxxx eval in Model.MyEvaluations)
+        @foreach (StaffEvaluations.Models.StaffPerformanceEvaluation eval in Model.MyEvaluations)
         {
             <li>
-                @Html.ActionLink("Go to your evaluation", "OpenEval", new { id = eval.EvalId })
+                @Html.ActionLink("Go to your evaluation", "EditEval", new { id = eval.EvalId })
             </li>
         }
     </ul>
-} 
+}
+else
+{
+    <ul><li>Not yet available.</li></ul>
+}
 
 <h2>Evaluations for your staff</h2>
 <ul>
@@ -28,17 +29,34 @@
         if (Model.MyStaffEvaluations.Any(e => e.NetId == directReport.NetId))
         {
             var eid = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.NetId).Single().EvalId;
+            var status = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.NetId).Single().Status;
+
             <li>
-                <strong>@directReport.Name</strong>
-                @Html.ActionLink("Edit Evaluation", "EditEval",new { id= eid })
-                @Html.ActionLink("Delete Evaluation", "DeleteEval", new { id = eid })
+                <strong>@directReport.Name</strong> (@status)
+
+                @if (status != "Complete")
+                {
+                    @Html.ActionLink("Edit", "EditEval", new { id = eid }) 
+                }
+                else
+                {
+                    @Html.ActionLink("View", "EditEval", new { id = eid })
+                }
+
+                @if (status == "In-Work")
+                {
+                    @:| 
+                    @Html.ActionLink("Submit", "SubmitEval", new { id = eid })
+                    @:|
+                    @Html.ActionLink("Delete", "DeleteEval", new { id = eid })
+                }
             </li>
         }
         else
         {
             <li>
-                <strong>@directReport.Name</strong>
-                @Html.ActionLink("Start Evaluation", "CreateEval", new { id = directReport.NetId, type=directReport.EmployeeType })
+                <strong>@directReport.Name </strong>
+                @Html.ActionLink("Start Evaluation", "CreateEval", new { id = directReport.NetId, type = directReport.EmployeeType })
             </li>
         }
     }

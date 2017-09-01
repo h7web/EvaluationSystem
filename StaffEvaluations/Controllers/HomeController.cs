@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using StaffEvaluations.Models;
+using System.Net.Mail;
 
 namespace StaffEvaluations.Controllers
 {
@@ -26,7 +27,8 @@ namespace StaffEvaluations.Controllers
         {
             List<Person> reportees = new List<Person>();
 
-            reportees.Add(new Models.Person { NetId = "jmj", Name = "Jenny Johnson", EmployeeType = "Faculty" });
+            reportees.Add(new Models.Person { NetId = "yoskye", Name = "Skye Arseneau", EmployeeType = "CC" });
+            reportees.Add(new Models.Person { NetId = "atJohnsn", Name = "Anietre Johnson", EmployeeType = "CA" });
             reportees.Add(new Models.Person { NetId = "mikesweb", Name = "Mike Nelson", EmployeeType = "AP" });
             reportees.Add(new Models.Person { NetId = "strutz", Name = "Jason Strutz", EmployeeType = "AP" });
 
@@ -35,7 +37,7 @@ namespace StaffEvaluations.Controllers
             vm.DirectReports = reportees;
             vm.NetId = HttpContext.User.Identity.Name.Substring(5);
 
-            var myEvals = from e in db.StaffPerformanceEvaluations where e.Status == Constants.ReadyForReview && e.NetId == vm.NetId select e;
+            var myEvals = from e in db.StaffPerformanceEvaluations where e.Status == Constants.Submitted && e.NetId == vm.NetId select e;
 
             var myStaffEvals = from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == vm.NetId select e;
 
@@ -48,7 +50,7 @@ namespace StaffEvaluations.Controllers
 
         public ActionResult CreateEval(string id, string type)
         {
-            StaffPerformanceEvaluationxxx newEval = new StaffPerformanceEvaluationxxx();
+            StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
             newEval.NetId = id;
             newEval.EvalCode = type;
 
@@ -65,7 +67,7 @@ namespace StaffEvaluations.Controllers
         [HttpPost]
         public ActionResult CreateEval(string id, string type, List<Question> question)
         {
-            StaffPerformanceEvaluationxxx newEval = new StaffPerformanceEvaluationxxx();
+            StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
             newEval.NetId = id;
             newEval.EvaluatorNetid = HttpContext.User.Identity.Name.Substring(5);
             newEval.Year = DateTime.Now.Year;
@@ -109,19 +111,67 @@ namespace StaffEvaluations.Controllers
         }
 
         [HttpPost]
-        public ActionResult EditEval(StaffPerformanceEvaluation eval, List<Question> question)
+        public ActionResult EditEval(int id, string EmployeeComments, string EvaluatorComments, string button, List<Question> question)
         {
 
             foreach (Question q in question)
             {
                 var orig = db.StaffPerformanceQuestions.Find(q.QuestionId);
-                    orig.Comment = q.QuestionComment;
-                    orig.Rating = q.QuestionRating;
-                    orig.LastUpdateDate = DateTime.Now;
+                if (orig.Comment != q.QuestionComment || orig.Rating != q.QuestionRating)
+                    {
+                        orig.Comment = q.QuestionComment;
+                        orig.Rating = q.QuestionRating;
+                        orig.LastUpdateDate = DateTime.Now;
+                        db.SaveChanges();
+                    }
+            }
+
+            var eval = db.StaffPerformanceEvaluations.Find(id);
+            if (eval.EvaluatorComments != EvaluatorComments || eval.EmployeeComments != EmployeeComments)
+            {
+                eval.EmployeeComments = EmployeeComments;
+                eval.EvaluatorComments = EvaluatorComments;
+
                 db.SaveChanges();
             }
 
+            if (button.Equals("Complete"))
+            {
+                eval.Status = "Complete";
+            }
 
+            if (eval.NetId == HttpContext.User.Identity.Name.Substring(5) && button == "Accept")
+            {
+                eval.Status = "Accepted";
+            }
+
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        public async System.Threading.Tasks.Task<ActionResult> SubmitEval(int id)
+        {
+            var eval = db.StaffPerformanceEvaluations.Find(id);
+            eval.Status = "Submitted";
+            eval.SubmittedDate = DateTime.Now;
+            db.SaveChanges();
+
+            var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + eval.EvaluatorNetid + " is available for you to review and comment at the following URL:</p>";
+            body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
+            var message = new MailMessage();
+
+            message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
+            message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
+            message.Subject = eval.Year + " Performance Evaluation";
+            message.Body = body;
+            message.IsBodyHtml = true;
+
+            using (var smtp = new SmtpClient())
+            {
+                smtp.Host = "Express-SMTP.cites.illinois.edu ";
+                await smtp.SendMailAsync(message);
+            }
 
             return RedirectToAction("Index");
         }

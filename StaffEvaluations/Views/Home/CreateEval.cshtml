@@ -1,19 +1,30 @@
-﻿@model StaffEvaluations.Models.CreateEvalViewModel
+﻿@model StaffEvaluations.Models.CreateEditEvalViewModel
 
 @{
     ViewBag.Title = "CreateEval";
+
+    var evaltypedesc = "";
+
+    if (Model.eval.EvalCode == "AP")
+    {
+        evaltypedesc = "Academic Professional";
+    }
+    else if (Model.eval.EvalCode == "CA")
+    {
+        evaltypedesc = "Civil Service";
+    }
+    else if (Model.eval.EvalCode == "CC")
+    {
+        evaltypedesc = "Civil Service - Exempt";
+    }
 }
-
-<h2>CreateEval</h2>
-
-<div>Evaluation for @Model.eval.NetId</div>
 
 @using (Html.BeginForm())
 {
     @Html.Hidden("Id", Model.eval.NetId)
     @Html.Hidden("Type", Model.eval.EvalCode)
 
-    <h1>Questions</h1>
+    <h2>@DateTime.Now.Year @evaltypedesc Performance Evaluation for @Model.eval.NetId</h2>
 
     <ol>
         @foreach (StaffEvaluations.Models.Question q in Model.questions)
@@ -22,19 +33,25 @@
                 @Html.Hidden("Question.Index", q.Index)
                 @Html.Hidden(q.namePrefix + "QuestionCode", q.QuestionCode)
                 <div>
-                    @q.QuestionText
+                    @Html.Raw(q.QuestionText)
                 </div>
                 <div>
-                    @Html.DropDownList(q.namePrefix + "QuestionRating",(List<SelectListItem>)ViewData["RatingList"])
+                    <br />
+                    Rating: 
+                    @Html.DropDownList(q.namePrefix + "QuestionRating", (List<SelectListItem>)ViewData["RatingList"])
                 </div>
                 <div>
-                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")"></textarea>
+                    <br />
+                    Comments: <br />
+                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100"></textarea>
+                    <br />
+                    <br />
                 </div>
             </li>
         }
     </ol>
 
-    <input type="submit" value="Save"/>
+    <input type="submit" value="Save" class="btn"/>
 }
 
 

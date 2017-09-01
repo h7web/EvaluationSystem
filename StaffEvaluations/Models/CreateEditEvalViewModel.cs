@@ -8,7 +8,7 @@ namespace StaffEvaluations.Models
     public class CreateEditEvalViewModel
     {
 
-        public StaffPerformanceEvaluationxxx eval { get; set; }
+        public StaffPerformanceEvaluation eval { get; set; }
 
         public List<Question> questions { get; set; }
 
