@@ -27,5 +27,6 @@ namespace StaffEvaluations.Models
     
         public virtual DbSet<StaffPerformanceEvaluation> StaffPerformanceEvaluations { get; set; }
         public virtual DbSet<StaffPerformanceQuestion> StaffPerformanceQuestions { get; set; }
+        public virtual DbSet<EvaluationQuestionSet> EvaluationQuestionSets { get; set; }
     }
 }

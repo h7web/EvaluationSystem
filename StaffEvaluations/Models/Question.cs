@@ -10,11 +10,17 @@ namespace StaffEvaluations.Models
     {
         public int QuestionId { get; set; }
 
+        public int QuestionSetId { get; set; }
+
         public int EvalId { get; set; }
 
         public string QuestionCode { get; set; }
 
+        public string QuestionType { get; set; }
+
         public string QuestionText { get; set; }
+
+        public int Year { get; set; }
 
         public string QuestionRating { get; set; }
 
@@ -46,6 +52,6 @@ namespace StaffEvaluations.Models
         public List<SelectListItem> RatingSelectList(string type)
         {
             return QuestionHelper.GetRatings(type, this.QuestionRating);
-        } 
+        }
     }
 }

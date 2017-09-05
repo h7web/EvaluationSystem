@@ -29,8 +29,8 @@ namespace StaffEvaluations.Controllers
 
             reportees.Add(new Models.Person { NetId = "yoskye", Name = "Skye Arseneau", EmployeeType = "CC" });
             reportees.Add(new Models.Person { NetId = "atJohnsn", Name = "Anietre Johnson", EmployeeType = "CA" });
-            reportees.Add(new Models.Person { NetId = "mikesweb", Name = "Mike Nelson", EmployeeType = "AP" });
-            reportees.Add(new Models.Person { NetId = "strutz", Name = "Jason Strutz", EmployeeType = "AP" });
+            reportees.Add(new Models.Person { NetId = "mikesweb", Name = "Mike Nelson", EmployeeType = "BA" });
+            reportees.Add(new Models.Person { NetId = "strutz", Name = "Jason Strutz", EmployeeType = "BA" });
 
 
             IndexViewModel vm = new IndexViewModel();
@@ -57,7 +57,7 @@ namespace StaffEvaluations.Controllers
             CreateEditEvalViewModel crvm = new CreateEditEvalViewModel();
 
             crvm.eval = newEval;
-            crvm.questions = QuestionHelper.GetQuestions(type);
+            crvm.questions = QuestionHelper.GetQuestions(db, type);
 
             ViewData["RatingList"] = QuestionHelper.GetRatings(type);
 
@@ -103,7 +103,7 @@ namespace StaffEvaluations.Controllers
             CreateEditEvalViewModel crvm = new CreateEditEvalViewModel();
 
             crvm.eval = getEval;
-            crvm.questions = QuestionHelper.GetQuestions(getEval.EvalCode,getEval.StaffPerformanceQuestions.ToList());
+            crvm.questions = QuestionHelper.GetQuestions(db, getEval.EvalCode, id, getEval.StaffPerformanceQuestions.ToList());
 
             ViewData["RatingList"] = QuestionHelper.GetRatings(getEval.EvalCode);
 
@@ -111,7 +111,7 @@ namespace StaffEvaluations.Controllers
         }
 
         [HttpPost]
-        public ActionResult EditEval(int id, string EmployeeComments, string EvaluatorComments, string button, List<Question> question)
+        public async System.Threading.Tasks.Task<ActionResult> EditEval(int id, string EmployeeComments, string EvaluatorComments, string button, List<Question> question)
         {
 
             foreach (Question q in question)
@@ -143,6 +143,21 @@ namespace StaffEvaluations.Controllers
             if (eval.NetId == HttpContext.User.Identity.Name.Substring(5) && button == "Accept")
             {
                 eval.Status = "Accepted";
+
+                var body = "<p> " + eval.EvaluatorNetid + " has accepted his/her " + eval.Year + " Performance Evaluation</p>";
+                var message = new MailMessage();
+
+                message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
+                message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
+                message.Subject = eval.Year + " Performance Evaluation Accepted";
+                message.Body = body;
+                message.IsBodyHtml = true;
+
+                using (var smtp = new SmtpClient())
+                {
+                    smtp.Host = "Express-SMTP.cites.illinois.edu ";
+                    await smtp.SendMailAsync(message);
+                }
             }
 
             db.SaveChanges();
@@ -161,7 +176,7 @@ namespace StaffEvaluations.Controllers
             body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
             var message = new MailMessage();
 
-            message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
+            message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu")); //change this to eval.NetId in production
             message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
             message.Subject = eval.Year + " Performance Evaluation";
             message.Body = body;

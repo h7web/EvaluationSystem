@@ -5,6 +5,16 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="StaffEvaluationsModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="EvaluationQuestionSets">
+          <Key>
+            <PropertyRef Name="QuestionSetId" />
+          </Key>
+          <Property Name="QuestionSetId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="QuestionText" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="QuestionCode" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="QuestionType" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="Year" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="StaffPerformanceEvaluations">
           <Key>
             <PropertyRef Name="EvalId" />
@@ -49,6 +59,7 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="StaffEvaluationsModelStoreContainer">
+          <EntitySet Name="EvaluationQuestionSets" EntityType="Self.EvaluationQuestionSets" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StaffPerformanceEvaluations" EntityType="Self.StaffPerformanceEvaluations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StaffPerformanceQuestions" EntityType="Self.StaffPerformanceQuestions" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" Association="Self.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations">
@@ -85,6 +96,7 @@
             <End Role="StaffPerformanceEvaluation" EntitySet="StaffPerformanceEvaluations" />
             <End Role="StaffPerformanceQuestion" EntitySet="StaffPerformanceQuestions" />
           </AssociationSet>
+          <EntitySet Name="EvaluationQuestionSets" EntityType="StaffEvaluationsModel.EvaluationQuestionSet" />
         </EntityContainer>
         <EntityType Name="StaffPerformanceQuestion">
           <Key>
@@ -113,6 +125,16 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="EvaluationQuestionSet">
+          <Key>
+            <PropertyRef Name="QuestionSetId" />
+          </Key>
+          <Property Name="QuestionSetId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="QuestionText" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="QuestionCode" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="QuestionType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Year" Type="Int32" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -147,6 +169,17 @@
                 <ScalarProperty Name="EvalId" ColumnName="EvalId" />
                 <ScalarProperty Name="QuestionCode" ColumnName="QuestionCode" />
                 <ScalarProperty Name="QuestionId" ColumnName="QuestionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EvaluationQuestionSets">
+            <EntityTypeMapping TypeName="StaffEvaluationsModel.EvaluationQuestionSet">
+              <MappingFragment StoreEntitySet="EvaluationQuestionSets">
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="QuestionType" ColumnName="QuestionType" />
+                <ScalarProperty Name="QuestionCode" ColumnName="QuestionCode" />
+                <ScalarProperty Name="QuestionText" ColumnName="QuestionText" />
+                <ScalarProperty Name="QuestionSetId" ColumnName="QuestionSetId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

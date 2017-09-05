@@ -136,7 +136,11 @@
     </Compile>
     <Compile Include="Models\Constants.cs" />
     <Compile Include="Models\CreateEditEvalViewModel.cs" />
+    <Compile Include="Models\EvaluationQuestionSet.cs">
+      <DependentUpon>StaffEvaluations.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\IndexViewModel.cs" />
+    <Compile Include="Models\PartialEvaluationQuestionSet.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\Question.cs" />
     <Compile Include="Models\QuestionHelper.cs" />
