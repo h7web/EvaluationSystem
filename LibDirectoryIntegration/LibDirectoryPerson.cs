@@ -25,5 +25,7 @@ namespace LibDirectoryIntegration
 
         public string employee_type { get; set; }
 
+        public string employee_type_code { get; set; }
+
     }
 }

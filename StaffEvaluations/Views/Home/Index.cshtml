@@ -24,15 +24,15 @@ else
 
 <h2>Evaluations for your staff</h2>
 <ul>
-    @foreach (StaffEvaluations.Models.Person directReport in Model.DirectReports)
+    @foreach (LibDirectoryIntegration.DirectReport directReport in Model.Super.direct_reports)
     {
-        if (Model.MyStaffEvaluations.Any(e => e.NetId == directReport.NetId))
+        if (Model.MyStaffEvaluations.Any(e => e.NetId == directReport.netid))
         {
-            var eid = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.NetId).Single().EvalId;
-            var status = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.NetId).Single().Status;
+            var eid = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().EvalId;
+            var status = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().Status;
 
             <li>
-                <strong>@directReport.Name</strong> (@status)
+                <strong>@directReport.name</strong> (@status)
 
                 @if (status != "Complete")
                 {
@@ -55,8 +55,8 @@ else
         else
         {
             <li>
-                <strong>@directReport.Name </strong>
-                @Html.ActionLink("Start Evaluation", "CreateEval", new { id = directReport.NetId, type = directReport.EmployeeType })
+                <strong>@directReport.name </strong>
+                @Html.ActionLink("Start Evaluation", "CreateEval", new { id = directReport.netid, type = directReport.employee_type_code })
             </li>
         }
     }

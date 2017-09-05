@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using StaffEvaluations.Models;
 using System.Net.Mail;
+using LibDirectoryIntegration;
 
 namespace StaffEvaluations.Controllers
 {
@@ -25,21 +26,25 @@ namespace StaffEvaluations.Controllers
 
         public ActionResult Index()
         {
-            List<Person> reportees = new List<Person>();
+            Supervisor super = LibDirectoryFactory.GetSupervisor(User.Identity.Name.Substring(5));
 
-            reportees.Add(new Models.Person { NetId = "yoskye", Name = "Skye Arseneau", EmployeeType = "CC" });
-            reportees.Add(new Models.Person { NetId = "atJohnsn", Name = "Anietre Johnson", EmployeeType = "CA" });
-            reportees.Add(new Models.Person { NetId = "mikesweb", Name = "Mike Nelson", EmployeeType = "BA" });
-            reportees.Add(new Models.Person { NetId = "strutz", Name = "Jason Strutz", EmployeeType = "BA" });
+
+            //List<Person> reportees = new List<Person>();
+
+            //reportees.Add(new Models.Person { NetId = "yoskye", Name = "Skye Arseneau", EmployeeType = "CC" });
+            //reportees.Add(new Models.Person { NetId = "atJohnsn", Name = "Anietre Johnson", EmployeeType = "CA" });
+            //reportees.Add(new Models.Person { NetId = "mikesweb", Name = "Mike Nelson", EmployeeType = "BA" });
+            //reportees.Add(new Models.Person { NetId = "strutz", Name = "Jason Strutz", EmployeeType = "BA" });
 
 
             IndexViewModel vm = new IndexViewModel();
-            vm.DirectReports = reportees;
-            vm.NetId = HttpContext.User.Identity.Name.Substring(5);
+            vm.Super = super;
+            //vm.DirectReports = reportees;
+            //vm.NetId = HttpContext.User.Identity.Name.Substring(5);
 
-            var myEvals = from e in db.StaffPerformanceEvaluations where e.Status == Constants.Submitted && e.NetId == vm.NetId select e;
+            var myEvals = from e in db.StaffPerformanceEvaluations where e.Status == Constants.Submitted && e.NetId == vm.Super.netid select e;
 
-            var myStaffEvals = from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == vm.NetId select e;
+            var myStaffEvals = from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == vm.Super.netid select e;
 
             vm.MyEvaluations = myEvals.ToList();
             vm.MyStaffEvaluations = myStaffEvals.ToList();
