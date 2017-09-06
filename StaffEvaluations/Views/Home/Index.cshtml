@@ -23,6 +23,8 @@ else
 }
 
 <h2>Evaluations for your staff</h2>
+@if (Model.MyStaffEvaluations.Count > 0)
+{
 <ul>
     @foreach (LibDirectoryIntegration.DirectReport directReport in Model.Super.direct_reports)
     {
@@ -61,3 +63,8 @@ else
         }
     }
 </ul>
+}
+else
+{
+    <ul><li>No staff found.</li></ul>
+}

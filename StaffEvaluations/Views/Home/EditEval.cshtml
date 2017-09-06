@@ -23,7 +23,18 @@
 {
     @Html.Hidden("Id", Model.eval.EvalId)
 
-    <h2>@Model.eval.Year @evaltypedesc Performance Evaluation for @Model.eval.NetId</h2>
+    <h2>@Model.eval.Year @evaltypedesc Performance Evaluation</h2>
+
+    <p>
+        @Model.person.name - @Model.person.banner_title<br />
+        Library Start Date: @Model.person.LibraryStartDate<br />
+        Supervisor: @Model.super.name - @Model.super.banner_title<br />
+        Date Started: @Model.eval.StartDate<br />
+        Date Accepted: @Model.eval.AcceptedDate<br />
+        Date Completed: @Model.eval.CompleteDate<br />
+
+        <br />
+    </p>
 
     <ol>
         @foreach (StaffEvaluations.Models.Question q in Model.questions)

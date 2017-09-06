@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="HR_DataModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="employees">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="FULLNAME" Type="nvarchar" MaxLength="255" />
+          <Property Name="YR_OF_SVC" Type="float" />
+          <Property Name="UNIV_START_DATE" Type="date" />
+          <Property Name="LIBRARY_START_DATE" Type="date" />
+          <Property Name="UIN" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="NETID" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="NETID_DOMAIN" Type="nvarchar" MaxLength="255" />
+          <Property Name="RACE_ALT" Type="nvarchar" MaxLength="255" />
+          <Property Name="BIRTH_DT" Type="date" />
+          <Property Name="GENDER" Type="nvarchar" MaxLength="255" />
+          <Property Name="ECLASS" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="positions">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EDW_PERS_ID" Type="int" Nullable="false" />
+          <Property Name="EMPEE_CLS_CD" Type="nvarchar" MaxLength="255" />
+          <Property Name="EMPEE_CLS_LONG_DESC" Type="nvarchar" MaxLength="255" />
+          <Property Name="FAC_TENURE_TRACK_YR" Type="float" />
+          <Property Name="FAC_RANK_DESC" Type="nvarchar" MaxLength="255" />
+          <Property Name="POSN_NBR" Type="nvarchar" MaxLength="255" />
+          <Property Name="JOB_DETL_TITLE" Type="nvarchar" MaxLength="255" />
+          <Property Name="JOB_DETL_EFF_DT" Type="datetime" />
+          <Property Name="JOB_DETL_DATA_EXP_DT" Type="datetime" />
+          <Property Name="ORG_CD" Type="nvarchar" MaxLength="255" />
+          <Property Name="ORG_TITLE" Type="nvarchar" MaxLength="255" />
+          <Property Name="JOB_DETL_SUB_DEPT_LEVEL_6_NAME" Type="nvarchar" MaxLength="255" />
+          <Property Name="JOB_DETL_SUB_DEPT_LEVEL_7_NAME" Type="nvarchar" MaxLength="255" />
+          <Property Name="PAPE_CIV_SVC_ID" Type="nvarchar" MaxLength="255" />
+          <Property Name="POSN_EXEMPT_IND" Type="nvarchar" MaxLength="255" />
+          <Property Name="JOB_DETL_FTE" Type="float" />
+          <Property Name="JOB_DETL_ANNL_SAL" Type="float" />
+          <Property Name="JOB_PROBN_BGN_DT" Type="nvarchar" MaxLength="255" />
+          <Property Name="JOB_PROBN_END_DT" Type="nvarchar" MaxLength="255" />
+          <Property Name="JOB_DETL_STATUS_DESC" Type="nvarchar" MaxLength="255" />
+          <Property Name="POSN_SAL_GROUP_DESC" Type="nvarchar" MaxLength="255" />
+          <Property Name="ADROLE" Type="nvarchar" MaxLength="255" />
+          <Property Name="JOB_CNTRCT_TYPE_DESC" Type="nvarchar" MaxLength="255" />
+          <Property Name="CFOAP" Type="nvarchar" MaxLength="255" />
+          <Property Name="CFOAP_AMT" Type="nvarchar" MaxLength="255" />
+          <Property Name="GRANTFUNDS" Type="int" />
+        </EntityType>
+        <EntityContainer Name="HR_DataModelStoreContainer">
+          <EntitySet Name="employees" EntityType="Self.employees" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="positions" EntityType="Self.positions" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="HR_DataModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="employee">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="FULLNAME" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="YR_OF_SVC" Type="Double" />
+          <Property Name="UNIV_START_DATE" Type="DateTime" Precision="0" />
+          <Property Name="LIBRARY_START_DATE" Type="DateTime" Precision="0" />
+          <Property Name="UIN" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NETID" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NETID_DOMAIN" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="RACE_ALT" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="BIRTH_DT" Type="DateTime" Precision="0" />
+          <Property Name="GENDER" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ECLASS" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="employees" EntityType="Self.employee" />
+          <EntitySet Name="positions" EntityType="HR_DataModel.position" />
+        </EntityContainer>
+        <EntityType Name="position">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EDW_PERS_ID" Type="Int32" Nullable="false" />
+          <Property Name="EMPEE_CLS_CD" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="EMPEE_CLS_LONG_DESC" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="FAC_TENURE_TRACK_YR" Type="Double" />
+          <Property Name="FAC_RANK_DESC" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="POSN_NBR" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="JOB_DETL_TITLE" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="JOB_DETL_EFF_DT" Type="DateTime" Precision="3" />
+          <Property Name="JOB_DETL_DATA_EXP_DT" Type="DateTime" Precision="3" />
+          <Property Name="ORG_CD" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ORG_TITLE" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="JOB_DETL_SUB_DEPT_LEVEL_6_NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="JOB_DETL_SUB_DEPT_LEVEL_7_NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="PAPE_CIV_SVC_ID" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="POSN_EXEMPT_IND" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="JOB_DETL_FTE" Type="Double" />
+          <Property Name="JOB_DETL_ANNL_SAL" Type="Double" />
+          <Property Name="JOB_PROBN_BGN_DT" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="JOB_PROBN_END_DT" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="JOB_DETL_STATUS_DESC" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="POSN_SAL_GROUP_DESC" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ADROLE" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="JOB_CNTRCT_TYPE_DESC" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="CFOAP" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="CFOAP_AMT" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="GRANTFUNDS" Type="Int32" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="HR_DataModelStoreContainer" CdmEntityContainer="Entities">
+          <EntitySetMapping Name="employees">
+            <EntityTypeMapping TypeName="HR_DataModel.employee">
+              <MappingFragment StoreEntitySet="employees">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="FULLNAME" ColumnName="FULLNAME" />
+                <ScalarProperty Name="YR_OF_SVC" ColumnName="YR_OF_SVC" />
+                <ScalarProperty Name="UNIV_START_DATE" ColumnName="UNIV_START_DATE" />
+                <ScalarProperty Name="LIBRARY_START_DATE" ColumnName="LIBRARY_START_DATE" />
+                <ScalarProperty Name="UIN" ColumnName="UIN" />
+                <ScalarProperty Name="NETID" ColumnName="NETID" />
+                <ScalarProperty Name="NETID_DOMAIN" ColumnName="NETID_DOMAIN" />
+                <ScalarProperty Name="RACE_ALT" ColumnName="RACE_ALT" />
+                <ScalarProperty Name="BIRTH_DT" ColumnName="BIRTH_DT" />
+                <ScalarProperty Name="GENDER" ColumnName="GENDER" />
+                <ScalarProperty Name="ECLASS" ColumnName="ECLASS" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="positions">
+            <EntityTypeMapping TypeName="HR_DataModel.position">
+              <MappingFragment StoreEntitySet="positions">
+                <ScalarProperty Name="GRANTFUNDS" ColumnName="GRANTFUNDS" />
+                <ScalarProperty Name="CFOAP_AMT" ColumnName="CFOAP_AMT" />
+                <ScalarProperty Name="CFOAP" ColumnName="CFOAP" />
+                <ScalarProperty Name="JOB_CNTRCT_TYPE_DESC" ColumnName="JOB_CNTRCT_TYPE_DESC" />
+                <ScalarProperty Name="ADROLE" ColumnName="ADROLE" />
+                <ScalarProperty Name="POSN_SAL_GROUP_DESC" ColumnName="POSN_SAL_GROUP_DESC" />
+                <ScalarProperty Name="JOB_DETL_STATUS_DESC" ColumnName="JOB_DETL_STATUS_DESC" />
+                <ScalarProperty Name="JOB_PROBN_END_DT" ColumnName="JOB_PROBN_END_DT" />
+                <ScalarProperty Name="JOB_PROBN_BGN_DT" ColumnName="JOB_PROBN_BGN_DT" />
+                <ScalarProperty Name="JOB_DETL_ANNL_SAL" ColumnName="JOB_DETL_ANNL_SAL" />
+                <ScalarProperty Name="JOB_DETL_FTE" ColumnName="JOB_DETL_FTE" />
+                <ScalarProperty Name="POSN_EXEMPT_IND" ColumnName="POSN_EXEMPT_IND" />
+                <ScalarProperty Name="PAPE_CIV_SVC_ID" ColumnName="PAPE_CIV_SVC_ID" />
+                <ScalarProperty Name="JOB_DETL_SUB_DEPT_LEVEL_7_NAME" ColumnName="JOB_DETL_SUB_DEPT_LEVEL_7_NAME" />
+                <ScalarProperty Name="JOB_DETL_SUB_DEPT_LEVEL_6_NAME" ColumnName="JOB_DETL_SUB_DEPT_LEVEL_6_NAME" />
+                <ScalarProperty Name="ORG_TITLE" ColumnName="ORG_TITLE" />
+                <ScalarProperty Name="ORG_CD" ColumnName="ORG_CD" />
+                <ScalarProperty Name="JOB_DETL_DATA_EXP_DT" ColumnName="JOB_DETL_DATA_EXP_DT" />
+                <ScalarProperty Name="JOB_DETL_EFF_DT" ColumnName="JOB_DETL_EFF_DT" />
+                <ScalarProperty Name="JOB_DETL_TITLE" ColumnName="JOB_DETL_TITLE" />
+                <ScalarProperty Name="POSN_NBR" ColumnName="POSN_NBR" />
+                <ScalarProperty Name="FAC_RANK_DESC" ColumnName="FAC_RANK_DESC" />
+                <ScalarProperty Name="FAC_TENURE_TRACK_YR" ColumnName="FAC_TENURE_TRACK_YR" />
+                <ScalarProperty Name="EMPEE_CLS_LONG_DESC" ColumnName="EMPEE_CLS_LONG_DESC" />
+                <ScalarProperty Name="EMPEE_CLS_CD" ColumnName="EMPEE_CLS_CD" />
+                <ScalarProperty Name="EDW_PERS_ID" ColumnName="EDW_PERS_ID" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

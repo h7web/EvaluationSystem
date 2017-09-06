@@ -12,14 +12,15 @@ namespace StaffEvaluations.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-
         private Models.StaffEvaluationsEntities db = new Models.StaffEvaluationsEntities();
+        private Models.HR_DataEntities db1 = new Models.HR_DataEntities();
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
                 db.Dispose();
+                db1.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -28,26 +29,31 @@ namespace StaffEvaluations.Controllers
         {
             Supervisor super = LibDirectoryFactory.GetSupervisor(User.Identity.Name.Substring(5));
 
-
-            //List<Person> reportees = new List<Person>();
-
-            //reportees.Add(new Models.Person { NetId = "yoskye", Name = "Skye Arseneau", EmployeeType = "CC" });
-            //reportees.Add(new Models.Person { NetId = "atJohnsn", Name = "Anietre Johnson", EmployeeType = "CA" });
-            //reportees.Add(new Models.Person { NetId = "mikesweb", Name = "Mike Nelson", EmployeeType = "BA" });
-            //reportees.Add(new Models.Person { NetId = "strutz", Name = "Jason Strutz", EmployeeType = "BA" });
-
-
             IndexViewModel vm = new IndexViewModel();
             vm.Super = super;
-            //vm.DirectReports = reportees;
-            //vm.NetId = HttpContext.User.Identity.Name.Substring(5);
 
-            var myEvals = from e in db.StaffPerformanceEvaluations where e.Status == Constants.Submitted && e.NetId == vm.Super.netid select e;
+            if (vm.Super.direct_reports != null)
+            {
+                foreach (LibDirectoryPerson lp in vm.Super.direct_reports)
+                {
+                    var eclass = (from e in db1.employees where e.NETID == lp.netid select e.ECLASS).FirstOrDefault();
+                    lp.employee_type_code = eclass;
+                }
+            }
 
-            var myStaffEvals = from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == vm.Super.netid select e;
+            // next 5 lines added for testing purposes
+            vm.Super.direct_reports = new List<DirectReport>();
+            vm.Super.direct_reports.Add(new DirectReport() { netid = "yoskye", name = "Skye Arseneau", employee_type_code = "CC" });
+            vm.Super.direct_reports.Add(new DirectReport { netid = "atJohnsn", name = "Anietre Johnson", employee_type_code = "CA" });
+            vm.Super.direct_reports.Add(new DirectReport { netid = "mikesweb", name = "Mike Nelson", employee_type_code = "BA" });
+            vm.Super.direct_reports.Add(new DirectReport { netid = "strutz", name = "Jason Strutz", employee_type_code = "BA" });
+
+            var myEvals = from e in db.StaffPerformanceEvaluations where (e.Status == Constants.Submitted || e.Status == Constants.Complete) && e.NetId == HttpContext.User.Identity.Name.Substring(5) select e;
+
+            var myStaffEvals = (from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == vm.Super.netid || e.EvaluatorNetid == HttpContext.User.Identity.Name.Substring(5) select e).ToList();
 
             vm.MyEvaluations = myEvals.ToList();
-            vm.MyStaffEvaluations = myStaffEvals.ToList();
+            vm.MyStaffEvaluations = myStaffEvals;
 
 
             return View(vm);
@@ -59,7 +65,20 @@ namespace StaffEvaluations.Controllers
             newEval.NetId = id;
             newEval.EvalCode = type;
 
+            var reportinfo = LibDirectoryFactory.GetPerson(id);
+
+            var superinfo = LibDirectoryFactory.GetPerson(User.Identity.Name.Substring(5));
+
+            var lsdate = (from e in db1.employees where e.NETID == id select e.LIBRARY_START_DATE).FirstOrDefault().ToString();
+
             CreateEditEvalViewModel crvm = new CreateEditEvalViewModel();
+
+            crvm.person = new LibDirectoryPerson();
+            crvm.person = reportinfo;
+            crvm.person.LibraryStartDate = lsdate;
+
+            crvm.super = new LibDirectoryPerson();
+            crvm.super = superinfo;
 
             crvm.eval = newEval;
             crvm.questions = QuestionHelper.GetQuestions(db, type);
@@ -70,7 +89,7 @@ namespace StaffEvaluations.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateEval(string id, string type, List<Question> question)
+        public ActionResult CreateEval(string id, string type, string title, List<Question> question)
         {
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
             newEval.NetId = id;
@@ -78,6 +97,7 @@ namespace StaffEvaluations.Controllers
             newEval.Year = DateTime.Now.Year;
             newEval.EvalCode = type;
             newEval.Status = "In-Work";
+            newEval.Title = title;
             newEval.StartDate = DateTime.Now;
             db.StaffPerformanceEvaluations.Add(newEval);
             db.SaveChanges();
@@ -105,7 +125,20 @@ namespace StaffEvaluations.Controllers
         {
             var getEval = (from e in db.StaffPerformanceEvaluations where e.EvalId == id select e).Single();
 
+            var reportinfo = LibDirectoryFactory.GetPerson(getEval.NetId);
+
+            var superinfo = LibDirectoryFactory.GetPerson(User.Identity.Name.Substring(5));
+
+            var lsdate = (from e in db1.employees where e.NETID == getEval.NetId select e.LIBRARY_START_DATE).FirstOrDefault().ToString();
+
             CreateEditEvalViewModel crvm = new CreateEditEvalViewModel();
+
+            crvm.person = new LibDirectoryPerson();
+            crvm.person = reportinfo;
+            crvm.person.LibraryStartDate = lsdate;
+
+            crvm.super = new LibDirectoryPerson();
+            crvm.super = superinfo;
 
             crvm.eval = getEval;
             crvm.questions = QuestionHelper.GetQuestions(db, getEval.EvalCode, id, getEval.StaffPerformanceQuestions.ToList());

@@ -27,5 +27,7 @@ namespace LibDirectoryIntegration
 
         public string employee_type_code { get; set; }
 
+        public string LibraryStartDate { get; set; }
+
     }
 }

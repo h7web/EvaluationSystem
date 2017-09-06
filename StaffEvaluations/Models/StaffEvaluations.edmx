@@ -10,7 +10,7 @@
             <PropertyRef Name="QuestionSetId" />
           </Key>
           <Property Name="QuestionSetId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="QuestionText" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="QuestionText" Type="nvarchar" MaxLength="750" Nullable="false" />
           <Property Name="QuestionCode" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="QuestionType" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="Year" Type="int" Nullable="false" />
@@ -23,6 +23,7 @@
           <Property Name="EvalCode" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="Year" Type="int" Nullable="false" />
           <Property Name="NetId" Type="nvarchar" MaxLength="64" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="64" />
           <Property Name="StartDate" Type="datetime" Nullable="false" />
           <Property Name="EvaluatorNetid" Type="nvarchar" MaxLength="64" Nullable="false" />
           <Property Name="Status" Type="nvarchar" MaxLength="10" />
@@ -88,6 +89,7 @@
           <Property Name="EvaluatorComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="StaffPerformanceQuestions" Relationship="StaffEvaluationsModel.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" FromRole="StaffPerformanceEvaluation" ToRole="StaffPerformanceQuestion" />
           <Property Name="SubmittedDate" Type="DateTime" Precision="3" />
+          <Property Name="Title" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityContainer Name="StaffEvaluationsEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="StaffPerformanceEvaluations" EntityType="Self.StaffPerformanceEvaluation" />
@@ -130,7 +132,7 @@
             <PropertyRef Name="QuestionSetId" />
           </Key>
           <Property Name="QuestionSetId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="QuestionText" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="QuestionText" Type="String" Nullable="false" MaxLength="750" FixedLength="false" Unicode="true" />
           <Property Name="QuestionCode" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="QuestionType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="Year" Type="Int32" Nullable="false" />
@@ -144,6 +146,7 @@
           <EntitySetMapping Name="StaffPerformanceEvaluations">
             <EntityTypeMapping TypeName="StaffEvaluationsModel.StaffPerformanceEvaluation">
               <MappingFragment StoreEntitySet="StaffPerformanceEvaluations">
+                <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="SubmittedDate" ColumnName="SubmittedDate" />
                 <ScalarProperty Name="EvaluatorComments" ColumnName="EvaluatorComments" />
                 <ScalarProperty Name="EmployeeComments" ColumnName="EmployeeComments" />

@@ -65,8 +65,15 @@ namespace LibDirectoryIntegration
         /// <returns></returns>
         public static Supervisor GetSupervisor(string netid)
         {
-            Supervisor ret = LibDirectoryFactory.GetAllSupervisors().SingleOrDefault(s => s.supervisor.netid==netid).supervisor;
+            Supervisor ret = new Supervisor();
+            try
+            {
+                ret = LibDirectoryFactory.GetAllSupervisors().SingleOrDefault(s => s.supervisor.netid == netid).supervisor;
+            }
+            catch (Exception ex)
+            {
 
+            }
             return ret;
         }
 

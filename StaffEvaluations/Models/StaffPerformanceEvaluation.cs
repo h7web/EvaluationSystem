@@ -32,6 +32,7 @@ namespace StaffEvaluations.Models
         public string EmployeeComments { get; set; }
         public string EvaluatorComments { get; set; }
         public Nullable<System.DateTime> SubmittedDate { get; set; }
+        public string Title { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StaffPerformanceQuestion> StaffPerformanceQuestions { get; set; }

@@ -136,12 +136,33 @@
     </Compile>
     <Compile Include="Models\Constants.cs" />
     <Compile Include="Models\CreateEditEvalViewModel.cs" />
+    <Compile Include="Models\employee.cs">
+      <DependentUpon>HRDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\EvaluationQuestionSet.cs">
       <DependentUpon>StaffEvaluations.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\HRDataModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HRDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\HRDataModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HRDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\HRDataModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HRDataModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\IndexViewModel.cs" />
     <Compile Include="Models\PartialEvaluationQuestionSet.cs" />
     <Compile Include="Models\Person.cs" />
+    <Compile Include="Models\position.cs">
+      <DependentUpon>HRDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Question.cs" />
     <Compile Include="Models\QuestionHelper.cs" />
     <Compile Include="Models\StaffEvaluations.Context.cs">
@@ -174,6 +195,16 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Models\HRDataModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>HRDataModel.edmx</DependentUpon>
+      <LastGenOutput>HRDataModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\HRDataModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>HRDataModel.edmx</DependentUpon>
+      <LastGenOutput>HRDataModel.cs</LastGenOutput>
+    </Content>
     <Content Include="Models\StaffEvaluations.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>StaffEvaluations.edmx</DependentUpon>
@@ -193,6 +224,13 @@
     <Content Include="Models\StaffEvaluations.edmx.diagram">
       <DependentUpon>StaffEvaluations.edmx</DependentUpon>
     </Content>
+    <EntityDeploy Include="Models\HRDataModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>HRDataModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\HRDataModel.edmx.diagram">
+      <DependentUpon>HRDataModel.edmx</DependentUpon>
+    </Content>
     <None Include="Properties\PublishProfiles\iisdev1.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -206,7 +244,9 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
