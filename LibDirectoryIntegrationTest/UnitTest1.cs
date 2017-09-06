@@ -47,7 +47,7 @@ namespace LibDirectoryIntegrationTest
         [TestMethod]
         public void TestGetPerson()
         {
-            LibDirectoryPerson pers = LibDirectoryFactory.GetPerson("jmj");
+            LibDirectoryPerson pers = LibDirectoryFactory.GetPerson("atjohnsn");
 
             Assert.AreEqual("Jenny Marie", pers.first);
             Assert.AreEqual("Johnson", pers.last);

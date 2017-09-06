@@ -16,7 +16,7 @@ namespace StaffEvaluations.Models
     public partial class HR_DataEntities : DbContext
     {
         public HR_DataEntities()
-            : base("name=Entities")
+            : base("name=HR_DataEntities")
         {
         }
     

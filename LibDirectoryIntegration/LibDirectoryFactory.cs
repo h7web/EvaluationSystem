@@ -65,14 +65,14 @@ namespace LibDirectoryIntegration
         /// <returns></returns>
         public static Supervisor GetSupervisor(string netid)
         {
-            Supervisor ret = new Supervisor();
+            Supervisor ret = null;
             try
             {
-                ret = LibDirectoryFactory.GetAllSupervisors().SingleOrDefault(s => s.supervisor.netid == netid).supervisor;
+                ret = LibDirectoryFactory.GetAllSupervisors().SingleOrDefault(s => s.supervisor.netid.Equals(netid, StringComparison.OrdinalIgnoreCase)).supervisor;
             }
-            catch (Exception ex)
+            catch
             {
-
+                //ignore and return null;
             }
             return ret;
         }
@@ -84,9 +84,16 @@ namespace LibDirectoryIntegration
         /// <returns></returns>
         public static List<Supervisor> GetPersonsSupervisors(string netid)
         {
-            List<Supervisor> ret = null; 
+            List<Supervisor> ret = null;
 
-            ret = LibDirectoryFactory.GetAllSupervisors().Where(rl => rl.supervisor.direct_reports.Any(dr => dr.netid==netid)).Select(rl=> rl.supervisor).ToList();
+            try
+            {
+                ret = LibDirectoryFactory.GetAllSupervisors().Where(rl => rl.supervisor.direct_reports.Any(dr => dr.netid.Equals(netid, StringComparison.OrdinalIgnoreCase))).Select(rl => rl.supervisor).ToList();
+            }
+            catch
+            {
+                //ignore and return null
+            }
 
             return ret;
         }
@@ -102,15 +109,16 @@ namespace LibDirectoryIntegration
             LibDirectoryPerson ret = null;
             foreach (ReportingLine rl in LibDirectoryFactory.GetAllSupervisors())
             {
-                if(rl.supervisor.netid==netid)
+                if (rl.supervisor.netid.Equals(netid, StringComparison.OrdinalIgnoreCase))
                 {
                     ret = rl.supervisor;
                     break;
-                } else
+                }
+                else
                 {
                     foreach (DirectReport dr in rl.supervisor.direct_reports)
                     {
-                        if (dr.netid==netid)
+                        if (dr.netid.Equals(netid, StringComparison.OrdinalIgnoreCase))
                         {
                             ret = dr;
                             break;

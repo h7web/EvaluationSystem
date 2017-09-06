@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="HR_DataModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="HR_DataModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="employees">
           <Key>
             <PropertyRef Name="id" />
@@ -58,7 +58,8 @@
           <EntitySet Name="employees" EntityType="Self.employees" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="positions" EntityType="Self.positions" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="HR_DataModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -79,10 +80,6 @@
           <Property Name="GENDER" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="ECLASS" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="employees" EntityType="Self.employee" />
-          <EntitySet Name="positions" EntityType="HR_DataModel.position" />
-        </EntityContainer>
         <EntityType Name="position">
           <Key>
             <PropertyRef Name="id" />
@@ -115,12 +112,16 @@
           <Property Name="CFOAP_AMT" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="GRANTFUNDS" Type="Int32" />
         </EntityType>
+        <EntityContainer Name="HR_DataEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="employees" EntityType="Self.employee" />
+          <EntitySet Name="positions" EntityType="Self.position" />
+        </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="HR_DataModelStoreContainer" CdmEntityContainer="Entities">
+        <EntityContainerMapping StorageEntityContainer="HR_DataModelStoreContainer" CdmEntityContainer="HR_DataEntities">
           <EntitySetMapping Name="employees">
             <EntityTypeMapping TypeName="HR_DataModel.employee">
               <MappingFragment StoreEntitySet="employees">
@@ -142,33 +143,33 @@
           <EntitySetMapping Name="positions">
             <EntityTypeMapping TypeName="HR_DataModel.position">
               <MappingFragment StoreEntitySet="positions">
-                <ScalarProperty Name="GRANTFUNDS" ColumnName="GRANTFUNDS" />
-                <ScalarProperty Name="CFOAP_AMT" ColumnName="CFOAP_AMT" />
-                <ScalarProperty Name="CFOAP" ColumnName="CFOAP" />
-                <ScalarProperty Name="JOB_CNTRCT_TYPE_DESC" ColumnName="JOB_CNTRCT_TYPE_DESC" />
-                <ScalarProperty Name="ADROLE" ColumnName="ADROLE" />
-                <ScalarProperty Name="POSN_SAL_GROUP_DESC" ColumnName="POSN_SAL_GROUP_DESC" />
-                <ScalarProperty Name="JOB_DETL_STATUS_DESC" ColumnName="JOB_DETL_STATUS_DESC" />
-                <ScalarProperty Name="JOB_PROBN_END_DT" ColumnName="JOB_PROBN_END_DT" />
-                <ScalarProperty Name="JOB_PROBN_BGN_DT" ColumnName="JOB_PROBN_BGN_DT" />
-                <ScalarProperty Name="JOB_DETL_ANNL_SAL" ColumnName="JOB_DETL_ANNL_SAL" />
-                <ScalarProperty Name="JOB_DETL_FTE" ColumnName="JOB_DETL_FTE" />
-                <ScalarProperty Name="POSN_EXEMPT_IND" ColumnName="POSN_EXEMPT_IND" />
-                <ScalarProperty Name="PAPE_CIV_SVC_ID" ColumnName="PAPE_CIV_SVC_ID" />
-                <ScalarProperty Name="JOB_DETL_SUB_DEPT_LEVEL_7_NAME" ColumnName="JOB_DETL_SUB_DEPT_LEVEL_7_NAME" />
-                <ScalarProperty Name="JOB_DETL_SUB_DEPT_LEVEL_6_NAME" ColumnName="JOB_DETL_SUB_DEPT_LEVEL_6_NAME" />
-                <ScalarProperty Name="ORG_TITLE" ColumnName="ORG_TITLE" />
-                <ScalarProperty Name="ORG_CD" ColumnName="ORG_CD" />
-                <ScalarProperty Name="JOB_DETL_DATA_EXP_DT" ColumnName="JOB_DETL_DATA_EXP_DT" />
-                <ScalarProperty Name="JOB_DETL_EFF_DT" ColumnName="JOB_DETL_EFF_DT" />
-                <ScalarProperty Name="JOB_DETL_TITLE" ColumnName="JOB_DETL_TITLE" />
-                <ScalarProperty Name="POSN_NBR" ColumnName="POSN_NBR" />
-                <ScalarProperty Name="FAC_RANK_DESC" ColumnName="FAC_RANK_DESC" />
-                <ScalarProperty Name="FAC_TENURE_TRACK_YR" ColumnName="FAC_TENURE_TRACK_YR" />
-                <ScalarProperty Name="EMPEE_CLS_LONG_DESC" ColumnName="EMPEE_CLS_LONG_DESC" />
-                <ScalarProperty Name="EMPEE_CLS_CD" ColumnName="EMPEE_CLS_CD" />
-                <ScalarProperty Name="EDW_PERS_ID" ColumnName="EDW_PERS_ID" />
                 <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="EDW_PERS_ID" ColumnName="EDW_PERS_ID" />
+                <ScalarProperty Name="EMPEE_CLS_CD" ColumnName="EMPEE_CLS_CD" />
+                <ScalarProperty Name="EMPEE_CLS_LONG_DESC" ColumnName="EMPEE_CLS_LONG_DESC" />
+                <ScalarProperty Name="FAC_TENURE_TRACK_YR" ColumnName="FAC_TENURE_TRACK_YR" />
+                <ScalarProperty Name="FAC_RANK_DESC" ColumnName="FAC_RANK_DESC" />
+                <ScalarProperty Name="POSN_NBR" ColumnName="POSN_NBR" />
+                <ScalarProperty Name="JOB_DETL_TITLE" ColumnName="JOB_DETL_TITLE" />
+                <ScalarProperty Name="JOB_DETL_EFF_DT" ColumnName="JOB_DETL_EFF_DT" />
+                <ScalarProperty Name="JOB_DETL_DATA_EXP_DT" ColumnName="JOB_DETL_DATA_EXP_DT" />
+                <ScalarProperty Name="ORG_CD" ColumnName="ORG_CD" />
+                <ScalarProperty Name="ORG_TITLE" ColumnName="ORG_TITLE" />
+                <ScalarProperty Name="JOB_DETL_SUB_DEPT_LEVEL_6_NAME" ColumnName="JOB_DETL_SUB_DEPT_LEVEL_6_NAME" />
+                <ScalarProperty Name="JOB_DETL_SUB_DEPT_LEVEL_7_NAME" ColumnName="JOB_DETL_SUB_DEPT_LEVEL_7_NAME" />
+                <ScalarProperty Name="PAPE_CIV_SVC_ID" ColumnName="PAPE_CIV_SVC_ID" />
+                <ScalarProperty Name="POSN_EXEMPT_IND" ColumnName="POSN_EXEMPT_IND" />
+                <ScalarProperty Name="JOB_DETL_FTE" ColumnName="JOB_DETL_FTE" />
+                <ScalarProperty Name="JOB_DETL_ANNL_SAL" ColumnName="JOB_DETL_ANNL_SAL" />
+                <ScalarProperty Name="JOB_PROBN_BGN_DT" ColumnName="JOB_PROBN_BGN_DT" />
+                <ScalarProperty Name="JOB_PROBN_END_DT" ColumnName="JOB_PROBN_END_DT" />
+                <ScalarProperty Name="JOB_DETL_STATUS_DESC" ColumnName="JOB_DETL_STATUS_DESC" />
+                <ScalarProperty Name="POSN_SAL_GROUP_DESC" ColumnName="POSN_SAL_GROUP_DESC" />
+                <ScalarProperty Name="ADROLE" ColumnName="ADROLE" />
+                <ScalarProperty Name="JOB_CNTRCT_TYPE_DESC" ColumnName="JOB_CNTRCT_TYPE_DESC" />
+                <ScalarProperty Name="CFOAP" ColumnName="CFOAP" />
+                <ScalarProperty Name="CFOAP_AMT" ColumnName="CFOAP_AMT" />
+                <ScalarProperty Name="GRANTFUNDS" ColumnName="GRANTFUNDS" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
