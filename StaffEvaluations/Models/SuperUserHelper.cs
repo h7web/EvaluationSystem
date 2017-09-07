@@ -6,18 +6,18 @@ using System.Configuration;
 
 namespace StaffEvaluations.Models
 {
-    public class SuperUserHelper
+    public static class SuperUserHelper
     {
 
-        public string IsAdSuperUser(string id)
+        public static bool IsAdSuperUser(string id)
         {
-            var ret = "";
+            var ret = false;
 
             string sulist = ConfigurationManager.AppSettings["AdSuperUsers"].ToString();
 
-            if (sulist.Contains(id))
+            if (sulist.IndexOf(id,StringComparison.OrdinalIgnoreCase)>=0)
             {
-                ret = "true";
+                ret = true;
             }
             return ret;
         }

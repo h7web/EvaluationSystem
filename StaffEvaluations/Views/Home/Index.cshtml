@@ -100,7 +100,7 @@ else
     var helper = isS;
 }
 
-@if (IsAdSuperUser)
+@if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5) ))
 {
 };
 
