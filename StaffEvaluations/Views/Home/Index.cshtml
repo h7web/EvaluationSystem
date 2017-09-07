@@ -95,3 +95,43 @@ else
 {
     <ul><li>No staff found.</li></ul>
 }
+
+@{ 
+    var helper = isS;
+}
+
+@if (IsAdSuperUser)
+{
+};
+
+<div class="modal fade" id="Masquarade" tabindex="-1" role="dialog" aria-labelledby="findLibExpenseLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="findLibExpenseLabel">Find Library Expense</h4>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("SearchForLibExpense", "Home"))
+                {
+                    <span>
+                        Search:
+                        @Html.TextBox("search") in Descriptions
+                        @Html.Hidden("searchfy", Model.ACCTG_YR)
+                        @Html.Hidden("searchpgm", Model.FIN_PGM_CD)
+                        <input type="submit" value="Find" onclick="SearchLibExpenses(); return false;" />
+                    </span>
+
+                    <div id="searchResults">
+
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -186,6 +186,7 @@
     <Compile Include="Models\StaffPerformanceQuestion.cs">
       <DependentUpon>StaffEvaluations.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\SuperUserHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

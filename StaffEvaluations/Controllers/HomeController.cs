@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using StaffEvaluations.Models;
 using System.Net.Mail;
 using LibDirectoryIntegration;
+using System.Configuration;
 
 namespace StaffEvaluations.Controllers
 {
@@ -25,8 +26,23 @@ namespace StaffEvaluations.Controllers
             base.Dispose(disposing);
         }
 
+        public static bool IsAdSuperUser(string id)
+        {
+            var ret = false;
+
+            string sulist = ConfigurationManager.AppSettings["AdSuperUsers"].ToString();
+
+            if (sulist.Contains(id))
+            {
+                ret = true;
+            }
+            return ret;
+        }
+
         public ActionResult Index()
         {
+            //Models.SuperUserHelper.
+
             Supervisor super = LibDirectoryFactory.GetSupervisor(User.Identity.Name.Substring(5));
 
             IndexViewModel vm = new IndexViewModel();
