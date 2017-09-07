@@ -11,8 +11,9 @@
     <ul>
         @foreach (StaffEvaluations.Models.StaffPerformanceEvaluation eval in Model.MyEvaluations)
         {
+            var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
             <li>
-                @Html.ActionLink("Go to your evaluation", "EditEval", new { id = eval.EvalId })
+                @Html.ActionLink("Go to your evaluation from " + evalname, "EditEval", new { id = eval.EvalId })
             </li>
         }
     </ul>
@@ -23,46 +24,72 @@ else
 }
 
 <h2>Evaluations for your staff</h2>
-@if (Model.MyStaffEvaluations.Count > 0)
+@if (Model.Super.direct_reports.Count > 0)
 {
-<ul>
-    @foreach (LibDirectoryIntegration.DirectReport directReport in Model.Super.direct_reports)
-    {
-        if (Model.MyStaffEvaluations.Any(e => e.NetId == directReport.netid))
+    <table>
+        @foreach (LibDirectoryIntegration.DirectReport directReport in Model.Super.direct_reports)
         {
-            var eid = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().EvalId;
-            var status = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().Status;
+            var lsdate = directReport.LibraryStartDate.AsDateTime().ToString("MM/dd/yyyy");
 
-            <li>
-                <strong>@directReport.name</strong> (@status)
+            <tr>
 
-                @if (status != "Complete")
+                @if (Model.MyStaffEvaluations.Any(e => e.NetId == directReport.netid))
                 {
-                    @Html.ActionLink("Edit", "EditEval", new { id = eid }) 
+                var eid = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().EvalId;
+                var status = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().Status;
+
+                <td><strong>@directReport.name</strong></td>
+                <td></td>
+                <td>@directReport.employee_type_code</td>
+                <td>@lsdate</td>
+                <td>(@status)</td>
+                <td>
+                    @if (status == "Complete")
+                    {
+                        @Html.ActionLink("View", "EditEval", new { id = eid })
+                    }
+                    @if (status == "Contested" || status == "Accepted" || status == "In-Work")
+                    {
+                        @Html.ActionLink("Edit", "EditEval", new { id = eid })
+                    }
+
+                    @if (status == "In-Work")
+                    {
+                        @:|
+                        @Html.ActionLink("Submit", "SubmitEval", new { id = eid })
+                        @:|
+                        @Html.ActionLink("Delete", "DeleteEval", new { id = eid })
+                    }
+                    @if (status == "Deferred")
+                    {
+                        @Html.ActionLink("Start Evaluation", "CreateEval", new { id = directReport.netid, type = directReport.employee_type_code })
+                    }
+                </td>
                 }
                 else
                 {
-                    @Html.ActionLink("View", "EditEval", new { id = eid })
+                <td><strong>@directReport.name </strong></td>
+                <td></td>
+                <td>@directReport.employee_type_code</td>
+                <td>@lsdate</td>
+                <td></td>
+                <td>
+                    @Html.ActionLink("Start Evaluation", "CreateEval", new { id = directReport.netid, type = directReport.employee_type_code })
+                    |
+                    @Html.ActionLink("Defer Evaluation", "DeferEval", new { id = directReport.netid, type = directReport.employee_type_code })
+                </td>
                 }
-
-                @if (status == "In-Work")
-                {
-                    @:| 
-                    @Html.ActionLink("Submit", "SubmitEval", new { id = eid })
-                    @:|
-                    @Html.ActionLink("Delete", "DeleteEval", new { id = eid })
-                }
-            </li>
+            </tr>
         }
-        else
-        {
-            <li>
-                <strong>@directReport.name </strong>
-                @Html.ActionLink("Start Evaluation", "CreateEval", new { id = directReport.netid, type = directReport.employee_type_code })
-            </li>
-        }
-    }
-</ul>
+        <tr>
+            <td></td>
+            <td width="20"></td>
+            <td width="50"></td>
+            <td width="80"></td>
+            <td width="80"></td>
+            <td></td>
+        </tr>
+    </table>
 }
 else
 {

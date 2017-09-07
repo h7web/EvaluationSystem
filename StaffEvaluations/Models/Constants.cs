@@ -15,5 +15,8 @@ namespace StaffEvaluations.Models
 
         public const string Complete = "Complete";
 
+        public const string Contested = "Contested";
+
+        public const string Deferred = "Deferred";
     }
 }

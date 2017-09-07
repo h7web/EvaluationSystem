@@ -32,29 +32,50 @@ namespace StaffEvaluations.Controllers
             IndexViewModel vm = new IndexViewModel();
             vm.Super = super;
 
-            if (vm.Super.direct_reports != null)
+            if (User.Identity.Name.Substring(5) != "gknott63")
             {
-                foreach (LibDirectoryPerson lp in vm.Super.direct_reports)
+
+                //new way to check for multiple null posibilities 
+                // if (vm?.Super?.direct_reports != null) 
+
+                if (vm.Super != null)
+            {
+                if (vm.Super.direct_reports != null)
                 {
-                    var eclass = (from e in db1.employees where e.NETID == lp.netid select e.ECLASS).FirstOrDefault();
-                    lp.employee_type_code = eclass;
+                    foreach (LibDirectoryPerson lp in vm.Super.direct_reports)
+                    {
+                        var emp = (from e in db1.employees where e.NETID == lp.netid select e).FirstOrDefault();
+                        lp.employee_type_code = emp.ECLASS;
+                        lp.LibraryStartDate = String.Format("0: MM/dd/yyyy", emp.LIBRARY_START_DATE.ToString());
+                    }
                 }
+            }
+            else
+            {
+                vm.Super = new Supervisor();
             }
 
             // next 5 lines added for testing purposes
-            vm.Super.direct_reports = new List<DirectReport>();
-            vm.Super.direct_reports.Add(new DirectReport() { netid = "yoskye", name = "Skye Arseneau", employee_type_code = "CC" });
-            vm.Super.direct_reports.Add(new DirectReport { netid = "atJohnsn", name = "Anietre Johnson", employee_type_code = "CA" });
-            vm.Super.direct_reports.Add(new DirectReport { netid = "mikesweb", name = "Mike Nelson", employee_type_code = "BA" });
-            vm.Super.direct_reports.Add(new DirectReport { netid = "strutz", name = "Jason Strutz", employee_type_code = "BA" });
-
-            var myEvals = from e in db.StaffPerformanceEvaluations where (e.Status == Constants.Submitted || e.Status == Constants.Complete) && e.NetId == HttpContext.User.Identity.Name.Substring(5) select e;
+                vm.Super.direct_reports = new List<DirectReport>();
+                vm.Super.direct_reports.Add(new DirectReport() { netid = "yoskye", name = "Skye Arseneau", employee_type_code = "CC", LibraryStartDate = "02/01/2001" });
+                vm.Super.direct_reports.Add(new DirectReport { netid = "atJohnsn", name = "Anietre Johnson", employee_type_code = "CA", LibraryStartDate = "08/01/2014" });
+                vm.Super.direct_reports.Add(new DirectReport { netid = "mikesweb", name = "Mike Nelson", employee_type_code = "BA", LibraryStartDate = "06/24/2016" });
+                vm.Super.direct_reports.Add(new DirectReport { netid = "strutz", name = "Jason Strutz", employee_type_code = "BA", LibraryStartDate = "09/01/2002" });
+                vm.Super.direct_reports.Add(new DirectReport { netid = "gknott63", name = "Greg Knott", employee_type_code = "BA", LibraryStartDate = "09/01/2010" });
+                vm.Super.direct_reports.Add(new DirectReport { netid = "jlockmil", name = "John Lockmiller", employee_type_code = "BA", LibraryStartDate = "06/01/2017" });
 
             var myStaffEvals = (from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == vm.Super.netid || e.EvaluatorNetid == HttpContext.User.Identity.Name.Substring(5) select e).ToList();
 
-            vm.MyEvaluations = myEvals.ToList();
-            vm.MyStaffEvaluations = myStaffEvals;
+                vm.MyStaffEvaluations = myStaffEvals;
+            }
+            else
+            {
+                vm.Super = new Supervisor();
+                vm.Super.direct_reports = new List<DirectReport>();
+            }
+            var myEvals = from e in db.StaffPerformanceEvaluations where (e.Status == Constants.Submitted || e.Status == Constants.Complete) && e.NetId == HttpContext.User.Identity.Name.Substring(5) select e;
 
+            vm.MyEvaluations = myEvals.ToList();
 
             return View(vm);
         }
@@ -175,15 +196,40 @@ namespace StaffEvaluations.Controllers
 
             if (button.Equals("Complete"))
             {
+                eval.CompleteDate = DateTime.Now;
                 eval.Status = "Complete";
             }
+            var body = "";
+            var message = new MailMessage();
 
-            if (eval.NetId == HttpContext.User.Identity.Name.Substring(5) && button == "Accept")
+            if (eval.NetId == HttpContext.User.Identity.Name.Substring(5) && button == "Contest")
             {
-                eval.Status = "Accepted";
+                eval.AcceptedDate = DateTime.Now;
+                eval.Status = "Contested";
+                var name = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.NetId).name;
 
-                var body = "<p> " + eval.EvaluatorNetid + " has accepted his/her " + eval.Year + " Performance Evaluation</p>";
-                var message = new MailMessage();
+                body = "<p> " + name + " has contested his/her " + eval.Year + " Performance Evaluation</p>";
+
+                message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
+                message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
+                message.Subject = eval.Year + " Performance Evaluation Contested";
+                message.Body = body;
+                message.IsBodyHtml = true;
+
+                using (var smtp = new SmtpClient())
+                {
+                    smtp.Host = "Express-SMTP.cites.illinois.edu ";
+                    await smtp.SendMailAsync(message);
+                }
+            }
+
+                if (eval.NetId == HttpContext.User.Identity.Name.Substring(5) && button == "Accept")
+            {
+                eval.AcceptedDate = DateTime.Now;
+                eval.Status = "Accepted";
+                var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
+
+                body = "<p> " + evalname + " has accepted his/her " + eval.Year + " Performance Evaluation</p>";
 
                 message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
                 message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
@@ -209,8 +255,9 @@ namespace StaffEvaluations.Controllers
             eval.Status = "Submitted";
             eval.SubmittedDate = DateTime.Now;
             db.SaveChanges();
+            var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
 
-            var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + eval.EvaluatorNetid + " is available for you to review and comment at the following URL:</p>";
+            var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + evalname + " is available for you to review and comment at the following URL:</p>";
             body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
             var message = new MailMessage();
 
@@ -229,6 +276,42 @@ namespace StaffEvaluations.Controllers
             return RedirectToAction("Index");
         }
 
+        public async System.Threading.Tasks.Task<ActionResult> DeferEval(string id, string type, string title )
+        {
+            StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
+            newEval.NetId = id;
+            newEval.EvaluatorNetid = HttpContext.User.Identity.Name.Substring(5);
+            newEval.Year = DateTime.Now.Year;
+            newEval.EvalCode = type;
+            newEval.Status = "In-Work";
+            newEval.Title = title;
+            newEval.StartDate = DateTime.Now;
+            db.StaffPerformanceEvaluations.Add(newEval);
+            db.SaveChanges();
+            newEval.Status = "Deferred";
+            newEval.DeferredDate = DateTime.Now;
+            db.SaveChanges();
+            var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.EvaluatorNetid).name;
+            var name = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.EvaluatorNetid).name;
+
+            var body = "<p> " + newEval.Year + " Performance Evaluation for " + name + " has been deferrede by " + evalname + " on " + newEval.DeferredDate + "</p>";
+            body = body + "Here is the Application URL: http://iisdev1.library.illinois.edu/StaffEvaluations/";
+            var message = new MailMessage();
+
+            message.To.Add(new MailAddress(newEval.EvaluatorNetid + "@illinois.edu")); //change this to BHSRC address in production
+            message.From = new MailAddress(newEval.EvaluatorNetid + "@illinois.edu");
+            message.Subject = newEval.Year + " Performance Evaluation Deferred";
+            message.Body = body;
+            message.IsBodyHtml = true;
+
+            using (var smtp = new SmtpClient())
+            {
+                smtp.Host = "Express-SMTP.cites.illinois.edu ";
+                await smtp.SendMailAsync(message);
+            }
+
+            return RedirectToAction("Index");
+        }
 
     }
 }

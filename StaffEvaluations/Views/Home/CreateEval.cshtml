@@ -5,7 +5,7 @@
 
     var evaltypedesc = "";
 
-    if (Model.eval.EvalCode == "AP")
+    if (Model.eval.EvalCode == "BA")
     {
         evaltypedesc = "Academic Professional";
     }
@@ -21,6 +21,8 @@
 
 @using (Html.BeginForm())
 {
+    var lsdate = Model.person.LibraryStartDate.AsDateTime().ToString("MM/dd/yyyy");
+
     @Html.Hidden("Id", Model.eval.NetId)
     @Html.Hidden("Type", Model.eval.EvalCode)
     @Html.Hidden("Title", Model.person.banner_title)
@@ -28,10 +30,10 @@
     <h2>@DateTime.Now.Year @evaltypedesc Performance Evaluation</h2>
     
     <p>
-        @Model.person.name - @Model.person.banner_title<br />
-        Library Start Date: @Model.person.LibraryStartDate<br />
+        <strong>@Model.person.name - @Model.person.banner_title</strong><br />
+        Library Start Date: @lsdate<br />
         Supervisor: @Model.super.name - @Model.super.banner_title<br />
-        Date: @DateTime.Now
+        Date: @DateTime.Now.ToString("MM/dd/yyyy")
         <br />
     </p>
 
@@ -52,7 +54,7 @@
                 <div>
                     <br />
                     Comments: <br />
-                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100"></textarea>
+                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;"></textarea>
                     <br />
                     <br />
                 </div>
