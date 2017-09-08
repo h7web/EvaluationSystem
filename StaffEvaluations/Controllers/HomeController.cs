@@ -16,6 +16,19 @@ namespace StaffEvaluations.Controllers
         private Models.StaffEvaluationsEntities db = new Models.StaffEvaluationsEntities();
         private Models.HR_DataEntities db1 = new Models.HR_DataEntities();
 
+        static string LoggedInUser = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+
+        public string GetUser()
+        {
+            string ret = LoggedInUser;
+
+            if (Session["MasqueradeUser"].ToString() != "")
+            {
+                ret = Session["MasqueradeUser"].ToString();
+            }
+            return ret;
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -26,24 +39,33 @@ namespace StaffEvaluations.Controllers
             base.Dispose(disposing);
         }
 
-        public static bool IsAdSuperUser(string id)
+        public ActionResult MasqueradeAs(string netid)
         {
-            var ret = false;
+            Session["Masquerade"] = true;
+            Session["MasqueradeUser"] = netid;
 
-            string sulist = ConfigurationManager.AppSettings["AdSuperUsers"].ToString();
+            return RedirectToAction("Index");
+        }
 
-            if (sulist.Contains(id))
-            {
-                ret = true;
-            }
-            return ret;
+        public ActionResult StopMasquerade()
+        {
+            Session["Masquerade"] = false;
+            Session["MasqueradeUser"] = "";
+
+            return RedirectToAction("Index");
         }
 
         public ActionResult Index()
         {
-            //Models.SuperUserHelper.
+            if (Session["Masquerade"] == null)
+            {
+                Session["Masquerade"] = false;
+                Session["MasqueradeUser"] = "";
+            }
 
-            Supervisor super = LibDirectoryFactory.GetSupervisor(User.Identity.Name.Substring(5));
+            string usethisnetid = GetUser();
+
+            Supervisor super = LibDirectoryFactory.GetSupervisor(GetUser());
 
             IndexViewModel vm = new IndexViewModel();
             vm.Super = super;
@@ -55,24 +77,25 @@ namespace StaffEvaluations.Controllers
                 // if (vm?.Super?.direct_reports != null) 
 
                 if (vm.Super != null)
-            {
-                if (vm.Super.direct_reports != null)
                 {
-                    foreach (LibDirectoryPerson lp in vm.Super.direct_reports)
+                    if (vm.Super.direct_reports != null)
                     {
-                        var emp = (from e in db1.employees where e.NETID == lp.netid select e).FirstOrDefault();
-                        lp.employee_type_code = emp.ECLASS;
-                        lp.LibraryStartDate = String.Format("0: MM/dd/yyyy", emp.LIBRARY_START_DATE.ToString());
+                        foreach (LibDirectoryPerson lp in vm.Super.direct_reports)
+                        {
+                            var emp = (from e in db1.employees where e.NETID == lp.netid select e).FirstOrDefault();
+                            lp.employee_type_code = emp.ECLASS;
+                            lp.LibraryStartDate = String.Format("0: MM/dd/yyyy", emp.LIBRARY_START_DATE.ToString());
+                        }
                     }
                 }
-            }
-            else
-            {
-                vm.Super = new Supervisor();
-            }
+                else
+                {
+                    vm.Super = new Supervisor();
+                    vm.Super.direct_reports = new List<DirectReport>();
+                }
 
-            // next 5 lines added for testing purposes
-                vm.Super.direct_reports = new List<DirectReport>();
+
+                // next 5 lines added for testing purposes
                 vm.Super.direct_reports.Add(new DirectReport() { netid = "yoskye", name = "Skye Arseneau", employee_type_code = "CC", LibraryStartDate = "02/01/2001" });
                 vm.Super.direct_reports.Add(new DirectReport { netid = "atJohnsn", name = "Anietre Johnson", employee_type_code = "CA", LibraryStartDate = "08/01/2014" });
                 vm.Super.direct_reports.Add(new DirectReport { netid = "mikesweb", name = "Mike Nelson", employee_type_code = "BA", LibraryStartDate = "06/24/2016" });
@@ -80,7 +103,7 @@ namespace StaffEvaluations.Controllers
                 vm.Super.direct_reports.Add(new DirectReport { netid = "gknott63", name = "Greg Knott", employee_type_code = "BA", LibraryStartDate = "09/01/2010" });
                 vm.Super.direct_reports.Add(new DirectReport { netid = "jlockmil", name = "John Lockmiller", employee_type_code = "BA", LibraryStartDate = "06/01/2017" });
 
-            var myStaffEvals = (from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == vm.Super.netid || e.EvaluatorNetid == HttpContext.User.Identity.Name.Substring(5) select e).ToList();
+                var myStaffEvals = (from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == vm.Super.netid || e.EvaluatorNetid == usethisnetid select e).ToList();
 
                 vm.MyStaffEvaluations = myStaffEvals;
             }
@@ -89,7 +112,7 @@ namespace StaffEvaluations.Controllers
                 vm.Super = new Supervisor();
                 vm.Super.direct_reports = new List<DirectReport>();
             }
-            var myEvals = from e in db.StaffPerformanceEvaluations where (e.Status == Constants.Submitted || e.Status == Constants.Complete) && e.NetId == HttpContext.User.Identity.Name.Substring(5) select e;
+            var myEvals = from e in db.StaffPerformanceEvaluations where (e.Status == Constants.Submitted || e.Status == Constants.Complete) && e.NetId == usethisnetid select e;
 
             vm.MyEvaluations = myEvals.ToList();
 
@@ -104,7 +127,7 @@ namespace StaffEvaluations.Controllers
 
             var reportinfo = LibDirectoryFactory.GetPerson(id);
 
-            var superinfo = LibDirectoryFactory.GetPerson(User.Identity.Name.Substring(5));
+            var superinfo = LibDirectoryFactory.GetPerson(GetUser());
 
             var lsdate = (from e in db1.employees where e.NETID == id select e.LIBRARY_START_DATE).FirstOrDefault().ToString();
 
@@ -130,7 +153,7 @@ namespace StaffEvaluations.Controllers
         {
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
             newEval.NetId = id;
-            newEval.EvaluatorNetid = HttpContext.User.Identity.Name.Substring(5);
+            newEval.EvaluatorNetid = GetUser();
             newEval.Year = DateTime.Now.Year;
             newEval.EvalCode = type;
             newEval.Status = "In-Work";
@@ -164,7 +187,7 @@ namespace StaffEvaluations.Controllers
 
             var reportinfo = LibDirectoryFactory.GetPerson(getEval.NetId);
 
-            var superinfo = LibDirectoryFactory.GetPerson(User.Identity.Name.Substring(5));
+            var superinfo = LibDirectoryFactory.GetPerson(GetUser());
 
             var lsdate = (from e in db1.employees where e.NETID == getEval.NetId select e.LIBRARY_START_DATE).FirstOrDefault().ToString();
 
@@ -193,12 +216,12 @@ namespace StaffEvaluations.Controllers
             {
                 var orig = db.StaffPerformanceQuestions.Find(q.QuestionId);
                 if (orig.Comment != q.QuestionComment || orig.Rating != q.QuestionRating)
-                    {
-                        orig.Comment = q.QuestionComment;
-                        orig.Rating = q.QuestionRating;
-                        orig.LastUpdateDate = DateTime.Now;
-                        db.SaveChanges();
-                    }
+                {
+                    orig.Comment = q.QuestionComment;
+                    orig.Rating = q.QuestionRating;
+                    orig.LastUpdateDate = DateTime.Now;
+                    db.SaveChanges();
+                }
             }
 
             var eval = db.StaffPerformanceEvaluations.Find(id);
@@ -218,7 +241,7 @@ namespace StaffEvaluations.Controllers
             var body = "";
             var message = new MailMessage();
 
-            if (eval.NetId == HttpContext.User.Identity.Name.Substring(5) && button == "Contest")
+            if (eval.NetId == GetUser() && button == "Contest")
             {
                 eval.AcceptedDate = DateTime.Now;
                 eval.Status = "Contested";
@@ -239,7 +262,7 @@ namespace StaffEvaluations.Controllers
                 }
             }
 
-                if (eval.NetId == HttpContext.User.Identity.Name.Substring(5) && button == "Accept")
+            if (eval.NetId == HttpContext.User.Identity.Name.Substring(5) && button == "Accept")
             {
                 eval.AcceptedDate = DateTime.Now;
                 eval.Status = "Accepted";
@@ -292,11 +315,11 @@ namespace StaffEvaluations.Controllers
             return RedirectToAction("Index");
         }
 
-        public async System.Threading.Tasks.Task<ActionResult> DeferEval(string id, string type, string title )
+        public async System.Threading.Tasks.Task<ActionResult> DeferEval(string id, string type, string title)
         {
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
             newEval.NetId = id;
-            newEval.EvaluatorNetid = HttpContext.User.Identity.Name.Substring(5);
+            newEval.EvaluatorNetid = GetUser();
             newEval.Year = DateTime.Now.Year;
             newEval.EvalCode = type;
             newEval.Status = "In-Work";

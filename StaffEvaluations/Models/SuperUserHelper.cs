@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Configuration;
+using System.Web.Mvc;
 
 namespace StaffEvaluations.Models
 {
@@ -15,11 +16,25 @@ namespace StaffEvaluations.Models
 
             string sulist = ConfigurationManager.AppSettings["AdSuperUsers"].ToString();
 
-            if (sulist.IndexOf(id,StringComparison.OrdinalIgnoreCase)>=0)
+            if (sulist.IndexOf(id, StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 ret = true;
             }
             return ret;
+        }
+
+        public static List<SelectListItem> GetSupervisors()
+        {
+            List<SelectListItem> ret = new List<SelectListItem>();
+
+            var splist = LibDirectoryIntegration.LibDirectoryFactory.GetAllSupervisors();
+
+            foreach (LibDirectoryIntegration.ReportingLine rp in splist)
+            {
+                ret.Add(new SelectListItem { Text = rp.supervisor.name, Value = rp.supervisor.netid });
+            }
+            return ret;
+
         }
     }
 }

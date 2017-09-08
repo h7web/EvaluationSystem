@@ -19,14 +19,32 @@
                 @Html.ActionLink("Performance Evaluations", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
-<!--
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                </ul>
-    -->
-                <p class="nav navbar-text navbar-right">Hello, @User.Identity.Name.Substring(5)!</p>
+                <!--
+                                <ul class="nav navbar-nav">
+                                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                                </ul>
+                    -->
+                @{                var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(User.Identity.Name.Substring(5)).name;
+                    var masquename = "";
+                    var mtext = "";
+                    var masqueuser = Session["MasqueradeUser"];
+
+                    if ((bool)Session["Masquerade"] == true)
+                    {
+                        masquename = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(Session["MasqueradeUser"].ToString()).name;
+                        mtext = " (as " + masquename + ")";
+                    }
+                }
+                <p class="nav navbar-text navbar-right">
+                    Hello, @evalname@mtext!
+                    @if (Session["Masquerade"].Equals(true))
+                    {
+                        <br />
+                        @Html.ActionLink("Stop Masquerade", "StopMasquerade", "Home", new { @style = "color:red;" })
+                    }
+                </p>
             </div>
         </div>
     </div>
