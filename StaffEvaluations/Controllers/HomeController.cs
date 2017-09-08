@@ -84,8 +84,8 @@ namespace StaffEvaluations.Controllers
                         foreach (LibDirectoryPerson lp in vm.Super.direct_reports)
                         {
                             var emp = (from e in db1.employees where e.NETID == lp.netid select e).FirstOrDefault();
-                            lp.employee_type_code = emp.ECLASS;
-                            lp.LibraryStartDate = String.Format("0: MM/dd/yyyy", emp.LIBRARY_START_DATE.ToString());
+                            lp.employee_type_code = emp?.ECLASS;
+                            lp.LibraryStartDate = String.Format("0: MM/dd/yyyy", emp?.LIBRARY_START_DATE.ToString());
                         }
                     }
                 }
@@ -297,7 +297,7 @@ namespace StaffEvaluations.Controllers
 
             if (answers.Count() > 0)
             {
-                ModelState.AddModelError("submit", "You must select a rating for all questions.");
+                TempData["error"]="You must select a rating for all questions.";
             }
             else
             {
