@@ -165,6 +165,7 @@
     </Compile>
     <Compile Include="Models\Question.cs" />
     <Compile Include="Models\QuestionHelper.cs" />
+    <Compile Include="Models\SessionHelper.cs" />
     <Compile Include="Models\StaffEvaluations.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

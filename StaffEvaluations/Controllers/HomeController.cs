@@ -7,6 +7,7 @@ using StaffEvaluations.Models;
 using System.Net.Mail;
 using LibDirectoryIntegration;
 using System.Configuration;
+using Mayur.Web.Attributes;
 
 namespace StaffEvaluations.Controllers
 {
@@ -147,7 +148,7 @@ namespace StaffEvaluations.Controllers
 
             return View(crvm);
         }
-
+        [SessionTimeout]
         [HttpPost]
         public ActionResult CreateEval(string id, string type, string title, List<Question> question)
         {
@@ -180,7 +181,7 @@ namespace StaffEvaluations.Controllers
 
             return RedirectToAction("Index");
         }
-
+        [SessionTimeout]
         public ActionResult EditEval(int id)
         {
             var getEval = (from e in db.StaffPerformanceEvaluations where e.EvalId == id select e).Single();
@@ -207,7 +208,7 @@ namespace StaffEvaluations.Controllers
 
             return View(crvm);
         }
-
+        [SessionTimeout]
         [HttpPost]
         public async System.Threading.Tasks.Task<ActionResult> EditEval(int id, string EmployeeComments, string EvaluatorComments, string button, List<Question> question)
         {
@@ -287,34 +288,44 @@ namespace StaffEvaluations.Controllers
 
             return RedirectToAction("Index");
         }
-
+        [SessionTimeout]
         public async System.Threading.Tasks.Task<ActionResult> SubmitEval(int id)
         {
             var eval = db.StaffPerformanceEvaluations.Find(id);
-            eval.Status = "Submitted";
-            eval.SubmittedDate = DateTime.Now;
-            db.SaveChanges();
-            var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
 
-            var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + evalname + " is available for you to review and comment at the following URL:</p>";
-            body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
-            var message = new MailMessage();
+            var answers = from a in db.StaffPerformanceQuestions where a.Rating == "* You must select a value *" select a;
 
-            message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu")); //change this to eval.NetId in production
-            message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
-            message.Subject = eval.Year + " Performance Evaluation";
-            message.Body = body;
-            message.IsBodyHtml = true;
-
-            using (var smtp = new SmtpClient())
+            if (answers.Count() > 0)
             {
-                smtp.Host = "Express-SMTP.cites.illinois.edu ";
-                await smtp.SendMailAsync(message);
+                ModelState.AddModelError("submit", "You must select a rating for all questions.");
             }
+            else
+            {
+                eval.Status = "Submitted";
+                eval.SubmittedDate = DateTime.Now;
+                db.SaveChanges();
+                var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
 
+                var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + evalname + " is available for you to review and comment at the following URL:</p>";
+                body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
+                var message = new MailMessage();
+
+                message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu")); //change this to eval.NetId in production
+                message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
+                message.Subject = eval.Year + " Performance Evaluation";
+                message.Body = body;
+                message.IsBodyHtml = true;
+
+                using (var smtp = new SmtpClient())
+                {
+                    smtp.Host = "Express-SMTP.cites.illinois.edu ";
+                    await smtp.SendMailAsync(message);
+                }
+            }
             return RedirectToAction("Index");
         }
 
+        [SessionTimeout]
         public async System.Threading.Tasks.Task<ActionResult> DeferEval(string id, string type, string title)
         {
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();

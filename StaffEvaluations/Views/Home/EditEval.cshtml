@@ -83,7 +83,7 @@
                     <br /> Comments: <br>
                     @if (Model.eval.Status == "" || Model.eval.Status == "In-Work")
                     {
-                        <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;">@q.QuestionComment</textarea>
+                        <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;" class="text-info">@q.QuestionComment</textarea>
                     }
                     else
                     {
