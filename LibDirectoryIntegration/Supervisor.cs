@@ -12,5 +12,15 @@ namespace LibDirectoryIntegration
 
         public List<DirectReport> direct_reports { get; set; }
 
+        public  List<DirectReport> civil_service_direct_reports
+        {
+            get
+            {
+                List<DirectReport> ret = this.direct_reports.Where(d => d.employee_type_code == "C").ToList();
+                return ret;
+            }
+
+        }
+
     }
 }
