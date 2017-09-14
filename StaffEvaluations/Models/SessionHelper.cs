@@ -17,8 +17,9 @@ namespace Mayur.Web.Attributes
             HttpContext ctx = HttpContext.Current;
             if (HttpContext.Current.Session["Masquerade"] == null)
             {
+                filterContext.HttpContext.Session["SessionTimeout"] = true;
                 filterContext.Result = new RedirectResult("~/Home/Index");
-                TempData["warning"] = "Your Masquerade session has timed out.";
+                
                 return;
             }
             base.OnActionExecuting(filterContext);

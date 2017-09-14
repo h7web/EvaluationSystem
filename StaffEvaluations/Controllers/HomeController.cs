@@ -65,6 +65,19 @@ namespace StaffEvaluations.Controllers
             {
                 Session["Masquerade"] = false;
                 Session["MasqueradeUser"] = "";
+                Session["SessionTimeout"] = false;
+            }
+
+            if (Session["SessionTimeout"] == null)
+            {
+                if ((bool)Session["SessionTimeout"] == true)
+                {
+                    TempData["warning"] = "Your Masquerade session has timed out.";
+                }
+                else
+                {
+                    TempData["warning"] = "";
+                }
             }
 
             string usethisnetid = GetUser();
