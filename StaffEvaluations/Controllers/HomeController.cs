@@ -23,9 +23,12 @@ namespace StaffEvaluations.Controllers
         {
             string ret = LoggedInUser;
 
-            if (Session["MasqueradeUser"].ToString() != "")
+            if (Session["MasqueradeUser"] != null)
             {
-                ret = Session["MasqueradeUser"].ToString();
+                if (Session["MasqueradeUser"].ToString() != "")
+                {
+                    ret = Session["MasqueradeUser"].ToString();
+                }
             }
             return ret;
         }
@@ -62,6 +65,19 @@ namespace StaffEvaluations.Controllers
             {
                 Session["Masquerade"] = false;
                 Session["MasqueradeUser"] = "";
+                Session["SessionTimeout"] = false;
+            }
+
+            if (Session["SessionTimeout"] == null)
+            {
+                if ((bool)Session["SessionTimeout"] == true)
+                {
+                    TempData["warning"] = "Your Masquerade session has timed out.";
+                }
+                else
+                {
+                    TempData["warning"] = "";
+                }
             }
 
             string usethisnetid = GetUser();
@@ -293,11 +309,11 @@ namespace StaffEvaluations.Controllers
         {
             var eval = db.StaffPerformanceEvaluations.Find(id);
 
-            var answers = from a in db.StaffPerformanceQuestions where a.Rating == "* You must select a value *" select a;
+            var answers = from a in db.StaffPerformanceQuestions where a.Rating == "* You must select a value *" && a.EvalId == id select a;
 
             if (answers.Count() > 0)
             {
-                TempData["error"]="You must select a rating for all questions.";
+                TempData["error"]="You must select a rating for all questions in order to Submit an Evaluation.";
             }
             else
             {
@@ -344,7 +360,7 @@ namespace StaffEvaluations.Controllers
             var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.EvaluatorNetid).name;
             var name = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.EvaluatorNetid).name;
 
-            var body = "<p> " + newEval.Year + " Performance Evaluation for " + name + " has been deferrede by " + evalname + " on " + newEval.DeferredDate + "</p>";
+            var body = "<p> " + newEval.Year + " Performance Evaluation for " + name + " has been deferred by " + evalname + " on " + newEval.DeferredDate + "</p>";
             body = body + "Here is the Application URL: http://iisdev1.library.illinois.edu/StaffEvaluations/";
             var message = new MailMessage();
 
