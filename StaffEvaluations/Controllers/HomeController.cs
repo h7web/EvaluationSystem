@@ -87,6 +87,8 @@ namespace StaffEvaluations.Controllers
             IndexViewModel vm = new IndexViewModel();
             vm.Super = super;
 
+            List<DirectReport> mylist = null;
+
             if (User.Identity.Name.Substring(5) != "gknott63")
             {
 
@@ -95,51 +97,47 @@ namespace StaffEvaluations.Controllers
 
                 if (vm.Super != null)
                 {
-                    if (vm.Super.direct_reports != null)
+                    if (vm.Super.eval_direct_reports != null)
                     {
-                        List<LibDirectoryPerson> removelist = new List<LibDirectoryPerson>();
+                        mylist = vm.Super.eval_direct_reports;
 
-                        foreach (LibDirectoryPerson lp in vm.Super.direct_reports)
+                        foreach (LibDirectoryPerson lp in mylist)
                         {
-                            if(lp.employee_type_code != "B" && lp.employee_type_code != "C")
-                            {
-                                removelist.Add(lp);
-                            }
                             var emp = (from e in db1.employees where e.NETID == lp.netid select e).FirstOrDefault();
                             lp.employee_type_code = emp?.ECLASS;
-                            lp.LibraryStartDate = String.Format("0: MM/dd/yyyy", emp?.LIBRARY_START_DATE.ToString());
+                            lp.LibraryStartDate = String.Format("{0:MM-dd-yyyy}", emp?.LIBRARY_START_DATE.ToString());
                         }
 
-                        vm.Super.direct_reports.Re
                     }
                 }
                 else
                 {
                     vm.Super = new Supervisor();
-                    vm.Super.direct_reports = new List<DirectReport>();
+                    mylist = new List<DirectReport>();
                 }
 
 
                 // next 5 lines added for testing purposes
-                vm.Super.direct_reports.Add(new DirectReport() { netid = "yoskye", name = "Skye Arseneau", employee_type_code = "CC", LibraryStartDate = "02/01/2001" });
-                vm.Super.direct_reports.Add(new DirectReport { netid = "atJohnsn", name = "Anietre Johnson", employee_type_code = "CA", LibraryStartDate = "08/01/2014" });
-                vm.Super.direct_reports.Add(new DirectReport { netid = "mikesweb", name = "Mike Nelson", employee_type_code = "BA", LibraryStartDate = "06/24/2016" });
-                vm.Super.direct_reports.Add(new DirectReport { netid = "strutz", name = "Jason Strutz", employee_type_code = "BA", LibraryStartDate = "09/01/2002" });
-                vm.Super.direct_reports.Add(new DirectReport { netid = "gknott63", name = "Greg Knott", employee_type_code = "BA", LibraryStartDate = "09/01/2010" });
-                vm.Super.direct_reports.Add(new DirectReport { netid = "jlockmil", name = "John Lockmiller", employee_type_code = "BA", LibraryStartDate = "06/01/2017" });
+                mylist.Add(new DirectReport() { netid = "yoskye", name = "Skye Arseneau", employee_type_code = "CC", LibraryStartDate = "02/01/2001" });
+                mylist.Add(new DirectReport { netid = "atJohnsn", name = "Anietre Johnson", employee_type_code = "CA", LibraryStartDate = "08/01/2014" });
+                mylist.Add(new DirectReport { netid = "mikesweb", name = "Mike Nelson", employee_type_code = "BA", LibraryStartDate = "06/24/2016" });
+                mylist.Add(new DirectReport { netid = "strutz", name = "Jason Strutz", employee_type_code = "BA", LibraryStartDate = "09/01/2002" });
+                mylist.Add(new DirectReport { netid = "gknott63", name = "Greg Knott", employee_type_code = "BA", LibraryStartDate = "09/01/2010" });
+                mylist.Add(new DirectReport { netid = "jlockmil", name = "John Lockmiller", employee_type_code = "BA", LibraryStartDate = "06/01/2017" });
 
-                var myStaffEvals = (from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == vm.Super.netid || e.EvaluatorNetid == usethisnetid select e).ToList();
+                var myStaffEvals = (from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == usethisnetid select e).ToList();
 
                 vm.MyStaffEvaluations = myStaffEvals;
             }
             else
             {
                 vm.Super = new Supervisor();
-                vm.Super.eval_direct_reports = new List<DirectReport>();
+                mylist = new List<DirectReport>();
             }
             var myEvals = from e in db.StaffPerformanceEvaluations where (e.Status == Constants.Submitted || e.Status == Constants.Complete) && e.NetId == usethisnetid select e;
 
             vm.MyEvaluations = myEvals.ToList();
+            vm.Super.direct_reports = mylist;
 
             return View(vm);
         }

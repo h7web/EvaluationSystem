@@ -21,7 +21,7 @@ namespace LibDirectoryIntegration
 
                 if (this.direct_reports != null)
                 {
-                    ret = this.direct_reports.Where(d => types.Contains(d.employee_type_code)).DefaultIfEmpty().ToList();
+                    ret = this.direct_reports.Where(d => types.Contains(d.employee_type_code)).ToList();
                 }
 
                 return ret;
