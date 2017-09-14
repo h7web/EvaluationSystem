@@ -65,10 +65,9 @@ namespace StaffEvaluations.Controllers
             {
                 Session["Masquerade"] = false;
                 Session["MasqueradeUser"] = "";
-                Session["SessionTimeout"] = false;
             }
 
-            if (Session["SessionTimeout"] == null)
+            if (Session["SessionTimeout"] != null)
             {
                 if ((bool)Session["SessionTimeout"] == true)
                 {

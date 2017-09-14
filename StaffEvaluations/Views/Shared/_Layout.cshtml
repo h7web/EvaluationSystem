@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@{ 
+    var style = "";
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -35,6 +38,7 @@
                     {
                         masquename = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(Session["MasqueradeUser"].ToString()).name;
                         mtext = " (as " + masquename + ")";
+                        style = "margin-top:20px;";
                     }
                 }
                 <p class="nav navbar-text navbar-right">
@@ -48,7 +52,7 @@
             </div>
         </div>
     </div>
-    <div style="background-color:gold;font-weight:300;">
+    <div style="background-color:gold;font-weight:300;@style">
         This is a test application, NOT FOR USE in production!
     </div>
     <div class="alert-danger">@TempData["error"]</div>
