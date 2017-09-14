@@ -12,7 +12,27 @@ namespace LibDirectoryIntegration
 
         public List<DirectReport> direct_reports { get; set; }
 
-        public  List<DirectReport> civil_service_direct_reports
+        public List<DirectReport> eval_direct_reports
+        {
+            get
+            {
+                var types = new[] { "B", "C" };
+                List<DirectReport> ret = new List<DirectReport>();
+
+                if (this.direct_reports != null)
+                {
+                    ret = this.direct_reports.Where(d => types.Contains(d.employee_type_code)).DefaultIfEmpty().ToList();
+                }
+
+                return ret;
+            }
+            set
+            {
+
+            }
+
+        }
+        public List<DirectReport> civil_service_direct_reports
         {
             get
             {

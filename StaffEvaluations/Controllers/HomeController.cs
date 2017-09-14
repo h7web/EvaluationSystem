@@ -97,12 +97,20 @@ namespace StaffEvaluations.Controllers
                 {
                     if (vm.Super.direct_reports != null)
                     {
+                        List<LibDirectoryPerson> removelist = new List<LibDirectoryPerson>();
+
                         foreach (LibDirectoryPerson lp in vm.Super.direct_reports)
                         {
+                            if(lp.employee_type_code != "B" && lp.employee_type_code != "C")
+                            {
+                                removelist.Add(lp);
+                            }
                             var emp = (from e in db1.employees where e.NETID == lp.netid select e).FirstOrDefault();
                             lp.employee_type_code = emp?.ECLASS;
                             lp.LibraryStartDate = String.Format("0: MM/dd/yyyy", emp?.LIBRARY_START_DATE.ToString());
                         }
+
+                        vm.Super.direct_reports.Re
                     }
                 }
                 else
@@ -127,7 +135,7 @@ namespace StaffEvaluations.Controllers
             else
             {
                 vm.Super = new Supervisor();
-                vm.Super.direct_reports = new List<DirectReport>();
+                vm.Super.eval_direct_reports = new List<DirectReport>();
             }
             var myEvals = from e in db.StaffPerformanceEvaluations where (e.Status == Constants.Submitted || e.Status == Constants.Complete) && e.NetId == usethisnetid select e;
 
