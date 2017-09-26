@@ -262,6 +262,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\CreateEval.cshtml" />
     <Content Include="Views\Home\EditEval.cshtml" />
+    <Content Include="secret_connectionStrings.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
