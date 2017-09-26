@@ -17,10 +17,12 @@ namespace StaffEvaluations.Controllers
         private Models.StaffEvaluationsEntities db = new Models.StaffEvaluationsEntities();
         private Models.HR_DataEntities db1 = new Models.HR_DataEntities();
 
-        static string LoggedInUser = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+        //static string LoggedInUser = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
 
         public string GetUser()
         {
+            string LoggedInUser = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+
             string ret = LoggedInUser;
 
             if (Session["MasqueradeUser"] != null)
@@ -29,6 +31,14 @@ namespace StaffEvaluations.Controllers
                 {
                     ret = Session["MasqueradeUser"].ToString();
                 }
+                else
+                {
+                    ret = LoggedInUser;
+                }
+            }
+            else
+            {
+                ret = LoggedInUser;
             }
             return ret;
         }
