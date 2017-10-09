@@ -98,7 +98,7 @@ namespace StaffEvaluations.Controllers
 
             List<DirectReport> mylist = null;
 
-            if (User.Identity.Name.Substring(5) != "gknott63")
+            if (User.Identity.Name.Substring(5) != "gknott6")
             {
 
                 //new way to check for multiple null posibilities 
@@ -270,6 +270,71 @@ namespace StaffEvaluations.Controllers
                 eval.CompleteDate = DateTime.Now;
                 eval.Status = "Complete";
             }
+            //var body = "";
+            //var message = new MailMessage();
+
+            //if (eval.NetId == GetUser() && button == "Contest")
+            //{
+            //    eval.AcceptedDate = DateTime.Now;
+            //    eval.Status = "Contested";
+            //    var name = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.NetId).name;
+
+            //    body = "<p> " + name + " has contested his/her " + eval.Year + " Performance Evaluation</p>";
+
+            //    message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
+            //    message.From = new MailAddress(eval.NetId + "@illinois.edu");
+            //    message.Subject = eval.Year + " Performance Evaluation Contested";
+            //    message.Body = body;
+            //    message.IsBodyHtml = true;
+
+            //    using (var smtp = new SmtpClient())
+            //    {
+            //        smtp.Host = "Express-SMTP.cites.illinois.edu ";
+            //        await smtp.SendMailAsync(message);
+            //    }
+            //}
+
+            //if (eval.NetId == GetUser() && button == "Accept")
+            //{
+            //    try
+            //    {
+            //        eval.AcceptedDate = DateTime.Now;
+            //        eval.Status = "Accepted";
+            //        var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.NetId).name;
+
+            //        body = "<p> " + evalname + " has accepted his/her " + eval.Year + " Performance Evaluation</p>";
+
+            //        message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
+            //        message.From = new MailAddress(eval.NetId + "@illinois.edu");
+            //        message.Subject = eval.Year + " Performance Evaluation Accepted";
+            //        message.Body = body;
+            //        message.IsBodyHtml = true;
+
+            //        using (var smtp = new SmtpClient())
+            //        {
+            //            smtp.Host = "Express-SMTP.cites.illinois.edu ";
+            //            await smtp.SendMailAsync(message);
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Console.WriteLine("error is " + ex.Message);
+            //    }
+            //}
+
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+
+
+
+
+
+        public async System.Threading.Tasks.Task<ActionResult> AcceptEval(int id, string button)
+        {
+            var eval = db.StaffPerformanceEvaluations.Find(id);
             var body = "";
             var message = new MailMessage();
 
@@ -282,7 +347,7 @@ namespace StaffEvaluations.Controllers
                 body = "<p> " + name + " has contested his/her " + eval.Year + " Performance Evaluation</p>";
 
                 message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
-                message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
+                message.From = new MailAddress(eval.NetId + "@illinois.edu");
                 message.Subject = eval.Year + " Performance Evaluation Contested";
                 message.Body = body;
                 message.IsBodyHtml = true;
@@ -294,24 +359,31 @@ namespace StaffEvaluations.Controllers
                 }
             }
 
-            if (eval.NetId == HttpContext.User.Identity.Name.Substring(5) && button == "Accept")
+            if (eval.NetId == GetUser() && button == "Accept")
             {
-                eval.AcceptedDate = DateTime.Now;
-                eval.Status = "Accepted";
-                var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
-
-                body = "<p> " + evalname + " has accepted his/her " + eval.Year + " Performance Evaluation</p>";
-
-                message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
-                message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
-                message.Subject = eval.Year + " Performance Evaluation Accepted";
-                message.Body = body;
-                message.IsBodyHtml = true;
-
-                using (var smtp = new SmtpClient())
+                try
                 {
-                    smtp.Host = "Express-SMTP.cites.illinois.edu ";
-                    await smtp.SendMailAsync(message);
+                    eval.AcceptedDate = DateTime.Now;
+                    eval.Status = "Accepted";
+                    var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.NetId).name;
+
+                    body = "<p> " + evalname + " has accepted his/her " + eval.Year + " Performance Evaluation</p>";
+
+                    message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
+                    message.From = new MailAddress(eval.NetId + "@illinois.edu");
+                    message.Subject = eval.Year + " Performance Evaluation Accepted";
+                    message.Body = body;
+                    message.IsBodyHtml = true;
+
+                    using (var smtp = new SmtpClient())
+                    {
+                        smtp.Host = "Express-SMTP.cites.illinois.edu ";
+                        await smtp.SendMailAsync(message);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("error is " + ex.Message);
                 }
             }
 
@@ -319,6 +391,7 @@ namespace StaffEvaluations.Controllers
 
             return RedirectToAction("Index");
         }
+
         [SessionTimeout]
         public async System.Threading.Tasks.Task<ActionResult> SubmitEval(int id)
         {
@@ -328,7 +401,7 @@ namespace StaffEvaluations.Controllers
 
             if (answers.Count() > 0)
             {
-                TempData["error"]="You must select a rating for all questions in order to Submit an Evaluation.";
+                TempData["error"] = "You must select a rating for all questions in order to Submit an Evaluation.";
             }
             else
             {

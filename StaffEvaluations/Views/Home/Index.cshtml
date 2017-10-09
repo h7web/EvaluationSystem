@@ -19,6 +19,18 @@
             var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
             <li>
                 @Html.ActionLink("Go to your evaluation from " + evalname, "EditEval", new { id = eval.EvalId })
+                |
+                @Html.ActionLink("Accept", "AcceptEval", new { id = eval.EvalId, button = "Accept" })
+                |
+                @Html.ActionLink("Contest", "AcceptEval", new { id = eval.EvalId, button = "Contest" })
+
+
+
+
+
+
+
+
             </li>
         }
     </ul>
