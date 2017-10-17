@@ -29,6 +29,7 @@
     var contdate = Model.eval.ContestedDate?.ToString("MM/dd/yyyy");
     var acceptdate = Model.eval.AcceptedDate?.ToString("MM/dd/yyyy");
     var compdate = Model.eval.CompleteDate?.ToString("MM/dd/yyyy");
+    var processdate = Model.eval.ProcessedDate?.ToString("MM/dd/yyyy");
 
     <h2>@Model.eval.Year @evaltypedesc Performance Evaluation</h2>
 
@@ -56,6 +57,10 @@
         {
             @:Date Completed: @compdate<br />
         }
+        @if (Model.eval.ProcessedDate != null)
+        {
+            @:Date Processed: @compdate<br />
+        }
         <br />
     </p>
 
@@ -76,7 +81,8 @@
                     }
                     else
                     {
-                        @Html.DropDownList(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode), new { @readonly = "readonly", @style = "background-color:lightgray" })
+                        @Html.DropDownList(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode), new { @disabled=true, @style = "background-color:lightgray" })
+                        @Html.Hidden(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode))
                     }
                 </div>
                 <div>
@@ -106,20 +112,26 @@
     else if (Model.eval.Status == "Accepted" || Model.eval.Status == "Contested")
     {
         <div>Employee Comments:<br />@Html.TextArea("EmployeeComments", Model.eval.EmployeeComments, new { @readonly = "readonly", @style = "background-color:lightgray;width:700px;max-width:none;" })</div>
+        if (Model.eval.NetId != User.Identity.Name.Substring(5))
+        {
         <div>Evaluator Comments:<br />@Html.TextArea("EvaluatorComments", Model.eval.EvaluatorComments, new { @style = "width:700px;max-width:none;" })</div>
+        }
     }
     else if (Model.eval.Status == "Complete")
     {
         <div>Employee Comments:<br/> @Html.TextArea("EmployeeComments", Model.eval.EmployeeComments, new { @readonly = "readonly", @style = "background-color:lightgray;width:700px;max-width:none;" })</div>
+        if (Model.eval.NetId != User.Identity.Name.Substring(5))
+        {
         <br />
         <div>Evaluator Comments:<br /> @Html.TextArea("EvaluatorComments", Model.eval.EvaluatorComments, new { @readonly = "readonly", @style = "background-color:lightgray;width:700px;max-width:none;" })</div>
+        }
     }
     <div>
-        @if (Model.eval.Status == "" || Model.eval.Status == "In-Work")
+        @if ((Model.eval.Status == "" || Model.eval.Status == "In-Work" || Model.eval.Status == "Accepted" || Model.eval.Status == "Contested") && Model.eval.NetId != User.Identity.Name.Substring(5))
         {
             <input type="submit" name="button" value="Save" class="btn" />
         }
-        else if (Model.eval.Status == "Accepted")
+        else if (Model.eval.Status == "Accepted" && Model.eval.NetId != User.Identity.Name.Substring(5))
         {
             <input type="submit" name="button" value="Complete" class="btn" onclick="confirm('Really Complete?\n\r No further comments can be added and the evaluation will be marked for processing by HR.')" />
         }

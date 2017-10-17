@@ -35,6 +35,9 @@ namespace StaffEvaluations.Models
         public string Title { get; set; }
         public Nullable<System.DateTime> DeferredDate { get; set; }
         public Nullable<System.DateTime> ContestedDate { get; set; }
+        public Nullable<System.DateTime> ProcessedDate { get; set; }
+        public string TouchedByMasqeradeNetID { get; set; }
+        public Nullable<System.DateTime> TouchedByMasqeradeDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StaffPerformanceQuestion> StaffPerformanceQuestions { get; set; }

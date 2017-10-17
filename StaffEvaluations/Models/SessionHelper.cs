@@ -15,10 +15,12 @@ namespace Mayur.Web.Attributes
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             HttpContext ctx = HttpContext.Current;
-            if (HttpContext.Current.Session["Masquerade"] == null)
+            if (HttpContext.Current.Session["Masquerade"] == null && HttpContext.Current.Response.Cookies["Masquerading"]["Masquerade"] == "true")
             {
                 filterContext.HttpContext.Session["SessionTimeout"] = true;
                 filterContext.Result = new RedirectResult("~/Home/Index");
+
+                HttpContext.Current.Response.Cookies["Masquerading"]["Masquerade"] = "false";
                 
                 return;
             }

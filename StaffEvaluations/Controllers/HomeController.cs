@@ -17,8 +17,6 @@ namespace StaffEvaluations.Controllers
         private Models.StaffEvaluationsEntities db = new Models.StaffEvaluationsEntities();
         private Models.HR_DataEntities db1 = new Models.HR_DataEntities();
 
-        //static string LoggedInUser = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
-
         public string GetUser()
         {
             string LoggedInUser = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
@@ -58,6 +56,15 @@ namespace StaffEvaluations.Controllers
             Session["Masquerade"] = true;
             Session["MasqueradeUser"] = netid;
 
+            HttpCookie cookie = new HttpCookie("Masquerading");
+
+            cookie["Masquerade"] = "true";
+            cookie["MasqueradeUser"] = netid;
+            
+            cookie.Expires = DateTime.Now.AddDays(365);
+
+            Response.Cookies.Add(cookie);
+
             return RedirectToAction("Index");
         }
 
@@ -65,6 +72,8 @@ namespace StaffEvaluations.Controllers
         {
             Session["Masquerade"] = false;
             Session["MasqueradeUser"] = "";
+
+            Response.Cookies["Masquerading"]["Masquerade"] = "false";
 
             return RedirectToAction("Index");
         }
@@ -143,7 +152,7 @@ namespace StaffEvaluations.Controllers
                 vm.Super = new Supervisor();
                 mylist = new List<DirectReport>();
             }
-            var myEvals = from e in db.StaffPerformanceEvaluations where (e.Status == Constants.Submitted || e.Status == Constants.Complete) && e.NetId == usethisnetid select e;
+            var myEvals = from e in db.StaffPerformanceEvaluations where e.NetId == usethisnetid select e;
 
             vm.MyEvaluations = myEvals.ToList();
             vm.Super.direct_reports = mylist;
@@ -151,6 +160,7 @@ namespace StaffEvaluations.Controllers
             return View(vm);
         }
 
+        [SessionTimeout]
         public ActionResult CreateEval(string id, string type)
         {
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
@@ -179,6 +189,7 @@ namespace StaffEvaluations.Controllers
 
             return View(crvm);
         }
+
         [SessionTimeout]
         [HttpPost]
         public ActionResult CreateEval(string id, string type, string title, List<Question> question)
@@ -191,8 +202,15 @@ namespace StaffEvaluations.Controllers
             newEval.Status = "In-Work";
             newEval.Title = title;
             newEval.StartDate = DateTime.Now;
+
+            if (Session["Masquerade"].Equals(true))
+            {
+                newEval.TouchedByMasqeradeNetID = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+                newEval.TouchedByMasqeradeDate = DateTime.Now;
+            }
+
             db.StaffPerformanceEvaluations.Add(newEval);
-            db.SaveChanges();
+ //           db.SaveChanges();
 
             foreach (Question myQuestion in question)
             {
@@ -212,6 +230,7 @@ namespace StaffEvaluations.Controllers
 
             return RedirectToAction("Index");
         }
+
         [SessionTimeout]
         public ActionResult EditEval(int id)
         {
@@ -239,20 +258,24 @@ namespace StaffEvaluations.Controllers
 
             return View(crvm);
         }
+
         [SessionTimeout]
         [HttpPost]
-        public async System.Threading.Tasks.Task<ActionResult> EditEval(int id, string EmployeeComments, string EvaluatorComments, string button, List<Question> question)
+        public ActionResult EditEval(int id, string EmployeeComments, string EvaluatorComments, string button, List<Question> question)
         {
 
             foreach (Question q in question)
             {
                 var orig = db.StaffPerformanceQuestions.Find(q.QuestionId);
-                if (orig.Comment != q.QuestionComment || orig.Rating != q.QuestionRating)
+                if (orig != null)
                 {
-                    orig.Comment = q.QuestionComment;
-                    orig.Rating = q.QuestionRating;
-                    orig.LastUpdateDate = DateTime.Now;
-                    db.SaveChanges();
+                    if (orig.Comment != q.QuestionComment || orig.Rating != q.QuestionRating)
+                    {
+                        orig.Comment = q.QuestionComment;
+                        orig.Rating = q.QuestionRating;
+                        orig.LastUpdateDate = DateTime.Now;
+                        db.SaveChanges();
+                    }
                 }
             }
 
@@ -262,7 +285,7 @@ namespace StaffEvaluations.Controllers
                 eval.EmployeeComments = EmployeeComments;
                 eval.EvaluatorComments = EvaluatorComments;
 
-                db.SaveChanges();
+//                db.SaveChanges();
             }
 
             if (button.Equals("Complete"))
@@ -270,68 +293,19 @@ namespace StaffEvaluations.Controllers
                 eval.CompleteDate = DateTime.Now;
                 eval.Status = "Complete";
             }
-            //var body = "";
-            //var message = new MailMessage();
 
-            //if (eval.NetId == GetUser() && button == "Contest")
-            //{
-            //    eval.AcceptedDate = DateTime.Now;
-            //    eval.Status = "Contested";
-            //    var name = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.NetId).name;
-
-            //    body = "<p> " + name + " has contested his/her " + eval.Year + " Performance Evaluation</p>";
-
-            //    message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
-            //    message.From = new MailAddress(eval.NetId + "@illinois.edu");
-            //    message.Subject = eval.Year + " Performance Evaluation Contested";
-            //    message.Body = body;
-            //    message.IsBodyHtml = true;
-
-            //    using (var smtp = new SmtpClient())
-            //    {
-            //        smtp.Host = "Express-SMTP.cites.illinois.edu ";
-            //        await smtp.SendMailAsync(message);
-            //    }
-            //}
-
-            //if (eval.NetId == GetUser() && button == "Accept")
-            //{
-            //    try
-            //    {
-            //        eval.AcceptedDate = DateTime.Now;
-            //        eval.Status = "Accepted";
-            //        var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.NetId).name;
-
-            //        body = "<p> " + evalname + " has accepted his/her " + eval.Year + " Performance Evaluation</p>";
-
-            //        message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
-            //        message.From = new MailAddress(eval.NetId + "@illinois.edu");
-            //        message.Subject = eval.Year + " Performance Evaluation Accepted";
-            //        message.Body = body;
-            //        message.IsBodyHtml = true;
-
-            //        using (var smtp = new SmtpClient())
-            //        {
-            //            smtp.Host = "Express-SMTP.cites.illinois.edu ";
-            //            await smtp.SendMailAsync(message);
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine("error is " + ex.Message);
-            //    }
-            //}
+            if (Session["Masquerade"].Equals(true))
+            {
+                eval.TouchedByMasqeradeNetID = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+                eval.TouchedByMasqeradeDate = DateTime.Now;
+            }
 
             db.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
-
-
-
-
-
+        [SessionTimeout]
         public async System.Threading.Tasks.Task<ActionResult> AcceptEval(int id, string button)
         {
             var eval = db.StaffPerformanceEvaluations.Find(id);
@@ -340,7 +314,7 @@ namespace StaffEvaluations.Controllers
 
             if (eval.NetId == GetUser() && button == "Contest")
             {
-                eval.AcceptedDate = DateTime.Now;
+                eval.ContestedDate = DateTime.Now;
                 eval.Status = "Contested";
                 var name = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.NetId).name;
 
@@ -387,11 +361,17 @@ namespace StaffEvaluations.Controllers
                 }
             }
 
+            if (Session["Masquerade"].Equals(true))
+            {
+                eval.TouchedByMasqeradeNetID = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+                eval.TouchedByMasqeradeDate = DateTime.Now;
+            }
+
             db.SaveChanges();
 
             return RedirectToAction("Index");
         }
-
+ 
         [SessionTimeout]
         public async System.Threading.Tasks.Task<ActionResult> SubmitEval(int id)
         {
@@ -407,6 +387,13 @@ namespace StaffEvaluations.Controllers
             {
                 eval.Status = "Submitted";
                 eval.SubmittedDate = DateTime.Now;
+
+                if (Session["Masquerade"].Equals(true))
+                {
+                    eval.TouchedByMasqeradeNetID = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+                    eval.TouchedByMasqeradeDate = DateTime.Now;
+                }
+
                 db.SaveChanges();
                 var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
 
@@ -444,6 +431,13 @@ namespace StaffEvaluations.Controllers
             db.SaveChanges();
             newEval.Status = "Deferred";
             newEval.DeferredDate = DateTime.Now;
+
+            if (Session["Masquerade"].Equals(true))
+            {
+                newEval.TouchedByMasqeradeNetID = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+                newEval.TouchedByMasqeradeDate = DateTime.Now;
+            }
+
             db.SaveChanges();
             var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.EvaluatorNetid).name;
             var name = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.EvaluatorNetid).name;

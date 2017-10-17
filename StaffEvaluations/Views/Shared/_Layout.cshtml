@@ -34,7 +34,7 @@
                     var mtext = "";
                     var masqueuser = Session["MasqueradeUser"];
 
-                    if ((bool)Session["Masquerade"] == true)
+                    if (Session["Masquerade"] != null && (bool)Session["Masquerade"] == true)
                     {
                         masquename = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(Session["MasqueradeUser"].ToString()).name;
                         mtext = " (as " + masquename + ")";
@@ -43,7 +43,7 @@
                 }
                 <p class="nav navbar-text navbar-right">
                     Hello, @evalname@mtext!
-                    @if (Session["Masquerade"].Equals(true))
+                    @if (Session["Masquerade"] != null && Session["Masquerade"].Equals(true))
                     {
                         <br />
                         @Html.ActionLink("Stop Masquerade", "StopMasquerade", "Home", new { @style = "color:red;" })

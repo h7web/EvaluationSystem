@@ -18,12 +18,24 @@
         {
             var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
             <li>
+@if (@eval.Status != "In-Work" && @eval.Status != "Deferred")
+{
                 @Html.ActionLink("Go to your evaluation from " + evalname, "EditEval", new { id = eval.EvalId })
-                |
+}
+else
+{
+    @:Your evaluation from 
+    @evalname.ToString() 
+    @: is in progress
+}
+&nbsp;(@eval.Status)
+@if(@eval.Status == "Submitted")
+                {
+                @:|
                 @Html.ActionLink("Accept", "AcceptEval", new { id = eval.EvalId, button = "Accept" })
-                |
+                @:|
                 @Html.ActionLink("Contest", "AcceptEval", new { id = eval.EvalId, button = "Contest" })
-
+                }
 
 
 

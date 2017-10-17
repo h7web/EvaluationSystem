@@ -30,10 +30,13 @@
           <Property Name="DeferredDate" Type="datetime" />
           <Property Name="SubmittedDate" Type="datetime" />
           <Property Name="AcceptedDate" Type="datetime" />
-          <Property Name="ContestedDate" Type="date" />
+          <Property Name="ContestedDate" Type="datetime" />
           <Property Name="CompleteDate" Type="datetime" />
+          <Property Name="ProcessedDate" Type="datetime" />
           <Property Name="EmployeeComments" Type="nvarchar(max)" />
           <Property Name="EvaluatorComments" Type="nvarchar(max)" />
+          <Property Name="TouchedByMasqeradeNetID" Type="nvarchar" MaxLength="64" />
+          <Property Name="TouchedByMasqeradeDate" Type="datetime" />
         </EntityType>
         <EntityType Name="StaffPerformanceQuestions">
           <Key>
@@ -93,7 +96,10 @@
           <Property Name="SubmittedDate" Type="DateTime" Precision="3" />
           <Property Name="Title" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
           <Property Name="DeferredDate" Type="DateTime" Precision="3" />
-          <Property Name="ContestedDate" Type="DateTime" Precision="0" />
+          <Property Name="ContestedDate" Type="DateTime" Precision="3" />
+          <Property Name="ProcessedDate" Type="DateTime" Precision="3" />
+          <Property Name="TouchedByMasqeradeNetID" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="TouchedByMasqeradeDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityContainer Name="StaffEvaluationsEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="StaffPerformanceEvaluations" EntityType="Self.StaffPerformanceEvaluation" />
@@ -150,6 +156,9 @@
           <EntitySetMapping Name="StaffPerformanceEvaluations">
             <EntityTypeMapping TypeName="StaffEvaluationsModel.StaffPerformanceEvaluation">
               <MappingFragment StoreEntitySet="StaffPerformanceEvaluations">
+                <ScalarProperty Name="TouchedByMasqeradeDate" ColumnName="TouchedByMasqeradeDate" />
+                <ScalarProperty Name="TouchedByMasqeradeNetID" ColumnName="TouchedByMasqeradeNetID" />
+                <ScalarProperty Name="ProcessedDate" ColumnName="ProcessedDate" />
                 <ScalarProperty Name="ContestedDate" ColumnName="ContestedDate" />
                 <ScalarProperty Name="DeferredDate" ColumnName="DeferredDate" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
