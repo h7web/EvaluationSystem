@@ -60,7 +60,7 @@ namespace StaffEvaluations.Controllers
 
             cookie["Masquerade"] = "true";
             cookie["MasqueradeUser"] = netid;
-            
+
             cookie.Expires = DateTime.Now.AddDays(365);
 
             Response.Cookies.Add(cookie);
@@ -171,23 +171,33 @@ namespace StaffEvaluations.Controllers
 
             var superinfo = LibDirectoryFactory.GetPerson(GetUser());
 
-            var lsdate = (from e in db1.employees where e.NETID == id select e.LIBRARY_START_DATE).FirstOrDefault().ToString();
+            var getsup = LibDirectoryFactory.GetPersonsSupervisors(newEval.NetId);
 
-            CreateEditEvalViewModel crvm = new CreateEditEvalViewModel();
+            if (getsup.ToString() == GetUser() || newEval.NetId == GetUser() || newEval.NetId == "yoskye" || newEval.NetId == "atJohnsn" || newEval.NetId == "mikesweb" || newEval.NetId == "strutz" || newEval.NetId == "gknott63" || newEval.NetId == "jlockmil")
+            {
+                var lsdate = (from e in db1.employees where e.NETID == id select e.LIBRARY_START_DATE).FirstOrDefault().ToString();
 
-            crvm.person = new LibDirectoryPerson();
-            crvm.person = reportinfo;
-            crvm.person.LibraryStartDate = lsdate;
+                CreateEditEvalViewModel crvm = new CreateEditEvalViewModel();
 
-            crvm.super = new LibDirectoryPerson();
-            crvm.super = superinfo;
+                crvm.person = new LibDirectoryPerson();
+                crvm.person = reportinfo;
+                crvm.person.LibraryStartDate = lsdate;
 
-            crvm.eval = newEval;
-            crvm.questions = QuestionHelper.GetQuestions(db, type);
+                crvm.super = new LibDirectoryPerson();
+                crvm.super = superinfo;
 
-            ViewData["RatingList"] = QuestionHelper.GetRatings(type);
+                crvm.eval = newEval;
+                crvm.questions = QuestionHelper.GetQuestions(db, type);
 
-            return View(crvm);
+                ViewData["RatingList"] = QuestionHelper.GetRatings(type);
+
+                return View(crvm);
+            }
+            else
+            {
+                TempData["error"] = "You do not have authorization to view this record.";
+                return RedirectToAction("Index");
+            }
         }
 
         [SessionTimeout]
@@ -210,7 +220,7 @@ namespace StaffEvaluations.Controllers
             }
 
             db.StaffPerformanceEvaluations.Add(newEval);
- //           db.SaveChanges();
+            //           db.SaveChanges();
 
             foreach (Question myQuestion in question)
             {
@@ -237,7 +247,7 @@ namespace StaffEvaluations.Controllers
             var getEval = (from e in db.StaffPerformanceEvaluations where e.EvalId == id select e).Single();
             var getsup = LibDirectoryFactory.GetPersonsSupervisors(getEval.NetId);
 
-            if (getsup.ToString() == GetUser() || getEval.NetId == GetUser() || getEval.NetId == "yoskye" || getEval.NetId == "atjohnsn" || getEval.NetId == "mikesweb" || getEval.NetId == "strutz" || getEval.NetId == "yoskye" || getEval.NetId == "yoskye")
+            if (getsup.ToString() == GetUser() || getEval.NetId == GetUser() || getEval.NetId == "yoskye" || getEval.NetId == "atJohnsn" || getEval.NetId == "mikesweb" || getEval.NetId == "strutz" || getEval.NetId == "gknott63" || getEval.NetId == "jlockmil")
             {
                 var reportinfo = LibDirectoryFactory.GetPerson(getEval.NetId);
 
@@ -262,9 +272,9 @@ namespace StaffEvaluations.Controllers
                 return View(crvm);
             }
             else
-                {
+            {
                 TempData["error"] = "You do not have authorization to view this record.";
-                return View();
+                return RedirectToAction("Index");
             }
         }
 
@@ -294,7 +304,7 @@ namespace StaffEvaluations.Controllers
                 eval.EmployeeComments = EmployeeComments;
                 eval.EvaluatorComments = EvaluatorComments;
 
-//                db.SaveChanges();
+                //                db.SaveChanges();
             }
 
             if (button.Equals("Complete"))
@@ -380,7 +390,7 @@ namespace StaffEvaluations.Controllers
 
             return RedirectToAction("Index");
         }
- 
+
         [SessionTimeout]
         public async System.Threading.Tasks.Task<ActionResult> SubmitEval(int id)
         {
