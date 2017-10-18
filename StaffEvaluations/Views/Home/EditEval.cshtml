@@ -107,7 +107,6 @@
         <div> Employee Comments:<br />@Html.TextArea("EmployeeComments", Model.eval.EmployeeComments, new { @style = "width:700px;max-width:none;" })</div>
         <br />
         <div><input type="submit" name="button" class="btn" value="Save" /></div>
-//        <div><input type="submit" name="button" class="btn" value="Accept" /> <input type="submit" name="button" class="btn" value="Contest" /></div>
     }
     else if (Model.eval.Status == "Accepted" || Model.eval.Status == "Contested")
     {

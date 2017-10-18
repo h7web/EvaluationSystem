@@ -137,7 +137,7 @@ namespace StaffEvaluations.Controllers
 
                 // next 5 lines added for testing purposes
                 mylist.Add(new DirectReport() { netid = "yoskye", name = "Skye Arseneau", employee_type_code = "CC", LibraryStartDate = "02/01/2001" });
-                mylist.Add(new DirectReport { netid = "atJohnsn", name = "Anietre Johnson", employee_type_code = "CA", LibraryStartDate = "08/01/2014" });
+                mylist.Add(new DirectReport { netid = "atJohnsn", name = "Aneitre Johnson", employee_type_code = "CA", LibraryStartDate = "08/01/2014" });
                 mylist.Add(new DirectReport { netid = "mikesweb", name = "Mike Nelson", employee_type_code = "BA", LibraryStartDate = "06/24/2016" });
                 mylist.Add(new DirectReport { netid = "strutz", name = "Jason Strutz", employee_type_code = "BA", LibraryStartDate = "09/01/2002" });
                 mylist.Add(new DirectReport { netid = "gknott63", name = "Greg Knott", employee_type_code = "BA", LibraryStartDate = "09/01/2010" });
@@ -235,28 +235,37 @@ namespace StaffEvaluations.Controllers
         public ActionResult EditEval(int id)
         {
             var getEval = (from e in db.StaffPerformanceEvaluations where e.EvalId == id select e).Single();
+            var getsup = LibDirectoryFactory.GetPersonsSupervisors(getEval.NetId);
 
-            var reportinfo = LibDirectoryFactory.GetPerson(getEval.NetId);
+            if (getsup.ToString() == GetUser() || getEval.NetId == GetUser() || getEval.NetId == "yoskye" || getEval.NetId == "atjohnsn" || getEval.NetId == "mikesweb" || getEval.NetId == "strutz" || getEval.NetId == "yoskye" || getEval.NetId == "yoskye")
+            {
+                var reportinfo = LibDirectoryFactory.GetPerson(getEval.NetId);
 
-            var superinfo = LibDirectoryFactory.GetPerson(GetUser());
+                var superinfo = LibDirectoryFactory.GetPerson(GetUser());
 
-            var lsdate = (from e in db1.employees where e.NETID == getEval.NetId select e.LIBRARY_START_DATE).FirstOrDefault().ToString();
+                var lsdate = (from e in db1.employees where e.NETID == getEval.NetId select e.LIBRARY_START_DATE).FirstOrDefault().ToString();
 
-            CreateEditEvalViewModel crvm = new CreateEditEvalViewModel();
+                CreateEditEvalViewModel crvm = new CreateEditEvalViewModel();
 
-            crvm.person = new LibDirectoryPerson();
-            crvm.person = reportinfo;
-            crvm.person.LibraryStartDate = lsdate;
+                crvm.person = new LibDirectoryPerson();
+                crvm.person = reportinfo;
+                crvm.person.LibraryStartDate = lsdate;
 
-            crvm.super = new LibDirectoryPerson();
-            crvm.super = superinfo;
+                crvm.super = new LibDirectoryPerson();
+                crvm.super = superinfo;
 
-            crvm.eval = getEval;
-            crvm.questions = QuestionHelper.GetQuestions(db, getEval.EvalCode, id, getEval.StaffPerformanceQuestions.ToList());
+                crvm.eval = getEval;
+                crvm.questions = QuestionHelper.GetQuestions(db, getEval.EvalCode, id, getEval.StaffPerformanceQuestions.ToList());
 
-            ViewData["RatingList"] = QuestionHelper.GetRatings(getEval.EvalCode);
+                ViewData["RatingList"] = QuestionHelper.GetRatings(getEval.EvalCode);
 
-            return View(crvm);
+                return View(crvm);
+            }
+            else
+                {
+                TempData["error"] = "You do not have authorization to view this record.";
+                return View();
+            }
         }
 
         [SessionTimeout]
