@@ -8,6 +8,7 @@ using System.Net.Mail;
 using LibDirectoryIntegration;
 using System.Configuration;
 using Mayur.Web.Attributes;
+using System.Data.Entity.Validation;
 
 namespace StaffEvaluations.Controllers
 {
@@ -106,6 +107,7 @@ namespace StaffEvaluations.Controllers
             vm.Super = super;
 
             List<DirectReport> mylist = null;
+            string unit = "";
 
             if (User.Identity.Name.Substring(5) != "gknott6")
             {
@@ -117,7 +119,7 @@ namespace StaffEvaluations.Controllers
                 {
                     if (vm.Super.eval_direct_reports != null)
                     {
-                        mylist = vm.Super.eval_direct_reports;
+                        mylist = vm.Super.eval_direct_reports.OrderBy(dr => dr.unit_name).ThenBy(dr => dr.last).ToList();
 
                         foreach (LibDirectoryPerson lp in mylist)
                         {
@@ -126,6 +128,7 @@ namespace StaffEvaluations.Controllers
                             lp.LibraryStartDate = String.Format("{0:MM-dd-yyyy}", emp?.LIBRARY_START_DATE.ToString());
                         }
 
+                       // mylist.Sort((x, y) => string.Compare(x.last, y.last));
                     }
                 }
                 else
@@ -135,14 +138,16 @@ namespace StaffEvaluations.Controllers
                 }
 
 
-                // next 5 lines added for testing purposes
-                mylist.Add(new DirectReport() { netid = "yoskye", name = "Skye Arseneau", employee_type_code = "CC", LibraryStartDate = "02/01/2001" });
-                mylist.Add(new DirectReport { netid = "atJohnsn", name = "Aneitre Johnson", employee_type_code = "CA", LibraryStartDate = "08/01/2014" });
-                mylist.Add(new DirectReport { netid = "mikesweb", name = "Mike Nelson", employee_type_code = "BA", LibraryStartDate = "06/24/2016" });
-                mylist.Add(new DirectReport { netid = "strutz", name = "Jason Strutz", employee_type_code = "BA", LibraryStartDate = "09/01/2002" });
-                mylist.Add(new DirectReport { netid = "gknott63", name = "Greg Knott", employee_type_code = "BA", LibraryStartDate = "09/01/2010" });
-                mylist.Add(new DirectReport { netid = "jlockmil", name = "John Lockmiller", employee_type_code = "BA", LibraryStartDate = "06/01/2017" });
-
+                if ((bool)Session["Masquerade"] != true)
+                {
+                    // next 5 lines added for testing purposes
+                    mylist.Add(new DirectReport() { netid = "yoskye", name = "Skye Arseneau", employee_type_code = "CC", LibraryStartDate = "02/01/2001" });
+                    mylist.Add(new DirectReport { netid = "atJohnsn", name = "Aneitre Johnson", employee_type_code = "CA", LibraryStartDate = "08/01/2014" });
+                    mylist.Add(new DirectReport { netid = "mikesweb", name = "Mike Nelson", employee_type_code = "BA", LibraryStartDate = "06/24/2016" });
+                    mylist.Add(new DirectReport { netid = "strutz", name = "Jason Strutz", employee_type_code = "BA", LibraryStartDate = "09/01/2002" });
+                    mylist.Add(new DirectReport { netid = "gknott63", name = "Greg Knott", employee_type_code = "BA", LibraryStartDate = "09/01/2010" });
+                    mylist.Add(new DirectReport { netid = "jlockmil", name = "John Lockmiller", employee_type_code = "BA", LibraryStartDate = "06/01/2017" });
+                }
                 var myStaffEvals = (from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == usethisnetid select e).ToList();
 
                 vm.MyStaffEvaluations = myStaffEvals;
@@ -283,22 +288,26 @@ namespace StaffEvaluations.Controllers
         public ActionResult EditEval(int id, string EmployeeComments, string EvaluatorComments, string button, List<Question> question)
         {
 
-            foreach (Question q in question)
+            var eval = db.StaffPerformanceEvaluations.Find(id);
+
+            if (eval.Status == Constants.InWork)
             {
-                var orig = db.StaffPerformanceQuestions.Find(q.QuestionId);
-                if (orig != null)
+                foreach (Question q in question)
                 {
-                    if (orig.Comment != q.QuestionComment || orig.Rating != q.QuestionRating)
+                    var orig = db.StaffPerformanceQuestions.Find(q.QuestionId);
+                    if (orig != null)
                     {
-                        orig.Comment = q.QuestionComment;
-                        orig.Rating = q.QuestionRating;
-                        orig.LastUpdateDate = DateTime.Now;
-                        db.SaveChanges();
+                        if (orig.Comment != q.QuestionComment || orig.Rating != q.QuestionRating)
+                        {
+                            orig.Comment = q.QuestionComment;
+                            orig.Rating = q.QuestionRating;
+                            orig.LastUpdateDate = DateTime.Now;
+                            db.SaveChanges();
+                        }
                     }
                 }
             }
 
-            var eval = db.StaffPerformanceEvaluations.Find(id);
             if (eval.EvaluatorComments != EvaluatorComments || eval.EmployeeComments != EmployeeComments)
             {
                 eval.EmployeeComments = EmployeeComments;
@@ -386,9 +395,25 @@ namespace StaffEvaluations.Controllers
                 eval.TouchedByMasqeradeDate = DateTime.Now;
             }
 
-            db.SaveChanges();
-
-            return RedirectToAction("Index");
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                            ve.PropertyName, ve.ErrorMessage);
+                    }
+                }
+                throw;
+            }
+                return RedirectToAction("Index");
         }
 
         [SessionTimeout]

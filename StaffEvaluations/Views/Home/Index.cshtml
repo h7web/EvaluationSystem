@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Home Page";
+    var unit = "";
 }
 
 <h2>Evaluations from your supervisor</h2>
@@ -36,13 +37,6 @@ else
                 @:|
                 @Html.ActionLink("Contest", "AcceptEval", new { id = eval.EvalId, button = "Contest" })
                 }
-
-
-
-
-
-
-
             </li>
         }
     </ul>
@@ -59,13 +53,18 @@ else
         @foreach (LibDirectoryIntegration.DirectReport directReport in Model.Super.direct_reports)
         {
             var lsdate = directReport.LibraryStartDate.AsDateTime().ToString("MM/dd/yyyy");
+            if (unit != directReport.unit_name)
+            {
+                unit = directReport.unit_name;
+                <tr><td colspan="6"><h3>@unit
+                    </h3></td></tr>
+            }
+        <tr>
 
-            <tr>
-
-                @if (Model.MyStaffEvaluations.Any(e => e.NetId == directReport.netid))
+            @if (Model.MyStaffEvaluations.Any(e => e.NetId == directReport.netid))
                 {
-                var eid = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().EvalId;
-                var status = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().Status;
+            var eid = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().EvalId;
+            var status = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().Status;
 
                 <td><strong>@directReport.name</strong></td>
                 <td></td>
@@ -75,14 +74,14 @@ else
                 <td>
                     @if (status == "Complete")
                     {
-                    @Html.ActionLink("View", "EditEval", new { id = eid })
+                @Html.ActionLink("View", "EditEval", new { id = eid })
                     }
-                @if (status == "Contested" || status == "Accepted" || status == "In-Work")
+            @if (status == "Contested" || status == "Accepted" || status == "In-Work")
                     {
-                    @Html.ActionLink("Edit", "EditEval", new { id = eid })
+                @Html.ActionLink("Edit", "EditEval", new { id = eid })
                     }
 
-                @if (status == "In-Work")
+            @if (status == "In-Work")
                     {
                         @:|
                         @Html.ActionLink("Submit", "SubmitEval", new { id = eid })
