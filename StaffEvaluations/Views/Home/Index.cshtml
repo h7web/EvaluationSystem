@@ -90,7 +90,7 @@ else
                     }
                     @if (status == "Deferred")
                     {
-                        @Html.ActionLink("Start Evaluation", "CreateEval", new { id = directReport.netid, type = directReport.employee_type_code })
+                        @Html.ActionLink("Start Evaluation", "EditEval", new { id = eid })
                     }
                 </td>
                 }

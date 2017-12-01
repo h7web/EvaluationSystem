@@ -178,7 +178,17 @@ namespace StaffEvaluations.Controllers
 
             var getsup = LibDirectoryFactory.GetPersonsSupervisors(newEval.NetId);
 
-            if (getsup.ToString() == GetUser() || newEval.NetId == GetUser() || newEval.NetId == "yoskye" || newEval.NetId == "atJohnsn" || newEval.NetId == "mikesweb" || newEval.NetId == "strutz" || newEval.NetId == "gknott63" || newEval.NetId == "jlockmil")
+            var suplist = "";
+
+            if(getsup != null)
+            {
+                foreach (LibDirectoryPerson s in getsup)
+                {
+                    suplist = suplist + s.netid;
+                }
+            }
+
+            if (suplist.ToString().Contains(GetUser()) || newEval.NetId == GetUser() || newEval.NetId == "yoskye" || newEval.NetId == "atJohnsn" || newEval.NetId == "mikesweb" || newEval.NetId == "strutz" || newEval.NetId == "gknott63" || newEval.NetId == "jlockmil")
             {
                 var lsdate = (from e in db1.employees where e.NETID == id select e.LIBRARY_START_DATE).FirstOrDefault().ToString();
 
@@ -217,6 +227,7 @@ namespace StaffEvaluations.Controllers
             newEval.Status = "In-Work";
             newEval.Title = title;
             newEval.StartDate = DateTime.Now;
+            var msgflag = false;
 
             if (Session["Masquerade"].Equals(true))
             {
@@ -237,12 +248,19 @@ namespace StaffEvaluations.Controllers
                     QuestionCode = myQuestion.QuestionCode,
                     FirstAnsweredDate = DateTime.Now
                 };
+                if (myQuestion.QuestionRating == "Excellent" && myQuestion.QuestionComment == null)
+                {
+                    msgflag = true;
+                }
                 db.StaffPerformanceQuestions.Add(newQuestion);
             }
 
             db.SaveChanges();
 
-
+            if (msgflag == true)
+            {
+                TempData["warning"] = "You must supply comments for any exceptional or less that satisfactory ratings before submission.";
+            }
             return RedirectToAction("Index");
         }
 
@@ -252,7 +270,17 @@ namespace StaffEvaluations.Controllers
             var getEval = (from e in db.StaffPerformanceEvaluations where e.EvalId == id select e).Single();
             var getsup = LibDirectoryFactory.GetPersonsSupervisors(getEval.NetId);
 
-            if (getsup.ToString() == GetUser() || getEval.NetId == GetUser() || getEval.NetId == "yoskye" || getEval.NetId == "atJohnsn" || getEval.NetId == "mikesweb" || getEval.NetId == "strutz" || getEval.NetId == "gknott63" || getEval.NetId == "jlockmil")
+            var suplist = "";
+
+            if (getsup != null)
+            {
+                foreach (LibDirectoryPerson s in getsup)
+                {
+                    suplist = suplist + s.netid;
+                }
+            }
+
+            if (suplist.ToString().Contains(GetUser()) || getEval.NetId == GetUser() || getEval.NetId == "yoskye" || getEval.NetId == "atJohnsn" || getEval.NetId == "mikesweb" || getEval.NetId == "strutz" || getEval.NetId == "gknott63" || getEval.NetId == "jlockmil")
             {
                 var reportinfo = LibDirectoryFactory.GetPerson(getEval.NetId);
 
@@ -289,8 +317,9 @@ namespace StaffEvaluations.Controllers
         {
 
             var eval = db.StaffPerformanceEvaluations.Find(id);
+            var msgflag = false;
 
-            if (eval.Status == Constants.InWork)
+            if (eval.Status == "In-Work")
             {
                 foreach (Question q in question)
                 {
@@ -304,6 +333,10 @@ namespace StaffEvaluations.Controllers
                             orig.LastUpdateDate = DateTime.Now;
                             db.SaveChanges();
                         }
+                        if (orig.Rating == "Excellent" && orig.Comment == null)
+                        {
+                            msgflag = true;
+                        }
                     }
                 }
             }
@@ -313,7 +346,6 @@ namespace StaffEvaluations.Controllers
                 eval.EmployeeComments = EmployeeComments;
                 eval.EvaluatorComments = EvaluatorComments;
 
-                //                db.SaveChanges();
             }
 
             if (button.Equals("Complete"))
@@ -326,6 +358,11 @@ namespace StaffEvaluations.Controllers
             {
                 eval.TouchedByMasqeradeNetID = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
                 eval.TouchedByMasqeradeDate = DateTime.Now;
+            }
+
+            if (msgflag == true)
+            {
+                TempData["warning"] = "You must supply comments for any exceptional or less that satisfactory ratings before submission.";
             }
 
             db.SaveChanges();
@@ -420,12 +457,25 @@ namespace StaffEvaluations.Controllers
         public async System.Threading.Tasks.Task<ActionResult> SubmitEval(int id)
         {
             var eval = db.StaffPerformanceEvaluations.Find(id);
+            var msgflag = false;
 
             var answers = from a in db.StaffPerformanceQuestions where a.Rating == "* You must select a value *" && a.EvalId == id select a;
+            var answers2 = from a in db.StaffPerformanceQuestions where a.EvalId == id select a;
+            foreach (StaffPerformanceQuestion q in answers2)
+            {
+                if (q.Rating == "Excellent" && q.Comment == null)
+                {
+                    msgflag = true;
+                }
+            }
 
             if (answers.Count() > 0)
             {
                 TempData["error"] = "You must select a rating for all questions in order to Submit an Evaluation.";
+            }
+            else if (msgflag == true)
+            {
+                TempData["error"] = "You must supply comments for any exceptional or less that satisfactory ratings before submission.";
             }
             else
             {
@@ -445,7 +495,7 @@ namespace StaffEvaluations.Controllers
                 body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
                 var message = new MailMessage();
 
-                message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu")); //change this to eval.NetId in production
+                message.To.Add(new MailAddress(eval.NetId + "@illinois.edu")); 
                 message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
                 message.Subject = eval.Year + " Performance Evaluation";
                 message.Body = body;

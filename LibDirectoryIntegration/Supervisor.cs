@@ -9,7 +9,6 @@ namespace LibDirectoryIntegration
 {
     public class Supervisor : LibDirectoryPerson
     {
-
         public List<DirectReport> direct_reports { get; set; }
 
         public List<DirectReport> eval_direct_reports

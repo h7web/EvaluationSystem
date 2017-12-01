@@ -75,7 +75,7 @@
                 </div>
                 <div>
                     <br />
-                    @if (Model.eval.Status == "" || Model.eval.Status == "In-Work")
+                    @if (Model.eval.Status == "" || Model.eval.Status == "In-Work" || Model.eval.Status == "Deferred")
                     {
                         @Html.DropDownList(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode))
                     }
@@ -87,7 +87,7 @@
                 </div>
                 <div>
                     <br /> Comments: <br>
-                    @if (Model.eval.Status == "" || Model.eval.Status == "In-Work")
+                    @if (Model.eval.Status == "" || Model.eval.Status == "In-Work" || Model.eval.Status == "Deferred")
                     {
                         <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;" class="text-info">@q.QuestionComment</textarea>
                     }
@@ -126,7 +126,7 @@
         }
     }
     <div>
-        @if ((Model.eval.Status == "" || Model.eval.Status == "In-Work" || Model.eval.Status == "Accepted" || Model.eval.Status == "Contested") && Model.eval.NetId != User.Identity.Name.Substring(5))
+        @if ((Model.eval.Status == "" || Model.eval.Status == "In-Work" || Model.eval.Status == "Deferred" || Model.eval.Status == "Accepted" || Model.eval.Status == "Contested") && Model.eval.NetId != User.Identity.Name.Substring(5))
         {
             <input type="submit" name="button" value="Save" class="btn" />
         }
