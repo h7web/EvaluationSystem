@@ -48,8 +48,10 @@
                 </div>
                 <div>
                     <br />
-                    Rating: 
-                    @Html.DropDownList(q.namePrefix + "QuestionRating", (List<SelectListItem>)ViewData["RatingList"])
+@if (q.CommentOnly == true) { 
+@:Rating:
+@Html.DropDownList(q.namePrefix + "QuestionRating", (List<SelectListItem>)ViewData["RatingList"])
+                    }
                 </div>
                 <div>
                     <br />

@@ -4,11 +4,11 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="b1a5eb398bdc4b25bd1d835fa726a4d6" Name="Diagram1">
+      <Diagram DiagramId="7a936d3b983b45faba69f466aea6bc30" Name="Diagram1">
+        <EntityTypeShape EntityType="StaffEvaluationsModel.EvaluationQuestionSet" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="StaffEvaluationsModel.StaffPerformanceEvaluation" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="StaffEvaluationsModel.StaffPerformanceQuestion" Width="1.5" PointX="3" PointY="1.375" />
+        <EntityTypeShape EntityType="StaffEvaluationsModel.StaffPerformanceQuestion" Width="1.5" PointX="3" PointY="2.125" IsExpanded="true" />
         <AssociationConnector Association="StaffEvaluationsModel.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" />
-        <EntityTypeShape EntityType="StaffEvaluationsModel.EvaluationQuestionSet" Width="1.5" PointX="3.375" PointY="4.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

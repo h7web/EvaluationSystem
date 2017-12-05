@@ -13,6 +13,7 @@
           <Property Name="QuestionText" Type="nvarchar" MaxLength="750" Nullable="false" />
           <Property Name="QuestionCode" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="QuestionType" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="CommentOnly" Type="bit" Nullable="false" />
           <Property Name="Year" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="StaffPerformanceEvaluations">
@@ -77,6 +78,17 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="StaffEvaluationsModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="EvaluationQuestionSet">
+          <Key>
+            <PropertyRef Name="QuestionSetId" />
+          </Key>
+          <Property Name="QuestionSetId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="QuestionText" Type="String" MaxLength="750" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="QuestionCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="QuestionType" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CommentOnly" Type="Boolean" Nullable="false" />
+          <Property Name="Year" Type="Int32" Nullable="false" />
+        </EntityType>
         <EntityType Name="StaffPerformanceEvaluation">
           <Key>
             <PropertyRef Name="EvalId" />
@@ -85,37 +97,28 @@
           <Property Name="EvalCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Year" Type="Int32" Nullable="false" />
           <Property Name="NetId" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Title" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
           <Property Name="EvaluatorNetid" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="CompleteDate" Type="DateTime" Precision="3" />
           <Property Name="Status" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DeferredDate" Type="DateTime" Precision="3" />
+          <Property Name="SubmittedDate" Type="DateTime" Precision="3" />
           <Property Name="AcceptedDate" Type="DateTime" Precision="3" />
+          <Property Name="ContestedDate" Type="DateTime" Precision="3" />
+          <Property Name="CompleteDate" Type="DateTime" Precision="3" />
+          <Property Name="ProcessedDate" Type="DateTime" Precision="3" />
           <Property Name="EmployeeComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="EvaluatorComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="StaffPerformanceQuestions" Relationship="StaffEvaluationsModel.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" FromRole="StaffPerformanceEvaluation" ToRole="StaffPerformanceQuestion" />
-          <Property Name="SubmittedDate" Type="DateTime" Precision="3" />
-          <Property Name="Title" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
-          <Property Name="DeferredDate" Type="DateTime" Precision="3" />
-          <Property Name="ContestedDate" Type="DateTime" Precision="3" />
-          <Property Name="ProcessedDate" Type="DateTime" Precision="3" />
           <Property Name="TouchedByMasqeradeNetID" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
           <Property Name="TouchedByMasqeradeDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="StaffPerformanceQuestions" Relationship="StaffEvaluationsModel.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" FromRole="StaffPerformanceEvaluation" ToRole="StaffPerformanceQuestion" />
         </EntityType>
-        <EntityContainer Name="StaffEvaluationsEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="StaffPerformanceEvaluations" EntityType="Self.StaffPerformanceEvaluation" />
-          <EntitySet Name="StaffPerformanceQuestions" EntityType="StaffEvaluationsModel.StaffPerformanceQuestion" />
-          <AssociationSet Name="FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" Association="StaffEvaluationsModel.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations">
-            <End Role="StaffPerformanceEvaluation" EntitySet="StaffPerformanceEvaluations" />
-            <End Role="StaffPerformanceQuestion" EntitySet="StaffPerformanceQuestions" />
-          </AssociationSet>
-          <EntitySet Name="EvaluationQuestionSets" EntityType="StaffEvaluationsModel.EvaluationQuestionSet" />
-        </EntityContainer>
         <EntityType Name="StaffPerformanceQuestion">
           <Key>
             <PropertyRef Name="QuestionId" />
           </Key>
           <Property Name="QuestionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="QuestionCode" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="QuestionCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="EvalId" Type="Int32" Nullable="false" />
           <Property Name="Rating" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
           <Property Name="Comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
@@ -123,6 +126,15 @@
           <Property Name="LastUpdateDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="StaffPerformanceEvaluation" Relationship="StaffEvaluationsModel.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" FromRole="StaffPerformanceQuestion" ToRole="StaffPerformanceEvaluation" />
         </EntityType>
+        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="EvaluationQuestionSets" EntityType="Self.EvaluationQuestionSet" />
+          <EntitySet Name="StaffPerformanceEvaluations" EntityType="Self.StaffPerformanceEvaluation" />
+          <EntitySet Name="StaffPerformanceQuestions" EntityType="Self.StaffPerformanceQuestion" />
+          <AssociationSet Name="FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" Association="StaffEvaluationsModel.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations">
+            <End Role="StaffPerformanceEvaluation" EntitySet="StaffPerformanceEvaluations" />
+            <End Role="StaffPerformanceQuestion" EntitySet="StaffPerformanceQuestions" />
+          </AssociationSet>
+        </EntityContainer>
         <Association Name="FK_StaffPerformanceQuestions_StaffPerformanceEvaluations">
           <End Type="StaffEvaluationsModel.StaffPerformanceEvaluation" Role="StaffPerformanceEvaluation" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -137,67 +149,58 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="EvaluationQuestionSet">
-          <Key>
-            <PropertyRef Name="QuestionSetId" />
-          </Key>
-          <Property Name="QuestionSetId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="QuestionText" Type="String" Nullable="false" MaxLength="750" FixedLength="false" Unicode="true" />
-          <Property Name="QuestionCode" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="QuestionType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="Year" Type="Int32" Nullable="false" />
-        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="StaffEvaluationsModelStoreContainer" CdmEntityContainer="StaffEvaluationsEntities">
+        <EntityContainerMapping StorageEntityContainer="StaffEvaluationsModelStoreContainer" CdmEntityContainer="Entities">
+          <EntitySetMapping Name="EvaluationQuestionSets">
+            <EntityTypeMapping TypeName="StaffEvaluationsModel.EvaluationQuestionSet">
+              <MappingFragment StoreEntitySet="EvaluationQuestionSets">
+                <ScalarProperty Name="QuestionSetId" ColumnName="QuestionSetId" />
+                <ScalarProperty Name="QuestionText" ColumnName="QuestionText" />
+                <ScalarProperty Name="QuestionCode" ColumnName="QuestionCode" />
+                <ScalarProperty Name="QuestionType" ColumnName="QuestionType" />
+                <ScalarProperty Name="CommentOnly" ColumnName="CommentOnly" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="StaffPerformanceEvaluations">
             <EntityTypeMapping TypeName="StaffEvaluationsModel.StaffPerformanceEvaluation">
               <MappingFragment StoreEntitySet="StaffPerformanceEvaluations">
-                <ScalarProperty Name="TouchedByMasqeradeDate" ColumnName="TouchedByMasqeradeDate" />
-                <ScalarProperty Name="TouchedByMasqeradeNetID" ColumnName="TouchedByMasqeradeNetID" />
-                <ScalarProperty Name="ProcessedDate" ColumnName="ProcessedDate" />
-                <ScalarProperty Name="ContestedDate" ColumnName="ContestedDate" />
-                <ScalarProperty Name="DeferredDate" ColumnName="DeferredDate" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="SubmittedDate" ColumnName="SubmittedDate" />
-                <ScalarProperty Name="EvaluatorComments" ColumnName="EvaluatorComments" />
-                <ScalarProperty Name="EmployeeComments" ColumnName="EmployeeComments" />
                 <ScalarProperty Name="EvalId" ColumnName="EvalId" />
                 <ScalarProperty Name="EvalCode" ColumnName="EvalCode" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
                 <ScalarProperty Name="NetId" ColumnName="NetId" />
-                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="EvaluatorNetid" ColumnName="EvaluatorNetid" />
-                <ScalarProperty Name="CompleteDate" ColumnName="CompleteDate" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="DeferredDate" ColumnName="DeferredDate" />
+                <ScalarProperty Name="SubmittedDate" ColumnName="SubmittedDate" />
                 <ScalarProperty Name="AcceptedDate" ColumnName="AcceptedDate" />
+                <ScalarProperty Name="ContestedDate" ColumnName="ContestedDate" />
+                <ScalarProperty Name="CompleteDate" ColumnName="CompleteDate" />
+                <ScalarProperty Name="ProcessedDate" ColumnName="ProcessedDate" />
+                <ScalarProperty Name="EmployeeComments" ColumnName="EmployeeComments" />
+                <ScalarProperty Name="EvaluatorComments" ColumnName="EvaluatorComments" />
+                <ScalarProperty Name="TouchedByMasqeradeNetID" ColumnName="TouchedByMasqeradeNetID" />
+                <ScalarProperty Name="TouchedByMasqeradeDate" ColumnName="TouchedByMasqeradeDate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="StaffPerformanceQuestions">
             <EntityTypeMapping TypeName="StaffEvaluationsModel.StaffPerformanceQuestion">
               <MappingFragment StoreEntitySet="StaffPerformanceQuestions">
-                <ScalarProperty Name="LastUpdateDate" ColumnName="LastUpdateDate" />
-                <ScalarProperty Name="FirstAnsweredDate" ColumnName="FirstAnsweredDate" />
-                <ScalarProperty Name="Comment" ColumnName="Comment" />
-                <ScalarProperty Name="Rating" ColumnName="Rating" />
-                <ScalarProperty Name="EvalId" ColumnName="EvalId" />
-                <ScalarProperty Name="QuestionCode" ColumnName="QuestionCode" />
                 <ScalarProperty Name="QuestionId" ColumnName="QuestionId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="EvaluationQuestionSets">
-            <EntityTypeMapping TypeName="StaffEvaluationsModel.EvaluationQuestionSet">
-              <MappingFragment StoreEntitySet="EvaluationQuestionSets">
-                <ScalarProperty Name="Year" ColumnName="Year" />
-                <ScalarProperty Name="QuestionType" ColumnName="QuestionType" />
                 <ScalarProperty Name="QuestionCode" ColumnName="QuestionCode" />
-                <ScalarProperty Name="QuestionText" ColumnName="QuestionText" />
-                <ScalarProperty Name="QuestionSetId" ColumnName="QuestionSetId" />
+                <ScalarProperty Name="EvalId" ColumnName="EvalId" />
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="FirstAnsweredDate" ColumnName="FirstAnsweredDate" />
+                <ScalarProperty Name="LastUpdateDate" ColumnName="LastUpdateDate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

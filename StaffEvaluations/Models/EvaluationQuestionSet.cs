@@ -18,6 +18,7 @@ namespace StaffEvaluations.Models
         public string QuestionText { get; set; }
         public string QuestionCode { get; set; }
         public string QuestionType { get; set; }
+        public bool CommentOnly { get; set; }
         public int Year { get; set; }
     }
 }

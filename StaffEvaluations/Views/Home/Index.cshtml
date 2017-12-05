@@ -130,28 +130,73 @@ else
     <div><button type="button" data-toggle="modal" data-target="#Masquerade" class="btn">Masquerade as Supervisor</button></div>
 }
 
-<div class="modal fade" id="Masquerade" tabindex="-1" role="dialog" aria-labelledby="ChooseSupervisorLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title" id="ChooseSupervisorLabel">Masquerade as a Supervisor</h4>
-            </div>
-            <div class="modal-body">
-                @using (Html.BeginForm("MasqueradeAs", "Home"))
-                {
-                    <span>
-                        Search:
-                        @Html.DropDownList("netid", (List<SelectListItem>)StaffEvaluations.Models.SuperUserHelper.GetSupervisors())
-                        <input type="submit" value="Masquerade" class="btn" />
-                    </span>
-                }
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+<button type="button" class="btn btn-default btn-secondary" data-toggle="modal" data-target="#evalerror">open box</button>
+
+    <div class="modal fade" id="Masquerade" tabindex="-1" role="dialog" aria-labelledby="ChooseSupervisorLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="ChooseSupervisorLabel">Masquerade as a Supervisor</h4>
+                </div>
+                <div class="modal-body">
+                    @using (Html.BeginForm("MasqueradeAs", "Home"))
+                    {
+                        <span>
+                            Search:
+                            @Html.DropDownList("netid", (List<SelectListItem>)StaffEvaluations.Models.SuperUserHelper.GetSupervisors())
+                            <input type="submit" value="Masquerade" class="btn" />
+                        </span>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <div class="modal fade" id="evalerror" tabindex="-1" role="dialog" aria-labelledby="evalerrorLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="findLibExpenseLabel">Error!</h4>
+                </div>
+                <div class="modal-body">
+                    @TempData["error"]
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="modalclose" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section scripts {
+        <script>
+            var modal = document.getElementById('evalerror');
+            var btn = document.getElementById("modalclose");
+            var err = '@TempData["error"]';
+
+            window.onload = function () {
+                if (err != null) {
+                    modal.style.display = "block";
+                }
+            }
+
+            btn.onclick = function () {
+                modal.style.display = "none";
+            }
+
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        </script>
+    }

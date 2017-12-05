@@ -24,7 +24,7 @@
     @Html.Hidden("Id", Model.eval.EvalId)
 
     var lsdate = Model.person.LibraryStartDate.AsDateTime().ToString("MM/dd/yyyy");
-    var startdate =Model.eval.StartDate.ToString("MM/dd/yyyy");
+    var startdate = Model.eval.StartDate.ToString("MM/dd/yyyy");
     var subdate = Model.eval.SubmittedDate?.ToString("MM/dd/yyyy");
     var contdate = Model.eval.ContestedDate?.ToString("MM/dd/yyyy");
     var acceptdate = Model.eval.AcceptedDate?.ToString("MM/dd/yyyy");
@@ -75,14 +75,17 @@
                 </div>
                 <div>
                     <br />
-                    @if (Model.eval.Status == "" || Model.eval.Status == "In-Work" || Model.eval.Status == "Deferred")
+                    @if (q.CommentOnly == false)
                     {
-                        @Html.DropDownList(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode))
-                    }
-                    else
-                    {
-                        @Html.DropDownList(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode), new { @disabled=true, @style = "background-color:lightgray" })
-                        @Html.Hidden(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode))
+                        if (Model.eval.Status == "" || Model.eval.Status == "In-Work" || Model.eval.Status == "Deferred")
+                        {
+                            @Html.DropDownList(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode))
+                        }
+                        else
+                        {
+                            @Html.DropDownList(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode), new { @disabled = true, @style = "background-color:lightgray" })
+                            @Html.Hidden(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode))
+                        }
                     }
                 </div>
                 <div>
@@ -113,16 +116,16 @@
         <div>Employee Comments:<br />@Html.TextArea("EmployeeComments", Model.eval.EmployeeComments, new { @readonly = "readonly", @style = "background-color:lightgray;width:700px;max-width:none;" })</div>
         if (Model.eval.NetId != User.Identity.Name.Substring(5))
         {
-        <div>Evaluator Comments:<br />@Html.TextArea("EvaluatorComments", Model.eval.EvaluatorComments, new { @style = "width:700px;max-width:none;" })</div>
+            <div>Evaluator Comments:<br />@Html.TextArea("EvaluatorComments", Model.eval.EvaluatorComments, new { @style = "width:700px;max-width:none;" })</div>
         }
     }
     else if (Model.eval.Status == "Complete")
     {
-        <div>Employee Comments:<br/> @Html.TextArea("EmployeeComments", Model.eval.EmployeeComments, new { @readonly = "readonly", @style = "background-color:lightgray;width:700px;max-width:none;" })</div>
+        <div>Employee Comments:<br /> @Html.TextArea("EmployeeComments", Model.eval.EmployeeComments, new { @readonly = "readonly", @style = "background-color:lightgray;width:700px;max-width:none;" })</div>
         if (Model.eval.NetId != User.Identity.Name.Substring(5))
         {
-        <br />
-        <div>Evaluator Comments:<br /> @Html.TextArea("EvaluatorComments", Model.eval.EvaluatorComments, new { @readonly = "readonly", @style = "background-color:lightgray;width:700px;max-width:none;" })</div>
+            <br />
+            <div>Evaluator Comments:<br /> @Html.TextArea("EvaluatorComments", Model.eval.EvaluatorComments, new { @readonly = "readonly", @style = "background-color:lightgray;width:700px;max-width:none;" })</div>
         }
     }
     <div>
@@ -136,7 +139,6 @@
         }
     </div>
 }
-
 
 
 

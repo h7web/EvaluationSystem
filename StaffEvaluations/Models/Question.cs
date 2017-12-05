@@ -26,6 +26,8 @@ namespace StaffEvaluations.Models
 
         public string QuestionComment { get; set; }
 
+        public bool CommentOnly { get; set; }
+
         public string Index {get; }
 
         public string namePrefix

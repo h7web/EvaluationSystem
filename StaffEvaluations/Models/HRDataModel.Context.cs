@@ -19,7 +19,7 @@ namespace StaffEvaluations.Models
             : base("name=HR_DataEntities")
         {
         }
-    
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             throw new UnintentionalCodeFirstException();
