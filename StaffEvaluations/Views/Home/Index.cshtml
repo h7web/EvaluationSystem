@@ -183,11 +183,11 @@ else
             var btn = document.getElementById("modalclose");
             var err = '@TempData["error"]';
 
-            window.onload = function () {
+            $(document).ready(function () {
                 if (err != null) {
                     modal.style.display = "block";
                 }
-            }
+            });
 
             btn.onclick = function () {
                 modal.style.display = "none";

@@ -13,10 +13,10 @@ namespace StaffEvaluations.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class StaffEvaluationsEntities : DbContext
+    public partial class Entities : DbContext
     {
-        public StaffEvaluationsEntities()
-            : base("name=StaffEvaluationsEntities")
+        public Entities()
+            : base("name=Entities")
         {
         }
     

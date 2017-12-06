@@ -9,7 +9,7 @@ namespace StaffEvaluations.Models
     public class QuestionHelper
     {
 
-        public static List<Question> GetQuestions(Models.StaffEvaluationsEntities db, string type)
+        public static List<Question> GetQuestions(Models.Entities db, string type)
         {
             List<Question> ret = new List<Question>();
 
@@ -29,7 +29,7 @@ namespace StaffEvaluations.Models
             return ret;
         }
 
-        public static List<Question> GetQuestions(Models.StaffEvaluationsEntities db, string type, int EvalId, List<StaffPerformanceQuestion> answers)
+        public static List<Question> GetQuestions(Models.Entities db, string type, int EvalId, List<StaffPerformanceQuestion> answers)
         {
             List<Question> qs = QuestionHelper.GetQuestions(db, type);
 

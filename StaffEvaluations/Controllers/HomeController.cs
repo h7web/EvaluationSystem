@@ -15,7 +15,7 @@ namespace StaffEvaluations.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        private Models.StaffEvaluationsEntities db = new Models.StaffEvaluationsEntities();
+        private Models.Entities db = new Models.Entities();
         private Models.HR_DataEntities db1 = new Models.HR_DataEntities();
 
         public string GetUser()
@@ -148,9 +148,12 @@ namespace StaffEvaluations.Controllers
                     mylist.Add(new DirectReport { netid = "gknott63", name = "Greg Knott", employee_type_code = "BA", LibraryStartDate = "09/01/2010" });
                     mylist.Add(new DirectReport { netid = "jlockmil", name = "John Lockmiller", employee_type_code = "BA", LibraryStartDate = "06/01/2017" });
                 }
-                var myStaffEvals = (from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == usethisnetid select e).ToList();
+                var myStaffEvals = from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == usethisnetid select e;
 
-                vm.MyStaffEvaluations = myStaffEvals;
+                if (myStaffEvals != null)
+                {
+                    vm.MyStaffEvaluations = myStaffEvals.ToList();
+                }
             }
             else
             {
@@ -259,7 +262,7 @@ namespace StaffEvaluations.Controllers
 
             if (msgflag == true)
             {
-                TempData["warning"] = "You must supply comments for any exceptional or less that satisfactory ratings before submission.";
+                TempData["error"] = "You must supply comments for any exceptional or less that satisfactory ratings before submission.";
             }
             return RedirectToAction("Index");
         }
