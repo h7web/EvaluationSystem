@@ -48,7 +48,7 @@
                 </div>
                 <div>
                     <br />
-@if (q.CommentOnly == true) { 
+@if (q.CommentOnly == false) { 
 @:Rating:
 @Html.DropDownList(q.namePrefix + "QuestionRating", (List<SelectListItem>)ViewData["RatingList"])
                     }
@@ -56,7 +56,14 @@
                 <div>
                     <br />
                     Comments: <br />
+                    @if (q.CommentOnly == true)
+                    {
+                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" readonly cols="100" style="background-color:lightgray; max-width:none;"></textarea>
+                    }
+                    else
+                    {
                     <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;"></textarea>
+                    }
                     <br />
                     <br />
                 </div>

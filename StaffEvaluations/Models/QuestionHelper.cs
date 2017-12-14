@@ -17,11 +17,11 @@ namespace StaffEvaluations.Models
 
             var questionlist = (from q in db.EvaluationQuestionSets where (q.QuestionType == type && q.Year == yr) select q).ToList();
 
-            var convquestionlist = questionlist.Select(x => new Question() { QuestionText = x.QuestionText, QuestionCode = x.QuestionCode });
+            var convquestionlist = questionlist.Select(x => new Question() { QuestionText = x.QuestionText, QuestionCode = x.QuestionCode, CommentOnly = x.CommentOnly });
 
             foreach (Question q in convquestionlist)
             {
-                ret.Add(new Models.Question { QuestionCode = q.QuestionCode, QuestionText = q.QuestionText });
+                ret.Add(new Models.Question { QuestionCode = q.QuestionCode, QuestionText = q.QuestionText, CommentOnly = q.CommentOnly });
             }
 
             //ret.

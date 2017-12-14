@@ -71,7 +71,7 @@
                 @Html.Hidden("Question.Index", q.Index)
                 @Html.Hidden(q.namePrefix + "QuestionId", q.QuestionId)
                 <div>
-                    @Html.Raw(q.QuestionText)
+                    @Html.Raw(q.QuestionText) 
                 </div>
                 <div>
                     <br />
@@ -90,13 +90,17 @@
                 </div>
                 <div>
                     <br /> Comments: <br>
-                    @if (Model.eval.Status == "" || Model.eval.Status == "In-Work" || Model.eval.Status == "Deferred")
+                    @if (Model.eval.Status == "" && q.CommentOnly == false || Model.eval.Status == "In-Work" && q.CommentOnly == false || Model.eval.Status == "Deferred" && q.CommentOnly == false)
                     {
-                        <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;" class="text-info">@q.QuestionComment</textarea>
+                    <textarea id = "@(q.namePrefixId + "QuestionComment")" name = "@(q.namePrefix + "QuestionComment")" cols = "100" style = "max-width:none;" class="text-info">@q.QuestionComment</textarea>
+                    }
+                    else if (q.CommentOnly == true && Model.eval.Status == "Submitted")
+                    {
+                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;" class="text-info wysiwyg">@q.QuestionComment</textarea>
                     }
                     else
                     {
-                        <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" readonly style="background-color:lightgray; max-width:none;" cols="100">@q.QuestionComment</textarea>
+                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" readonly style="background-color:lightgray; max-width:none;" cols="100">@q.QuestionComment</textarea>
                     }
                 </div>
                 <br />
@@ -141,5 +145,7 @@
 }
 
 
-
+@section scripts {
+    <script>tinymce.init({ selector:'textarea.wysiwyg' });</script>
+    }
 

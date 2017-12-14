@@ -168,6 +168,18 @@ namespace StaffEvaluations.Controllers
             return View(vm);
         }
 
+        public string GetJD(string netid, string posn)
+        {
+            var JD = "";
+            var JDEntry = (from j in db.JobDescriptions where j.netid == netid && j.posnNumber == posn select j).SingleOrDefault();
+
+            if (JDEntry != null)
+            {
+                JD = JDEntry.description;
+            }
+            return JD;
+        }
+
         [SessionTimeout]
         public ActionResult CreateEval(string id, string type)
         {

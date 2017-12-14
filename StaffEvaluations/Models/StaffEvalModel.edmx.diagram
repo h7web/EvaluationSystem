@@ -9,6 +9,7 @@
         <EntityTypeShape EntityType="StaffEvaluationsModel.StaffPerformanceEvaluation" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="StaffEvaluationsModel.StaffPerformanceQuestion" Width="1.5" PointX="3" PointY="2.125" IsExpanded="true" />
         <AssociationConnector Association="StaffEvaluationsModel.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" />
+        <EntityTypeShape EntityType="StaffEvaluationsModel.JobDescription" Width="1.5" PointX="5.375" PointY="3.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
