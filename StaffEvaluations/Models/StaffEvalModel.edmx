@@ -22,9 +22,18 @@
           </Key>
           <Property Name="jdid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="netid" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="posnNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="supervisorNetid" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="description" Type="nvarchar(max)" Nullable="false" />
           <Property Name="lastUpdatedDate" Type="date" />
+        </EntityType>
+        <EntityType Name="Ratings">
+          <Key>
+            <PropertyRef Name="rid" />
+          </Key>
+          <Property Name="rid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EvalCode" Type="nvarchar" MaxLength="5" Nullable="false" />
+          <Property Name="Rating" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CommentRequired" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="StaffPerformanceEvaluations">
           <Key>
@@ -78,6 +87,7 @@
         <EntityContainer Name="StaffEvaluationsModelStoreContainer">
           <EntitySet Name="EvaluationQuestionSets" EntityType="Self.EvaluationQuestionSets" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="JobDescriptions" EntityType="Self.JobDescriptions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Ratings" EntityType="Self.Ratings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StaffPerformanceEvaluations" EntityType="Self.StaffPerformanceEvaluations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StaffPerformanceQuestions" EntityType="Self.StaffPerformanceQuestions" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" Association="Self.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations">
@@ -146,6 +156,7 @@
             <End Role="StaffPerformanceQuestion" EntitySet="StaffPerformanceQuestions" />
           </AssociationSet>
           <EntitySet Name="JobDescriptions" EntityType="StaffEvaluationsModel.JobDescription" />
+          <EntitySet Name="Ratings" EntityType="StaffEvaluationsModel.Rating" />
         </EntityContainer>
         <Association Name="FK_StaffPerformanceQuestions_StaffPerformanceEvaluations">
           <End Type="StaffEvaluationsModel.StaffPerformanceEvaluation" Role="StaffPerformanceEvaluation" Multiplicity="1">
@@ -169,7 +180,16 @@
           <Property Name="netid" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="lastUpdatedDate" Type="DateTime" Precision="0" />
-          <Property Name="posnNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="supervisorNetid" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Rating">
+          <Key>
+            <PropertyRef Name="rid" />
+          </Key>
+          <Property Name="rid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EvalCode" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Name="Rating1" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CommentRequired" Type="Boolean" Nullable="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -229,11 +249,21 @@
           <EntitySetMapping Name="JobDescriptions">
             <EntityTypeMapping TypeName="StaffEvaluationsModel.JobDescription">
               <MappingFragment StoreEntitySet="JobDescriptions">
-                <ScalarProperty Name="posnNumber" ColumnName="posnNumber" />
+                <ScalarProperty Name="supervisorNetid" ColumnName="supervisorNetid" />
                 <ScalarProperty Name="lastUpdatedDate" ColumnName="lastUpdatedDate" />
                 <ScalarProperty Name="description" ColumnName="description" />
                 <ScalarProperty Name="netid" ColumnName="netid" />
                 <ScalarProperty Name="jdid" ColumnName="jdid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Ratings">
+            <EntityTypeMapping TypeName="StaffEvaluationsModel.Rating">
+              <MappingFragment StoreEntitySet="Ratings">
+                <ScalarProperty Name="CommentRequired" ColumnName="CommentRequired" />
+                <ScalarProperty Name="Rating1" ColumnName="Rating" />
+                <ScalarProperty Name="EvalCode" ColumnName="EvalCode" />
+                <ScalarProperty Name="rid" ColumnName="rid" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

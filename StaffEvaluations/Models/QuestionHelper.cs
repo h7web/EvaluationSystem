@@ -9,7 +9,7 @@ namespace StaffEvaluations.Models
     public class QuestionHelper
     {
 
-        public static List<Question> GetQuestions(Models.Entities db, string type)
+        public static List<Question> GetQuestions(Models.Entities db, string type, string netid, string supervisorNetid)
         {
             List<Question> ret = new List<Question>();
 
@@ -19,9 +19,18 @@ namespace StaffEvaluations.Models
 
             var convquestionlist = questionlist.Select(x => new Question() { QuestionText = x.QuestionText, QuestionCode = x.QuestionCode, CommentOnly = x.CommentOnly });
 
+            var jd = GetJD(db, netid, supervisorNetid);
+                
             foreach (Question q in convquestionlist)
             {
-                ret.Add(new Models.Question { QuestionCode = q.QuestionCode, QuestionText = q.QuestionText, CommentOnly = q.CommentOnly });
+                if (q.QuestionText == "Job Description")
+                {
+                    ret.Add(new Models.Question { QuestionCode = q.QuestionCode, QuestionText = q.QuestionText, QuestionComment = jd, CommentOnly = q.CommentOnly });
+                }
+                else
+                {
+                    ret.Add(new Models.Question { QuestionCode = q.QuestionCode, QuestionText = q.QuestionText, CommentOnly = q.CommentOnly });
+                }
             }
 
             //ret.
@@ -31,7 +40,11 @@ namespace StaffEvaluations.Models
 
         public static List<Question> GetQuestions(Models.Entities db, string type, int EvalId, List<StaffPerformanceQuestion> answers)
         {
-            List<Question> qs = QuestionHelper.GetQuestions(db, type);
+            var eval = (from e in db.StaffPerformanceEvaluations where e.EvalId == EvalId select e).SingleOrDefault();
+            string netid = eval.NetId;
+            string supervisorNetid = eval.EvaluatorNetid;
+
+            List<Question> qs = QuestionHelper.GetQuestions(db, type, netid, supervisorNetid);
 
             foreach (StaffPerformanceQuestion q in answers)
             {
@@ -45,71 +58,86 @@ namespace StaffEvaluations.Models
             return qs;
         }
 
+        public static string GetJD(Models.Entities db, string netid, string supervisorNetid)
+        {
+            var JD = "";
+            var JDEntry = (from j in db.JobDescriptions where j.netid == netid && j.supervisorNetid == supervisorNetid select j).SingleOrDefault();
 
-        public static List<SelectListItem> GetRatings( string type, string selected = "")
+            if (JDEntry != null)
+            {
+                JD = JDEntry.description;
+            }
+            return JD;
+        }
+
+        public static List<SelectListItem> GetRatings(Models.Entities db, string type, string selected = "")
         {
             List<SelectListItem> ret = new List<SelectListItem>();
 
-            string val;
+            var val = from r in db.Ratings where r.EvalCode == type select r;
 
-            if (type == "BA")
+            foreach (Rating r in val)
             {
-
-                val = "Outstanding";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-                val = "Solid Performer";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-                val = "Needs Improvement";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-                val = "Not Acceptable";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-            }
-            else if (type == "CA")
-            {
-                val = "Excellent";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-                val = "Above Average";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-                val = "Satisfactory";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-                val = "Needs Improvement";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-                val = "Unsatisfactory";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-                val = "Not Applicable";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-            }
-            else if (type == "CC")
-            {
-                val = "Outstanding";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-                val = "Exceeds Expectations";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-                val = "Meets Expectations";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-                val = "Needs Improvement";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
-                val = "Unsatisfactory";
-                ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
-
+                ret.Add(new SelectListItem { Text = r.Rating1, Value = r.Rating1, Selected = (r.Rating1 == selected) });
             }
 
-            val = "* You must select a value *";
-            ret.Insert(0, new SelectListItem { Text = val, Value = val });
+            //if (type == "BA")
+            //{
+
+            //    val = "Outstanding";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //    val = "Solid Performer";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //    val = "Needs Improvement";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //    val = "Not Acceptable";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //}
+            //else if (type == "CA")
+            //{
+            //    val = "Excellent";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //    val = "Above Average";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //    val = "Satisfactory";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //    val = "Needs Improvement";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //    val = "Unsatisfactory";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //    val = "Not Applicable";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //}
+            //else if (type == "CC")
+            //{
+            //    val = "Outstanding";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //    val = "Exceeds Expectations";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //    val = "Meets Expectations";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //    val = "Needs Improvement";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //    val = "Unsatisfactory";
+            //    ret.Add(new SelectListItem { Text = val, Value = val, Selected = (val == selected) });
+
+            //}
+
+            ret.Insert(0, new SelectListItem { Text = "* You must select a value *", Value = "* You must select a value *" });
 
             return ret;
         }

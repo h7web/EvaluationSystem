@@ -53,7 +53,7 @@ namespace StaffEvaluations.Models
 
         public List<SelectListItem> RatingSelectList(string type)
         {
-            return QuestionHelper.GetRatings(type, this.QuestionRating);
+            return QuestionHelper.GetRatings(db, type, this.QuestionRating);
         }
     }
 }

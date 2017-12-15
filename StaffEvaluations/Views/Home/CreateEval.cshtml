@@ -1,78 +1,81 @@
 ﻿@model StaffEvaluations.Models.CreateEditEvalViewModel
 
-@{
-    ViewBag.Title = "CreateEval";
+    @{
+        ViewBag.Title = "CreateEval";
 
-    var evaltypedesc = "";
+        var evaltypedesc = "";
 
-    if (Model.eval.EvalCode == "BA")
-    {
-        evaltypedesc = "Academic Professional";
-    }
-    else if (Model.eval.EvalCode == "CA")
-    {
-        evaltypedesc = "Civil Service";
-    }
-    else if (Model.eval.EvalCode == "CC")
-    {
-        evaltypedesc = "Civil Service - Exempt";
-    }
-}
-
-@using (Html.BeginForm())
-{
-    var lsdate = Model.person.LibraryStartDate.AsDateTime().ToString("MM/dd/yyyy");
-
-    @Html.Hidden("Id", Model.eval.NetId)
-    @Html.Hidden("Type", Model.eval.EvalCode)
-    @Html.Hidden("Title", Model.person.banner_title)
-
-    <h2>@DateTime.Now.Year @evaltypedesc Performance Evaluation</h2>
-    
-    <p>
-        <strong>@Model.person.name - @Model.person.banner_title</strong><br />
-        Library Start Date: @lsdate<br />
-        Supervisor: @Model.super.name - @Model.super.banner_title<br />
-        Date: @DateTime.Now.ToString("MM/dd/yyyy")
-        <br />
-    </p>
-
-    <ol>
-        @foreach (StaffEvaluations.Models.Question q in Model.questions)
+        if (Model.eval.EvalCode == "BA")
         {
-            <li>
-                @Html.Hidden("Question.Index", q.Index)
-                @Html.Hidden(q.namePrefix + "QuestionCode", q.QuestionCode)
-                <div>
-                    @Html.Raw(q.QuestionText)
-                </div>
-                <div>
-                    <br />
-@if (q.CommentOnly == false) { 
-@:Rating:
-@Html.DropDownList(q.namePrefix + "QuestionRating", (List<SelectListItem>)ViewData["RatingList"])
-                    }
-                </div>
-                <div>
-                    <br />
-                    Comments: <br />
-                    @if (q.CommentOnly == true)
-                    {
-                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" readonly cols="100" style="background-color:lightgray; max-width:none;"></textarea>
-                    }
-                    else
-                    {
-                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;"></textarea>
-                    }
-                    <br />
-                    <br />
-                </div>
-            </li>
+            evaltypedesc = "Academic Professional";
         }
-    </ol>
+        else if (Model.eval.EvalCode == "CA")
+        {
+            evaltypedesc = "Civil Service";
+        }
+        else if (Model.eval.EvalCode == "CC")
+        {
+            evaltypedesc = "Civil Service - Exempt";
+        }
+    }
 
-    <input type="submit" value="Save" class="btn"/>
-}
+    @using (Html.BeginForm())
+    {
+        var lsdate = Model.person.LibraryStartDate.AsDateTime().ToString("MM/dd/yyyy");
+
+        @Html.Hidden("Id", Model.eval.NetId)
+        @Html.Hidden("Type", Model.eval.EvalCode)
+        @Html.Hidden("Title", Model.person.banner_title)
+
+        <h2>@DateTime.Now.Year @evaltypedesc Performance Evaluation</h2>
+
+        <p>
+            <strong>@Model.person.name - @Model.person.banner_title</strong><br />
+            Library Start Date: @lsdate<br />
+            Supervisor: @Model.super.name - @Model.super.banner_title<br />
+            Date: @DateTime.Now.ToString("MM/dd/yyyy")
+            <br />
+        </p>
+
+        <ol>
+            @foreach (StaffEvaluations.Models.Question q in Model.questions)
+            {
+                <li>
+                    @Html.Hidden("Question.Index", q.Index)
+                    @Html.Hidden(q.namePrefix + "QuestionCode", q.QuestionCode)
+                    <div>
+                        @Html.Raw(q.QuestionText)
+                        -
+                        @Html.Raw(q.QuestionComment)
+                    </div>
+                    <div>
+                        <br />
+                        @if (q.CommentOnly == false)
+                        {
+                            @:Rating:
+                            @Html.DropDownList(q.namePrefix + "QuestionRating", (List<SelectListItem>)ViewData["RatingList"])
+                        }
+                    </div>
+                    <div>
+                        <br />
+                        Comments: <br />
+                        @if (q.CommentOnly == true)
+                    {
+                            <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" readonly cols="100" style="background-color:lightgray; max-width:none;">@q.QuestionComment</textarea>
+                        }
+                        else
+                        {
+                            <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;"></textarea>
+                        }
+                        <br />
+                        <br />
+                    </div>
+                </li>
+            }
+        </ol>
+
+        <input type="submit" value="Save" class="btn" />
+    }
 
 
 

@@ -178,6 +178,9 @@
     </Compile>
     <Compile Include="Models\Question.cs" />
     <Compile Include="Models\QuestionHelper.cs" />
+    <Compile Include="Models\Rating.cs">
+      <DependentUpon>StaffEvalModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\SessionHelper.cs" />
     <Compile Include="Models\StaffEvalModel.Context.cs">
       <AutoGen>True</AutoGen>

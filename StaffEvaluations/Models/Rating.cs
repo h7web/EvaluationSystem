@@ -12,12 +12,11 @@ namespace StaffEvaluations.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class JobDescription
+    public partial class Rating
     {
-        public int jdid { get; set; }
-        public string netid { get; set; }
-        public string description { get; set; }
-        public Nullable<System.DateTime> lastUpdatedDate { get; set; }
-        public string supervisorNetid { get; set; }
+        public int rid { get; set; }
+        public string EvalCode { get; set; }
+        public string Rating1 { get; set; }
+        public bool CommentRequired { get; set; }
     }
 }

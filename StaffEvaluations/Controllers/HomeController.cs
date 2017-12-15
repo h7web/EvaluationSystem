@@ -168,18 +168,6 @@ namespace StaffEvaluations.Controllers
             return View(vm);
         }
 
-        public string GetJD(string netid, string posn)
-        {
-            var JD = "";
-            var JDEntry = (from j in db.JobDescriptions where j.netid == netid && j.posnNumber == posn select j).SingleOrDefault();
-
-            if (JDEntry != null)
-            {
-                JD = JDEntry.description;
-            }
-            return JD;
-        }
-
         [SessionTimeout]
         public ActionResult CreateEval(string id, string type)
         {
@@ -193,9 +181,11 @@ namespace StaffEvaluations.Controllers
 
             var getsup = LibDirectoryFactory.GetPersonsSupervisors(newEval.NetId);
 
+            var supervisorNetid = superinfo.netid;
+
             var suplist = "";
 
-            if(getsup != null)
+            if (getsup != null)
             {
                 foreach (LibDirectoryPerson s in getsup)
                 {
@@ -217,9 +207,9 @@ namespace StaffEvaluations.Controllers
                 crvm.super = superinfo;
 
                 crvm.eval = newEval;
-                crvm.questions = QuestionHelper.GetQuestions(db, type);
+                crvm.questions = QuestionHelper.GetQuestions(db, type, reportinfo.netid, supervisorNetid);
 
-                ViewData["RatingList"] = QuestionHelper.GetRatings(type);
+                ViewData["RatingList"] = QuestionHelper.GetRatings(db, type);
 
                 return View(crvm);
             }
@@ -232,6 +222,7 @@ namespace StaffEvaluations.Controllers
 
         [SessionTimeout]
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult CreateEval(string id, string type, string title, List<Question> question)
         {
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
@@ -244,14 +235,23 @@ namespace StaffEvaluations.Controllers
             newEval.StartDate = DateTime.Now;
             var msgflag = false;
 
-            if (Session["Masquerade"].Equals(true))
+            if (Session["Masquerade"] != null)
             {
-                newEval.TouchedByMasqeradeNetID = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
-                newEval.TouchedByMasqeradeDate = DateTime.Now;
+                if (Session["Masquerade"].Equals(true))
+                {
+                    newEval.TouchedByMasqeradeNetID = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+                    newEval.TouchedByMasqeradeDate = DateTime.Now;
+                }
             }
 
             db.StaffPerformanceEvaluations.Add(newEval);
-            //           db.SaveChanges();
+
+            string CommentList = "";
+            var CommentReq = from r in db.Ratings where r.EvalCode == type && r.CommentRequired == true select r;
+            foreach (Rating r in CommentReq)
+            {
+                CommentList += r.Rating1;
+            }
 
             foreach (Question myQuestion in question)
             {
@@ -263,7 +263,7 @@ namespace StaffEvaluations.Controllers
                     QuestionCode = myQuestion.QuestionCode,
                     FirstAnsweredDate = DateTime.Now
                 };
-                if (myQuestion.QuestionRating == "Excellent" && myQuestion.QuestionComment == null)
+                if (CommentList.Contains(myQuestion.QuestionRating) && myQuestion.QuestionComment == null)
                 {
                     msgflag = true;
                 }
@@ -315,7 +315,7 @@ namespace StaffEvaluations.Controllers
                 crvm.eval = getEval;
                 crvm.questions = QuestionHelper.GetQuestions(db, getEval.EvalCode, id, getEval.StaffPerformanceQuestions.ToList());
 
-                ViewData["RatingList"] = QuestionHelper.GetRatings(getEval.EvalCode);
+                ViewData["RatingList"] = QuestionHelper.GetRatings(db, getEval.EvalCode);
 
                 return View(crvm);
             }
@@ -328,6 +328,7 @@ namespace StaffEvaluations.Controllers
 
         [SessionTimeout]
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult EditEval(int id, string EmployeeComments, string EvaluatorComments, string button, List<Question> question)
         {
 
