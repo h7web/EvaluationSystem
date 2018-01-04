@@ -11,6 +11,8 @@
         <AssociationConnector Association="StaffEvaluationsModel.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" />
         <EntityTypeShape EntityType="StaffEvaluationsModel.JobDescription" Width="1.5" PointX="5.375" PointY="3.75" />
         <EntityTypeShape EntityType="StaffEvaluationsModel.Rating" Width="1.5" PointX="8.5" PointY="3.25" />
+        <EntityTypeShape EntityType="StaffEvaluationsModel.ReportingLine" Width="1.5" PointX="0.75" PointY="6.75" />
+        <EntityTypeShape EntityType="StaffEvaluationsModel.JDList" Width="1.5" PointX="3.375" PointY="6.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

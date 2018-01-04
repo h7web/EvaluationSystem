@@ -263,9 +263,12 @@ namespace StaffEvaluations.Controllers
                     QuestionCode = myQuestion.QuestionCode,
                     FirstAnsweredDate = DateTime.Now
                 };
-                if (CommentList.Contains(myQuestion.QuestionRating) && myQuestion.QuestionComment == null)
+                if (myQuestion.QuestionCode != "AP12" && myQuestion.QuestionCode != "CA11" && myQuestion.QuestionCode != "CC9")
                 {
-                    msgflag = true;
+                    if (CommentList.Contains(myQuestion.QuestionRating) && myQuestion.QuestionComment == null)
+                    {
+                        msgflag = true;
+                    }
                 }
                 db.StaffPerformanceQuestions.Add(newQuestion);
             }
@@ -337,6 +340,13 @@ namespace StaffEvaluations.Controllers
 
             if (eval.Status == "In-Work")
             {
+                string CommentList = "";
+                var CommentReq = from r in db.Ratings where r.EvalCode == eval.EvalCode && r.CommentRequired == true select r;
+                foreach (Rating r in CommentReq)
+                {
+                    CommentList += r.Rating1;
+                }
+
                 foreach (Question q in question)
                 {
                     var orig = db.StaffPerformanceQuestions.Find(q.QuestionId);
@@ -349,9 +359,12 @@ namespace StaffEvaluations.Controllers
                             orig.LastUpdateDate = DateTime.Now;
                             db.SaveChanges();
                         }
-                        if (orig.Rating == "Excellent" && orig.Comment == null)
+                        if (q.QuestionCode != "AP12" && q.QuestionCode != "CA11" && q.QuestionCode != "CC9" && q.QuestionRating != null)
                         {
-                            msgflag = true;
+                            if (CommentList.Contains(q.QuestionRating) && q.QuestionComment == null)
+                            {
+                                msgflag = true;
+                            }
                         }
                     }
                 }
@@ -475,13 +488,23 @@ namespace StaffEvaluations.Controllers
             var eval = db.StaffPerformanceEvaluations.Find(id);
             var msgflag = false;
 
+            string CommentList = "";
+            var CommentReq = from r in db.Ratings where r.EvalCode == eval.EvalCode && r.CommentRequired == true select r;
+            foreach (Rating r in CommentReq)
+            {
+                CommentList += r.Rating1;
+            }
+
             var answers = from a in db.StaffPerformanceQuestions where a.Rating == "* You must select a value *" && a.EvalId == id select a;
             var answers2 = from a in db.StaffPerformanceQuestions where a.EvalId == id select a;
             foreach (StaffPerformanceQuestion q in answers2)
             {
-                if (q.Rating == "Excellent" && q.Comment == null)
+                if (q.QuestionCode != "AP12" && q.QuestionCode != "CA11" && q.QuestionCode != "CC9" && q.Rating != null)
                 {
-                    msgflag = true;
+                    if (CommentList.Contains(q.Rating) && q.Comment == null)
+                    {
+                        msgflag = true;
+                    }
                 }
             }
 
@@ -569,6 +592,101 @@ namespace StaffEvaluations.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        //This is the list of JDs
+        public ActionResult EditJDs ()
+        {
+            var jds = from j in db.JDLists select j;
+
+            return View(jds);
+        }
+
+        public ActionResult CreateJD(string netid, string supervisorNetid, string JDname, string JDSuper)
+        {
+            JobDescription newJD = new JobDescription();
+            var lsdate = DateTime.Now;
+
+            newJD.lastUpdatedDate = lsdate;
+
+            newJD.netid = netid;
+            newJD.supervisorNetid = supervisorNetid;
+            newJD.JDName = JDname;
+            newJD.JDSuper = JDSuper;
+
+            if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)))
+            {
+                return View(newJD);
+            }
+            else
+            {
+                TempData["error"] = "You do not have authorization work with Job Descriptions.";
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult CreateJD(string netid, string supervisorNetid, string description)
+        {
+            JobDescription newJD = new JobDescription();
+            var lsdate = DateTime.Now;
+
+            newJD.lastUpdatedDate = lsdate;
+
+            newJD.netid = netid;
+            newJD.supervisorNetid = supervisorNetid;
+            newJD.description = description;
+
+            db.JobDescriptions.Add(newJD);
+
+            db.SaveChanges();
+
+            return RedirectToAction("EditJDs");
+        }
+
+        public ActionResult EditJD(int id)
+        {
+            if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)))
+            { 
+                var getJD = (from e in db.JobDescriptions where e.jdid == id select e).SingleOrDefault();
+                getJD.JDName = (from e in db1.employees where e.NETID == getJD.netid select e.FULLNAME).FirstOrDefault().ToString();
+                getJD.JDSuper = (from e in db1.employees where e.NETID == getJD.supervisorNetid select e.FULLNAME).FirstOrDefault().ToString();
+
+                return View(getJD);
+            }
+            else
+            {
+                TempData["error"] = "You do not have authorization to work with Job Descriptions.";
+                return RedirectToAction("Index");
+            }
+        }
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult EditJD (int id, string netid, string supervisorNetid, string description)
+        {
+            var JD = db.JobDescriptions.Find(id);
+
+            var lsdate = DateTime.Now;
+
+            JD.lastUpdatedDate = lsdate;
+            JD.netid = netid;
+            JD.supervisorNetid = supervisorNetid;
+            JD.description = description;
+
+            db.SaveChanges();
+
+            return RedirectToAction("EditJDs");
+        }
+
+        public ActionResult DeleteJD(int id)
+        {
+            var JD = db.JobDescriptions.Find(id);
+
+            db.JobDescriptions.Remove(JD);
+            db.SaveChanges();
+
+            return RedirectToAction("EditJDs");
         }
 
     }

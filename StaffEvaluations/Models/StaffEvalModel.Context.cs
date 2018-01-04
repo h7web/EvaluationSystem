@@ -30,5 +30,7 @@ namespace StaffEvaluations.Models
         public virtual DbSet<StaffPerformanceQuestion> StaffPerformanceQuestions { get; set; }
         public virtual DbSet<JobDescription> JobDescriptions { get; set; }
         public virtual DbSet<Rating> Ratings { get; set; }
+        public virtual DbSet<ReportingLine> ReportingLines { get; set; }
+        public virtual DbSet<JDList> JDLists { get; set; }
     }
 }

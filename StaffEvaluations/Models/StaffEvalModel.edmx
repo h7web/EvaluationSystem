@@ -24,7 +24,7 @@
           <Property Name="netid" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="supervisorNetid" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="description" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="lastUpdatedDate" Type="date" />
+          <Property Name="lastUpdatedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="Ratings">
           <Key>
@@ -34,6 +34,14 @@
           <Property Name="EvalCode" Type="nvarchar" MaxLength="5" Nullable="false" />
           <Property Name="Rating" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="CommentRequired" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ReportingLines">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="empNetId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="supNetId" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="StaffPerformanceEvaluations">
           <Key>
@@ -70,6 +78,23 @@
           <Property Name="FirstAnsweredDate" Type="datetime" Nullable="false" />
           <Property Name="LastUpdateDate" Type="datetime" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="JDList">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="empNetId" />
+            <PropertyRef Name="supNetId" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="empNetId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="supNetId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="JDname" Type="nvarchar" MaxLength="255" />
+          <Property Name="JDSuper" Type="nvarchar" MaxLength="255" />
+          <Property Name="jdid" Type="int" />
+          <Property Name="description" Type="nvarchar(max)" />
+          <Property Name="lastUpdatedDate" Type="datetime" />
+        </EntityType>
         <Association Name="FK_StaffPerformanceQuestions_StaffPerformanceEvaluations">
           <End Role="StaffPerformanceEvaluations" Type="Self.StaffPerformanceEvaluations" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -88,8 +113,21 @@
           <EntitySet Name="EvaluationQuestionSets" EntityType="Self.EvaluationQuestionSets" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="JobDescriptions" EntityType="Self.JobDescriptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Ratings" EntityType="Self.Ratings" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ReportingLines" EntityType="Self.ReportingLines" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StaffPerformanceEvaluations" EntityType="Self.StaffPerformanceEvaluations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StaffPerformanceQuestions" EntityType="Self.StaffPerformanceQuestions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="JDList" EntityType="Self.JDList" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [JDList].[id] AS [id], 
+    [JDList].[empNetId] AS [empNetId], 
+    [JDList].[supNetId] AS [supNetId], 
+    [JDList].[JDname] AS [JDname], 
+    [JDList].[JDSuper] AS [JDSuper], 
+    [JDList].[jdid] AS [jdid], 
+    [JDList].[description] AS [description], 
+    [JDList].[lastUpdatedDate] AS [lastUpdatedDate]
+    FROM [dbo].[JDList] AS [JDList]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" Association="Self.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations">
             <End Role="StaffPerformanceEvaluations" EntitySet="StaffPerformanceEvaluations" />
             <End Role="StaffPerformanceQuestions" EntitySet="StaffPerformanceQuestions" />
@@ -157,6 +195,8 @@
           </AssociationSet>
           <EntitySet Name="JobDescriptions" EntityType="StaffEvaluationsModel.JobDescription" />
           <EntitySet Name="Ratings" EntityType="StaffEvaluationsModel.Rating" />
+          <EntitySet Name="ReportingLines" EntityType="StaffEvaluationsModel.ReportingLine" />
+          <EntitySet Name="JDLists" EntityType="StaffEvaluationsModel.JDList" />
         </EntityContainer>
         <Association Name="FK_StaffPerformanceQuestions_StaffPerformanceEvaluations">
           <End Type="StaffEvaluationsModel.StaffPerformanceEvaluation" Role="StaffPerformanceEvaluation" Multiplicity="1">
@@ -179,7 +219,7 @@
           <Property Name="jdid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="netid" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="lastUpdatedDate" Type="DateTime" Precision="0" />
+          <Property Name="lastUpdatedDate" Type="DateTime" Precision="3" />
           <Property Name="supervisorNetid" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Rating">
@@ -190,6 +230,29 @@
           <Property Name="EvalCode" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="true" />
           <Property Name="Rating1" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CommentRequired" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ReportingLine">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="empNetId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="supNetId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="JDList">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="empNetId" />
+            <PropertyRef Name="supNetId" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="empNetId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="supNetId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="JDname" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="JDSuper" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="jdid" Type="Int32" />
+          <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="lastUpdatedDate" Type="DateTime" Precision="3" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -264,6 +327,29 @@
                 <ScalarProperty Name="Rating1" ColumnName="Rating" />
                 <ScalarProperty Name="EvalCode" ColumnName="EvalCode" />
                 <ScalarProperty Name="rid" ColumnName="rid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReportingLines">
+            <EntityTypeMapping TypeName="StaffEvaluationsModel.ReportingLine">
+              <MappingFragment StoreEntitySet="ReportingLines">
+                <ScalarProperty Name="supNetId" ColumnName="supNetId" />
+                <ScalarProperty Name="empNetId" ColumnName="empNetId" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="JDLists">
+            <EntityTypeMapping TypeName="StaffEvaluationsModel.JDList">
+              <MappingFragment StoreEntitySet="JDList">
+                <ScalarProperty Name="lastUpdatedDate" ColumnName="lastUpdatedDate" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="jdid" ColumnName="jdid" />
+                <ScalarProperty Name="JDSuper" ColumnName="JDSuper" />
+                <ScalarProperty Name="JDname" ColumnName="JDname" />
+                <ScalarProperty Name="supNetId" ColumnName="supNetId" />
+                <ScalarProperty Name="empNetId" ColumnName="empNetId" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -67,11 +67,22 @@
     <ol>
         @foreach (StaffEvaluations.Models.Question q in Model.questions)
         {
+            foreach (SelectListItem r in (List<SelectListItem>)ViewData["RatingList"])
+            {
+                if (r.Value == q.QuestionRating)
+                {
+                    r.Selected = true;
+                }
+                else
+                {
+                    r.Selected = false;
+                }
+            }
             <li>
                 @Html.Hidden("Question.Index", q.Index)
                 @Html.Hidden(q.namePrefix + "QuestionId", q.QuestionId)
                 <div>
-                    @Html.Raw(q.QuestionText) 
+                    @Html.Raw(q.QuestionText)
                 </div>
                 <div>
                     <br />
@@ -79,29 +90,60 @@
                     {
                         if (Model.eval.Status == "" || Model.eval.Status == "In-Work" || Model.eval.Status == "Deferred")
                         {
-                            @Html.DropDownList(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode))
+                            @Html.DropDownList(q.namePrefix + "QuestionRating", (List<SelectListItem>)ViewData["RatingList"])
                         }
                         else
                         {
-                            @Html.DropDownList(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode), new { @disabled = true, @style = "background-color:lightgray" })
-                            @Html.Hidden(q.namePrefix + "QuestionRating", q.RatingSelectList(Model.eval.EvalCode))
+                            @Html.DropDownList(q.namePrefix + "QuestionRating", (List<SelectListItem>)ViewData["RatingList"], new { @disabled = true, @style = "background-color:lightgray" })
+                            @Html.Hidden(q.namePrefix + "QuestionRating", q.QuestionRating)
                         }
                     }
                 </div>
                 <div>
-                    <br /> Comments: <br>
-                    @if (Model.eval.Status == "" && q.CommentOnly == false || Model.eval.Status == "In-Work" && q.CommentOnly == false || Model.eval.Status == "Deferred" && q.CommentOnly == false)
+                    @*<br /> Comments: <br>
+                        @if (Model.eval.Status == "" && q.CommentOnly == false || Model.eval.Status == "In-Work" && q.CommentOnly == false || Model.eval.Status == "Deferred" && q.CommentOnly == false)
+                        {
+                        <textarea id = "@(q.namePrefixId + "QuestionComment")" name = "@(q.namePrefix + "QuestionComment")" cols = "100" style = "max-width:none;" class="text-info">@q.QuestionComment</textarea>
+                        }
+                        else if (q.CommentOnly == true && Model.eval.Status == "Submitted")
+                        {
+                        <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;" class="text-info wysiwyg">@q.QuestionComment</textarea>
+                        }
+                        else
+                        {
+                        <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" readonly style="background-color:lightgray; max-width:none;" cols="100">@q.QuestionComment</textarea>
+                        }*@
+
+                    @if (q.CommentOnly == true) //if its Job Desc
                     {
-                    <textarea id = "@(q.namePrefixId + "QuestionComment")" name = "@(q.namePrefix + "QuestionComment")" cols = "100" style = "max-width:none;" class="text-info">@q.QuestionComment</textarea>
+                        if (Model.eval.Status == "In-Work" || Model.eval.Status == "Submitted") //in-work means super has it (1st time) submitted means employee has it
+                        {
+                            <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;" class="text-info wysiwyg">@q.QuestionComment</textarea>
+                        }
+                        else if (Model.eval.Status == "Accepted" && Model.eval.NetId != System.Web.HttpContext.Current.User.Identity.Name.Substring(5) || Model.eval.Status == "Contested" && Model.eval.Status == "Accepted" && Model.eval.NetId != System.Web.HttpContext.Current.User.Identity.Name.Substring(5))
+                        //means sup has it (2nd time)
+                        {
+                            <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;" class="text-info wysiwyg">@q.QuestionComment</textarea>
+                        }
+                        else //otherwise read only
+                        {
+                            @Html.Raw(q.QuestionComment)
+                        }
+
                     }
-                    else if (q.CommentOnly == true && Model.eval.Status == "Submitted")
+                    else//not job desc
                     {
-                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;" class="text-info wysiwyg">@q.QuestionComment</textarea>
+                        <br /> @:Comments: <br />
+                        if (Model.eval.Status == "In-Work") //not comment only and sup has it (1st time)
+                        {
+                            <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;" class="text-info">@q.QuestionComment</textarea>
+                        }
+                        else //otherwise readonly
+                        {
+                            <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" readonly style="background-color:lightgray; max-width:none;" cols="100">@q.QuestionComment</textarea>
+                        }
                     }
-                    else
-                    {
-                    <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" readonly style="background-color:lightgray; max-width:none;" cols="100">@q.QuestionComment</textarea>
-                    }
+
                 </div>
                 <br />
                 <br />
@@ -146,6 +188,6 @@
 
 
 @section scripts {
-    <script>tinymce.init({ selector:'textarea.wysiwyg' });</script>
-    }
+    <script>tinymce.init({ selector: 'textarea.wysiwyg' });</script>
+}
 

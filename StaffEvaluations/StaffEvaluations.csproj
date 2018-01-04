@@ -168,10 +168,14 @@
       <DependentUpon>HRDataModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\IndexViewModel.cs" />
+    <Compile Include="Models\JDList.cs">
+      <DependentUpon>StaffEvalModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\JobDescription.cs">
       <DependentUpon>StaffEvalModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\PartialEvaluationQuestionSet.cs" />
+    <Compile Include="Models\PartialJobDescription.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\position.cs">
       <DependentUpon>HRDataModel.tt</DependentUpon>
@@ -179,6 +183,9 @@
     <Compile Include="Models\Question.cs" />
     <Compile Include="Models\QuestionHelper.cs" />
     <Compile Include="Models\Rating.cs">
+      <DependentUpon>StaffEvalModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ReportingLine.cs">
       <DependentUpon>StaffEvalModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SessionHelper.cs" />
@@ -428,6 +435,9 @@
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce-small.eot" />
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce-mobile.woff" />
     <Content Include="Scripts\tinymce\langs\readme.md" />
+    <Content Include="Views\Home\EditJDs.cshtml" />
+    <Content Include="Views\Home\CreateJD.cshtml" />
+    <Content Include="Views\Home\EditJD.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

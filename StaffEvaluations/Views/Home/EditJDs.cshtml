@@ -1,0 +1,82 @@
+﻿@model IEnumerable<StaffEvaluations.Models.JDList>
+
+@{
+    Layout = "~/Views/Shared/_layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>EditJDs</title>
+</head>
+<body>
+    <h2>Job Description Master List</h2>
+    <p>
+        Note: A netid in brackets denotes that our data shows that person in that employee to supervisor relationship, but that netid is not found in our list of current employees, so no full name can be displayed.
+    </p>
+
+    <table class="table">
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Supervisor
+            </th>
+            <th>
+                Last Updated Date
+            </th>
+            <th></th>
+        </tr>
+    
+    @foreach (var item in Model) {
+        <tr>
+
+            <td>
+                @if (item.JDname == null)
+                {
+                @:[
+                    @Html.DisplayFor(modelItem => item.empNetId)
+                    @:]
+                }
+                else
+                {
+                @Html.DisplayFor(modelItem => item.JDname)
+                }
+            </td>
+            <td>
+                @if (item.JDSuper == null)
+                {
+                    @:[
+                    @Html.DisplayFor(modelItem => item.supNetId)
+                    @:]
+
+}
+else
+{
+                @Html.DisplayFor(modelItem => item.JDSuper)
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.lastUpdatedDate)
+            </td>
+            <td>
+                @if (item.jdid == null)
+                {
+                    @Html.ActionLink("Create", "CreateJD", new { netid = item.empNetId, supervisorNetid = item.supNetId, JDname = item.JDname, JDSuper = item.JDSuper }) 
+                }
+                else
+                {
+                @Html.ActionLink("Edit", "EditJD", new { id = item.jdid }) 
+//                @:|
+//                @Html.ActionLink("Delete", "DeleteJD", new { id = item.jdid }, new { onclick = "return confirm('Are you sure you wish to delete this Job Description?');" })
+                }
+            </td>
+        </tr>
+    }
+    
+    </table>
+</body>
+</html>
