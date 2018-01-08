@@ -129,7 +129,10 @@ else
 @if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)) && Session["Masquerade"].Equals(false))
 {
     <br />
-    <div><button type="button" data-toggle="modal" data-target="#Masquerade" class="btn">Masquerade as Supervisor</button></div>
+    <div>
+        <button type="button" data-toggle="modal" data-target="#Masquerade" class="btn">Masquerade as Supervisor</button>
+        <button type="button" onclick="location.href='@Url.Action("EditJDs", "Home")'" class="btn">Edit Job Descriptions</button>
+    </div>
 }
 
     <div class="modal fade" id="Masquerade" tabindex="-1" role="dialog" aria-labelledby="ChooseSupervisorLabel" aria-hidden="true">

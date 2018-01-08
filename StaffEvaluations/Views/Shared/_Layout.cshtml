@@ -12,14 +12,12 @@
     @Scripts.Render("~/bundles/tinymce")
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar navbar-inverse navbar-fixed-top navbar-library">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
+                <br />
+                <img src="https://www.library.illinois.edu/assets/images/imark.svg?v=20171003" class="blockI" />
+                <img src="https://www.library.illinois.edu/assets/images/university_libraries_wordmark.png" /><br />
                 @Html.ActionLink("Performance Evaluations", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
@@ -53,7 +51,7 @@
             </div>
         </div>
     </div>
-    <div style="background-color:gold;font-weight:300;@style">
+    <div style="background-color:gold;font-weight:300;margin-top:60px;@style">
         This is a test application, NOT FOR USE in production!
     </div>
     <div class="alert-danger">@TempData["error"]</div>

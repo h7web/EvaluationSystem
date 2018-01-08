@@ -22,3 +22,20 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.navbar-library, .navbar-library container {
+    background-color:#13294b;
+}
+
+a, a:active, a:link, a:visited, h2 {
+    color:#E84A27;
+}
+
+a:hover {
+    color:orange;
+}
+
+.blockI {
+    display:inline-block;
+    margin-right:15px;
+}

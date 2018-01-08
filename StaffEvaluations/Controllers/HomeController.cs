@@ -595,10 +595,22 @@ namespace StaffEvaluations.Controllers
         }
 
         //This is the list of JDs
-        public ActionResult EditJDs ()
+        public ActionResult EditJDs (string sortOrder)
         {
             var jds = from j in db.JDLists select j;
 
+            switch (sortOrder)
+            {
+                case "employee":
+                    jds = jds.OrderBy(j => j.JDname);
+                    break;
+                case "super":
+                    jds = jds.OrderBy(j => j.JDSuper);
+                    break;
+                case "date":
+                    jds = jds.OrderByDescending(j => j.lastUpdatedDate);
+                    break;
+            }
             return View(jds);
         }
 

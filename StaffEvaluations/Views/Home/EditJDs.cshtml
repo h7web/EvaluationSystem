@@ -20,13 +20,13 @@
     <table class="table">
         <tr>
             <th>
-                Name
+                @Html.ActionLink("Name", "EditJDs", new { sortOrder = "employee" })
             </th>
             <th>
-                Supervisor
+                @Html.ActionLink("Supervisor", "EditJDs", new { sortOrder = "super" })
             </th>
             <th>
-                Last Updated Date
+                @Html.ActionLink("Last Updated Date", "EditJDs", new { sortOrder = "date" })
             </th>
             <th></th>
         </tr>
