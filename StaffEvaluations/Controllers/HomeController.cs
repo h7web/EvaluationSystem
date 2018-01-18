@@ -597,21 +597,55 @@ namespace StaffEvaluations.Controllers
         //This is the list of JDs
         public ActionResult EditJDs (string sortOrder)
         {
-            var jds = from j in db.JDLists select j;
+            var suplist = LibDirectoryFactory.GetAllSupervisors();
+
+            List<JDList> jds1 = new List<JDList>();
+
+            foreach (var item in suplist)
+            {
+                foreach (var item2 in item.supervisor.eval_direct_reports)
+                {
+                    var newJD = new JDList();
+                    newJD.supNetId = item.supervisor.netid;
+                    newJD.JDSuper = item.supervisor.name;
+                    newJD.empNetId = item2.netid;
+                    newJD.JDname = item2.name;
+                    jds1.Add(newJD);
+                }
+            }
+
+            foreach (var item in jds1)
+            {
+                var jds = (from j in db.JobDescriptions where j.netid == item.empNetId && j.supervisorNetid == item.supNetId select j).SingleOrDefault();
+
+                if (jds != null)
+                {
+                    if (jds.description != null)
+                    {
+                        item.description = jds.description;
+                    }
+                    if (jds.posn_number != null)
+                    {
+                        item.posn_number = jds.posn_number;
+                    }
+                }
+            }
+
+            List<JDList> ret = new List<JDList>();
 
             switch (sortOrder)
             {
                 case "employee":
-                    jds = jds.OrderBy(j => j.JDname);
+                    jds1.OrderBy(j => j.JDname);
                     break;
                 case "super":
-                    jds = jds.OrderBy(j => j.JDSuper);
+                    jds1.OrderBy(j => j.JDSuper);
                     break;
                 case "date":
-                    jds = jds.OrderByDescending(j => j.lastUpdatedDate);
+                    jds1.OrderByDescending(j => j.lastUpdatedDate);
                     break;
             }
-            return View(jds);
+            return View(jds1);
         }
 
         public ActionResult CreateJD(string netid, string supervisorNetid, string JDname, string JDSuper)
@@ -639,7 +673,7 @@ namespace StaffEvaluations.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult CreateJD(string netid, string supervisorNetid, string description)
+        public ActionResult CreateJD(string netid, string supervisorNetid, string description, string posn_number, string val = null)
         {
             JobDescription newJD = new JobDescription();
             var lsdate = DateTime.Now;
@@ -649,6 +683,8 @@ namespace StaffEvaluations.Controllers
             newJD.netid = netid;
             newJD.supervisorNetid = supervisorNetid;
             newJD.description = description;
+            newJD.posn_number = posn_number;
+
 
             db.JobDescriptions.Add(newJD);
 
@@ -675,7 +711,7 @@ namespace StaffEvaluations.Controllers
         }
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult EditJD (int id, string netid, string supervisorNetid, string description)
+        public ActionResult EditJD (int id, string netid, string supervisorNetid, string description, string posn_number, string submit)
         {
             var JD = db.JobDescriptions.Find(id);
 
@@ -685,10 +721,21 @@ namespace StaffEvaluations.Controllers
             JD.netid = netid;
             JD.supervisorNetid = supervisorNetid;
             JD.description = description;
+            JD.posn_number = posn_number;
 
-            db.SaveChanges();
+            if (submit == "Formatting")
+            {
+                JD.description = FormatDesc(description);
 
-            return RedirectToAction("EditJDs");
+                return View(JD);
+            }
+                else
+            {
+
+                db.SaveChanges();
+
+                return RedirectToAction("EditJDs");
+            }
         }
 
         public ActionResult DeleteJD(int id)
@@ -699,6 +746,15 @@ namespace StaffEvaluations.Controllers
             db.SaveChanges();
 
             return RedirectToAction("EditJDs");
+        }
+
+        public string FormatDesc(string desc)
+        {
+            string ret = "";
+
+
+
+            return ret;
         }
 
     }

@@ -23,6 +23,7 @@
           <Property Name="jdid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="netid" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="supervisorNetid" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="posn_number" Type="nvarchar" MaxLength="50" />
           <Property Name="description" Type="nvarchar(max)" Nullable="false" />
           <Property Name="lastUpdatedDate" Type="datetime" />
         </EntityType>
@@ -94,6 +95,7 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <Property Name="jdid" Type="int" />
           <Property Name="description" Type="nvarchar(max)" />
           <Property Name="lastUpdatedDate" Type="datetime" />
+          <Property Name="posn_number" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <Association Name="FK_StaffPerformanceQuestions_StaffPerformanceEvaluations">
           <End Role="StaffPerformanceEvaluations" Type="Self.StaffPerformanceEvaluations" Multiplicity="1">
@@ -125,7 +127,8 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
     [JDList].[JDSuper] AS [JDSuper], 
     [JDList].[jdid] AS [jdid], 
     [JDList].[description] AS [description], 
-    [JDList].[lastUpdatedDate] AS [lastUpdatedDate]
+    [JDList].[lastUpdatedDate] AS [lastUpdatedDate], 
+    [JDList].[posn_number] AS [posn_number]
     FROM [dbo].[JDList] AS [JDList]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" Association="Self.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations">
@@ -221,6 +224,7 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <Property Name="description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="lastUpdatedDate" Type="DateTime" Precision="3" />
           <Property Name="supervisorNetid" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="posn_number" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Rating">
           <Key>
@@ -253,6 +257,7 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <Property Name="jdid" Type="Int32" />
           <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="lastUpdatedDate" Type="DateTime" Precision="3" />
+          <Property Name="posn_number" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -312,6 +317,7 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <EntitySetMapping Name="JobDescriptions">
             <EntityTypeMapping TypeName="StaffEvaluationsModel.JobDescription">
               <MappingFragment StoreEntitySet="JobDescriptions">
+                <ScalarProperty Name="posn_number" ColumnName="posn_number" />
                 <ScalarProperty Name="supervisorNetid" ColumnName="supervisorNetid" />
                 <ScalarProperty Name="lastUpdatedDate" ColumnName="lastUpdatedDate" />
                 <ScalarProperty Name="description" ColumnName="description" />
@@ -342,6 +348,7 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <EntitySetMapping Name="JDLists">
             <EntityTypeMapping TypeName="StaffEvaluationsModel.JDList">
               <MappingFragment StoreEntitySet="JDList">
+                <ScalarProperty Name="posn_number" ColumnName="posn_number" />
                 <ScalarProperty Name="lastUpdatedDate" ColumnName="lastUpdatedDate" />
                 <ScalarProperty Name="description" ColumnName="description" />
                 <ScalarProperty Name="jdid" ColumnName="jdid" />

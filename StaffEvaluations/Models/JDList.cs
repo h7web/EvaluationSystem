@@ -22,5 +22,6 @@ namespace StaffEvaluations.Models
         public Nullable<int> jdid { get; set; }
         public string description { get; set; }
         public Nullable<System.DateTime> lastUpdatedDate { get; set; }
+        public string posn_number { get; set; }
     }
 }

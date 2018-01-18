@@ -19,5 +19,6 @@ namespace StaffEvaluations.Models
         public string description { get; set; }
         public Nullable<System.DateTime> lastUpdatedDate { get; set; }
         public string supervisorNetid { get; set; }
+        public string posn_number { get; set; }
     }
 }
