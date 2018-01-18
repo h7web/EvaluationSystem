@@ -633,19 +633,24 @@ namespace StaffEvaluations.Controllers
 
             List<JDList> ret = new List<JDList>();
 
+            IOrderedEnumerable<JDList> sorted;
+
             switch (sortOrder)
             {
                 case "employee":
-                    jds1.OrderBy(j => j.JDname);
+                    sorted=jds1.OrderBy(j => j.JDname);
                     break;
                 case "super":
-                    jds1.OrderBy(j => j.JDSuper);
+                    sorted=jds1.OrderBy(j => j.JDSuper);
                     break;
                 case "date":
-                    jds1.OrderByDescending(j => j.lastUpdatedDate);
+                    sorted=jds1.OrderByDescending(j => j.lastUpdatedDate);
+                    break;
+                default:
+                    sorted = jds1.OrderBy(j => j.JDname);
                     break;
             }
-            return View(jds1);
+            return View(sorted.ToList());
         }
 
         public ActionResult CreateJD(string netid, string supervisorNetid, string JDname, string JDSuper)
