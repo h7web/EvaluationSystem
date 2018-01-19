@@ -9,6 +9,7 @@ using LibDirectoryIntegration;
 using System.Configuration;
 using Mayur.Web.Attributes;
 using System.Data.Entity.Validation;
+using StaffEvaluations.Helpers;
 
 namespace StaffEvaluations.Controllers
 {
@@ -628,6 +629,8 @@ namespace StaffEvaluations.Controllers
                     {
                         item.posn_number = jds.posn_number;
                     }
+                    item.lastUpdatedDate = jds.lastUpdatedDate;
+                    item.jdid = jds.jdid;
                 }
             }
 
@@ -730,9 +733,11 @@ namespace StaffEvaluations.Controllers
 
             if (submit == "Formatting")
             {
-                JD.description = FormatDesc(description);
+                JD.description = FormatHelper.JDFormat(description);
 
-                return View(JD);
+                db.SaveChanges();
+
+                return RedirectToAction("EditJD", new { @id = id });
             }
                 else
             {
@@ -752,15 +757,5 @@ namespace StaffEvaluations.Controllers
 
             return RedirectToAction("EditJDs");
         }
-
-        public string FormatDesc(string desc)
-        {
-            string ret = "";
-
-
-
-            return ret;
-        }
-
     }
 }
