@@ -9,7 +9,7 @@ using StaffEvaluations.Models;
 
 namespace StaffEvaluations.Controllers
 {
-    public class CreatePDFController
+    public class CreatePDFController : Controller
     {
         private Models.Entities db = new Models.Entities();
         private Models.HR_DataEntities db1 = new Models.HR_DataEntities();
@@ -19,10 +19,10 @@ namespace StaffEvaluations.Controllers
 
             HtmlToPdf converter = new HtmlToPdf();
 
-            converter.Options.MarginTop = 10;
-            converter.Options.MarginBottom = 10;
-            converter.Options.MarginLeft = 10;
-            converter.Options.MarginRight = 10;
+            converter.Options.MarginTop = 20;
+            converter.Options.MarginBottom = 20;
+            converter.Options.MarginLeft = 20;
+            converter.Options.MarginRight = 20;
 
             PdfDocument doc = converter.ConvertHtmlString(htmlString);
 
@@ -41,7 +41,11 @@ namespace StaffEvaluations.Controllers
             var reportinfo = LibDirectoryFactory.GetPerson(eval.NetId);
             var supinfo = LibDirectoryFactory.GetPerson(eval.EvaluatorNetid);
 
-            var qa = QuestionHelper.GetQuestions(db, eval.EvalCode, reportinfo.netid, eval.EvaluatorNetid);
+            var qa = QuestionHelper.GetQuestions(db, eval.EvalCode, eval.EvalId, eval.StaffPerformanceQuestions.ToList() );
+
+            var lsdate = (from e in db1.employees where e.NETID == eval.NetId select e.LIBRARY_START_DATE).FirstOrDefault().ToString();
+
+            reportinfo.LibraryStartDate = lsdate;
 
             preparedpdf = "<html><body>";
             preparedpdf = preparedpdf + "<H2>" + eval.Year + " Performance Evaluation</H2>";
@@ -75,7 +79,7 @@ namespace StaffEvaluations.Controllers
             preparedpdf = preparedpdf + "<p>Employee Comments:<br/>" + eval.EmployeeComments + "</p>";
             preparedpdf = preparedpdf + "<p>Supervisor Comments:<br/>" + eval.EvaluatorComments + "</p>";
 
-            preparedpdf = preparedpdf + "<div style='page-break-before: always'>" + jd + "</div>";
+            preparedpdf = preparedpdf + "<div style='page-break-before: always'><h2>Job Description</h2>" + jd + "</div>";
 
             preparedpdf = preparedpdf + "</body></html>";
 

@@ -29,6 +29,8 @@ namespace StaffEvaluations.Models
 
             var splist = LibDirectoryIntegration.LibDirectoryFactory.GetAllSupervisors();
 
+            splist.OrderBy(w => w.supervisor.last);
+
             foreach (LibDirectoryIntegration.ReportingLine rp in splist)
             {
                 ret.Add(new SelectListItem { Text = rp.supervisor.name, Value = rp.supervisor.netid });

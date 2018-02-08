@@ -108,7 +108,7 @@ namespace StaffEvaluations.Controllers
             vm.Super = super;
 
             List<DirectReport> mylist = null;
-            string unit = "";
+           // string unit = "";
 
             if (User.Identity.Name.Substring(5) != "gknott6")
             {
