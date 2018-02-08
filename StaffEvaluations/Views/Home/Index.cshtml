@@ -92,6 +92,11 @@ else
                     {
                         @Html.ActionLink("Start Evaluation", "EditEval", new { id = eid })
                     }
+                    @if (status != null && status != "Deferred")
+                    {
+                        @:|
+                        @Html.ActionLink("Pdf", "Print2Pdf", "CreatePDFController", new { id = eid }, null)
+                    }
                 </td>
                 }
                 else
