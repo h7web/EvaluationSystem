@@ -10,6 +10,18 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/tinymce")
+    <style>
+        .blockI
+        {
+            display: inline-block;
+            max-width: 6%;
+        }
+        .wordmark{
+            display:inline-block;
+            max-width: 80%;
+        }
+
+    </style>
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top navbar-library">
@@ -17,8 +29,8 @@
             <div class="navbar-header">
                 <br />
                 <img src="https://www.library.illinois.edu/assets/images/imark.svg?v=20171003" class="blockI" />
-                <img src="https://www.library.illinois.edu/assets/images/university_libraries_wordmark.png" /><br />
-                @Html.ActionLink("Performance Evaluations", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                <img src="https://www.library.illinois.edu/assets/images/university_libraries_wordmark.png" class="wordmark" /><br />
+                @Html.ActionLink("Performance Evaluations", "Index", "Home", new { area = "" }, new { @class = "navbar-brand", style = "text-decoration:underline;" })
             </div>
             <div class="navbar-collapse collapse">
                 <!--
@@ -47,6 +59,8 @@
                         <br />
                         @Html.ActionLink("Stop Masquerade", "StopMasquerade", "Home", new { @style = "color:red;" })
                     }
+                    <br/>
+                    <a href="https://www.library.illinois.edu/">LOGOFF</a>
                 </p>
             </div>
         </div>

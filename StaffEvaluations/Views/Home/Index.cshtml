@@ -4,141 +4,156 @@
     ViewBag.Title = "Home Page";
     var unit = "";
 }
+<div class="divbox">
+    <h2>Evaluations from your supervisor</h2>
 
-<h2>Evaluations from your supervisor</h2>
-
-<div>
-    <Br />@Html.ValidationSummary(false)
-</div>
-
-
-@if (Model.MyEvaluations.Count > 0)
-{
-    <ul>
-        @foreach (StaffEvaluations.Models.StaffPerformanceEvaluation eval in Model.MyEvaluations)
-        {
-            var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
-            <li>
-@if (@eval.Status != "In-Work" && @eval.Status != "Deferred")
-{
-                @Html.ActionLink("Go to your evaluation from " + evalname, "EditEval", new { id = eval.EvalId })
-}
-else
-{
-    @:Your evaluation from 
-    @evalname.ToString() 
-    @: is in progress
-}
-&nbsp;(@eval.Status)
-@if(@eval.Status == "Submitted")
-                {
-                @:|
-                @Html.ActionLink("Accept", "AcceptEval", new { id = eval.EvalId, button = "Accept" })
-                @:|
-                @Html.ActionLink("Contest", "AcceptEval", new { id = eval.EvalId, button = "Contest" })
-                }
-            </li>
-        }
-    </ul>
-}
-else
-{
-    <ul><li>Not yet available.</li></ul>
-}
-
-<h2>Evaluations for your staff</h2>
-@if (Model.Super.direct_reports.Count > 0)
-{
-    <table>
-        @foreach (LibDirectoryIntegration.DirectReport directReport in Model.Super.direct_reports)
-        {
-            var lsdate = directReport.LibraryStartDate.AsDateTime().ToString("MM/dd/yyyy");
-            if (unit != directReport.unit_name)
-            {
-                unit = directReport.unit_name;
-                <tr><td colspan="6"><h3>@unit
-                    </h3></td></tr>
-            }
-        <tr>
-
-            @if (Model.MyStaffEvaluations.Any(e => e.NetId == directReport.netid))
-                {
-            var eid = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().EvalId;
-            var status = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().Status;
-
-                <td><strong>@directReport.name</strong></td>
-                <td></td>
-                <td>@directReport.employee_type_code</td>
-                <td>@lsdate</td>
-                <td>(@status)</td>
-                <td>
-                    @if (status == "Complete")
-                    {
-                @Html.ActionLink("View", "EditEval", new { id = eid })
-                    }
-            @if (status == "Contested" || status == "Accepted" || status == "In-Work")
-                    {
-                @Html.ActionLink("Edit", "EditEval", new { id = eid })
-                    }
-
-            @if (status == "In-Work")
-                    {
-                        @:|
-                        @Html.ActionLink("Submit", "SubmitEval", new { id = eid }, new { onclick = "setid(" + eid + ");" })
-                        @:|
-                        @Html.ActionLink("Delete", "DeleteEval", new { id = eid })
-                    }
-                    @if (status == "Deferred")
-                    {
-                        @Html.ActionLink("Start Evaluation", "EditEval", new { id = eid })
-                    }
-                    @if (status != null && status != "Deferred")
-                    {
-                        @:|
-                        @Html.ActionLink("Pdf", "Print2Pdf", "CreatePDF", new { id = eid }, null)
-                    }
-                </td>
-                }
-                else
-                {
-                <td><strong>@directReport.name </strong></td>
-                <td></td>
-                <td>@directReport.employee_type_code</td>
-                <td>@lsdate</td>
-                <td></td>
-                <td>
-                    @Html.ActionLink("Start Evaluation", "CreateEval", new { id = directReport.netid, type = directReport.employee_type_code })
-                    |
-                    @Html.ActionLink("Defer Evaluation", "DeferEval", new { id = directReport.netid, type = directReport.employee_type_code })
-                </td>
-                }
-            </tr>
-        }
-        <tr>
-            <td></td>
-            <td width="20"></td>
-            <td width="50"></td>
-            <td width="80"></td>
-            <td width="80"></td>
-            <td></td>
-        </tr>
-    </table>
-}
-else
-{
-    <ul><li>No staff found.</li></ul>
-}
-
-<div id="editevalno"></div>
-
-@if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)) && Session["Masquerade"].Equals(false))
-{
-    <br />
     <div>
-        <button type="button" data-toggle="modal" data-target="#Masquerade" class="btn">Masquerade as Supervisor</button>
-        <button type="button" onclick="location.href='@Url.Action("EditJDs", "Home")'" class="btn">Edit Job Descriptions</button>
+        <Br />@Html.ValidationSummary(false)
     </div>
+
+
+    @if (Model.MyEvaluations.Count > 0)
+    {
+        <ul>
+            @foreach (StaffEvaluations.Models.StaffPerformanceEvaluation eval in Model.MyEvaluations)
+            {
+                var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
+                <li>
+                    @if (@eval.Status != "In-Work" && @eval.Status != "Deferred")
+                    {
+                        @Html.ActionLink("Go to your evaluation from " + evalname, "EditEval", new { id = eval.EvalId })
+                    }
+                    else
+                    {
+                        @:Your evaluation from
+                        @evalname.ToString()
+                        @: is in progress
 }
+                    &nbsp;(@eval.Status)
+                    @if (@eval.Status == "Submitted")
+                    {
+                        @:|
+                        @Html.ActionLink("Accept", "AcceptEval", new { id = eval.EvalId, button = "Accept" })
+                        @:|
+                        @Html.ActionLink("Contest", "AcceptEval", new { id = eval.EvalId, button = "Contest" })
+                        @:|
+                }
+                    @Html.ActionLink("Pdf", "Print2Pdf", "CreatePDF", new { id = eval.EvalId, e = true }, null)
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <ul><li>Not yet available.</li></ul>
+    }
+
+</div>
+<div class="divbox">
+
+
+    <h2>Evaluations for your staff</h2>
+    @if (Model.Super.direct_reports.Count > 0)
+    {
+        <table>
+            @foreach (LibDirectoryIntegration.DirectReport directReport in Model.Super.direct_reports)
+            {
+                var lsdate = directReport.LibraryStartDate.AsDateTime().ToString("MM/dd/yyyy");
+                if (unit != directReport.unit_name)
+                {
+                    unit = directReport.unit_name;
+                    <tr><td colspan="6"><h3>@unit</h3></td></tr>
+                }
+                <tr>
+
+                    @if (Model.MyStaffEvaluations.Any(e => e.NetId == directReport.netid))
+                    {
+                        var eid = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().EvalId;
+                        var status = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().Status;
+
+                        if (status == "Submitted")
+                        {
+                            status = "Submitted to Employee";
+                        }
+
+                        <td><strong>@directReport.name</strong></td>
+                        <td></td>
+                        <td>@directReport.employee_type_code</td>
+                        <td>@lsdate</td>
+                        <td @if (status == "Submitted to Employee") { @: colspan="2"
+                                                }>
+                            (@status)
+                        </td>
+                        <td>
+                            @if (status == "Complete")
+                            {
+                                @Html.ActionLink("View", "EditEval", new { id = eid })
+                            }
+                            @if (status == "Contested" || status == "Accepted" || status == "In-Work")
+                            {
+                                @Html.ActionLink("Edit", "EditEval", new { id = eid })
+                            }
+
+                            @if (status == "In-Work")
+                            {
+                                @:|
+                                @Html.ActionLink("Submit", "SubmitEval", new { id = eid }, new { onclick = "setid(" + eid + ");" })
+                                @:|
+                                @Html.ActionLink("Delete", "DeleteEval", new { id = eid })
+                            }
+                            @if (status == "Deferred")
+                            {
+                                @Html.ActionLink("Start Evaluation", "EditEval", new { id = eid })
+                            }
+                            @if (status != null && status != "Deferred" && status != "Submitted to Employee")
+                            {
+                                @:|
+                                @Html.ActionLink("Pdf", "Print2Pdf", "CreatePDF", new { id = eid }, null)
+                            }
+                        </td>
+                    }
+                    else
+                    {
+                        <td><strong>@directReport.name </strong></td>
+                        <td></td>
+                        <td>@directReport.employee_type_code</td>
+                        <td>@lsdate</td>
+                        <td></td>
+                        <td>
+                            @Html.ActionLink("Start Evaluation", "CreateEval", new { id = directReport.netid, type = directReport.employee_type_code })
+                            |
+                            @Html.ActionLink("Defer Evaluation", "DeferEval", new { id = directReport.netid, type = directReport.employee_type_code })
+                        </td>
+                    }
+                </tr>
+            }
+            <tr>
+                <td></td>
+                <td width="20"></td>
+                <td width="50"></td>
+                <td width="80"></td>
+                <td width="80"></td>
+                <td></td>
+            </tr>
+        </table>
+    }
+    else
+    {
+        <ul><li>No staff found.</li></ul>
+    }
+
+    </div>
+
+    <div id="editevalno"></div>
+
+    @if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)) && Session["Masquerade"].Equals(false))
+    {
+        <br />
+        <div>
+            <button type="button" data-toggle="modal" data-target="#Masquerade" class="btn">Masquerade as Supervisor</button>
+            <button type="button" onclick="location.href='@Url.Action("EditJDs", "Home")'" class="btn">Edit Job Descriptions</button>
+        </div>
+    }
 
     <div class="modal fade" id="Masquerade" tabindex="-1" role="dialog" aria-labelledby="ChooseSupervisorLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -195,12 +210,12 @@ else
             var evalid = "";
             var url = "";
 
-            $(document).ready (
+            $(document).ready(
             function openpopup() {
                 if (err != null && err != '') {
                     $('#evalerror').modal('show');
                 }
-           
+
             });
 
             //trying to pass the evalid (eid) from the clicked submit link to the code for the edit button to take you to the correct button

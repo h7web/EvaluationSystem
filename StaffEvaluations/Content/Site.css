@@ -39,3 +39,12 @@ a:hover {
     display:inline-block;
     margin-right:15px;
 }
+
+.divbox {
+    display: block;
+    border:solid;
+    border-width:1px;
+    border-color:#13294b;
+    margin: 20px;
+    padding: 20px;
+}

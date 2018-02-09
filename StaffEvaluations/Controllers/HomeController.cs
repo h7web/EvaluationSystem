@@ -142,12 +142,12 @@ namespace StaffEvaluations.Controllers
                 if ((bool)Session["Masquerade"] != true)
                 {
                     // next 5 lines added for testing purposes
-                    mylist.Add(new DirectReport() { netid = "yoskye", name = "Skye Arseneau", employee_type_code = "CC", LibraryStartDate = "02/01/2001" });
-                    mylist.Add(new DirectReport { netid = "atJohnsn", name = "Aneitre Johnson", employee_type_code = "CA", LibraryStartDate = "08/01/2014" });
-                    mylist.Add(new DirectReport { netid = "mikesweb", name = "Mike Nelson", employee_type_code = "BA", LibraryStartDate = "06/24/2016" });
-                    mylist.Add(new DirectReport { netid = "strutz", name = "Jason Strutz", employee_type_code = "BA", LibraryStartDate = "09/01/2002" });
-                    mylist.Add(new DirectReport { netid = "gknott63", name = "Greg Knott", employee_type_code = "BA", LibraryStartDate = "09/01/2010" });
-                    mylist.Add(new DirectReport { netid = "jlockmil", name = "John Lockmiller", employee_type_code = "BA", LibraryStartDate = "06/01/2017" });
+                    //mylist.Add(new DirectReport() { netid = "yoskye", name = "Skye Arseneau", employee_type_code = "CC", LibraryStartDate = "02/01/2001" });
+                    //mylist.Add(new DirectReport { netid = "atJohnsn", name = "Aneitre Johnson", employee_type_code = "CA", LibraryStartDate = "08/01/2014" });
+                    //mylist.Add(new DirectReport { netid = "mikesweb", name = "Mike Nelson", employee_type_code = "BA", LibraryStartDate = "06/24/2016" });
+                    //mylist.Add(new DirectReport { netid = "strutz", name = "Jason Strutz", employee_type_code = "BA", LibraryStartDate = "09/01/2002" });
+                    //mylist.Add(new DirectReport { netid = "gknott63", name = "Greg Knott", employee_type_code = "BA", LibraryStartDate = "09/01/2010" });
+                    //mylist.Add(new DirectReport { netid = "jlockmil", name = "John Lockmiller", employee_type_code = "BA", LibraryStartDate = "06/01/2017" });
                 }
                 var myStaffEvals = from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == usethisnetid select e;
 
@@ -278,7 +278,7 @@ namespace StaffEvaluations.Controllers
 
             if (msgflag == true)
             {
-                TempData["error"] = "You must supply comments for any exceptional or less that satisfactory ratings before submission.";
+                TempData["error"] = "Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.";
             }
             return RedirectToAction("Index");
         }
@@ -392,7 +392,7 @@ namespace StaffEvaluations.Controllers
 
             if (msgflag == true)
             {
-                TempData["warning"] = "You must supply comments for any exceptional or less that satisfactory ratings before submission.";
+                TempData["warning"] = "Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.";
             }
 
             db.SaveChanges();
@@ -488,6 +488,7 @@ namespace StaffEvaluations.Controllers
         {
             var eval = db.StaffPerformanceEvaluations.Find(id);
             var msgflag = false;
+            var jdflag = false;
 
             string CommentList = "";
             var CommentReq = from r in db.Ratings where r.EvalCode == eval.EvalCode && r.CommentRequired == true select r;
@@ -507,15 +508,26 @@ namespace StaffEvaluations.Controllers
                         msgflag = true;
                     }
                 }
+                else if (q.QuestionCode == "AP12" && q.QuestionCode == "CA11" && q.QuestionCode == "CC9")
+                {
+                    if (q.Comment == null)
+                    {
+                        jdflag = true;
+                    }
+                }
             }
 
             if (answers.Count() > 0)
             {
-                TempData["error"] = "You must select a rating for all questions in order to Submit an Evaluation.";
+                TempData["error"] = "You must answer all questions in order to Submit an Evaluation.";
             }
             else if (msgflag == true)
             {
-                TempData["error"] = "You must supply comments for any exceptional or less that satisfactory ratings before submission.";
+                TempData["error"] = "Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.";
+            }
+            else if (jdflag == true)
+            {
+                TempData["error"] = "A Job Description is required before submission.";
             }
             else
             {

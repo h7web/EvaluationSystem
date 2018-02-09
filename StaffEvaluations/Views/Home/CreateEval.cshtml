@@ -59,7 +59,7 @@
                         @if (q.CommentOnly == true)
                         {
                             //                            <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" readonly cols="100" style="background-color:lightgray; max-width:none;">@q.QuestionComment</textarea>
-                            <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;" class="text-info wysiwyg">@q.QuestionComment</textarea>
+                            <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" rows="40" style="max-width:none;" class="text-info wysiwyg">@q.QuestionComment</textarea>
                         }
                         else
                         {

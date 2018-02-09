@@ -29,7 +29,7 @@ namespace StaffEvaluations.Models
 
             var splist = LibDirectoryIntegration.LibDirectoryFactory.GetAllSupervisors();
 
-            splist.OrderBy(w => w.supervisor.last);
+            splist = (splist.OrderBy(w => w.supervisor.last)).ToList();
 
             foreach (LibDirectoryIntegration.ReportingLine rp in splist)
             {
