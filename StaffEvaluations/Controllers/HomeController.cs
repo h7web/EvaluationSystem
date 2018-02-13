@@ -517,6 +517,10 @@ namespace StaffEvaluations.Controllers
                 }
             }
 
+            TempData["submittedevalid"] = id;
+            TempData["editmode"] = "check";
+
+            //the variable answers is a list of questions with the value "You must select a value"
             if (answers.Count() > 0)
             {
                 TempData["error"] = "You must answer all questions in order to Submit an Evaluation.";

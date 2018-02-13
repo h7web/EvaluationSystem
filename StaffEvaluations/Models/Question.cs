@@ -51,11 +51,6 @@ namespace StaffEvaluations.Models
             Index = Guid.NewGuid().ToString();
         }
 
-        //public List<SelectListItem> RatingSelectList(string type)
-        //{
-        //    //return QuestionHelper.GetRatings(type, this.QuestionRating);
-
-        //    return " ";
-        //}
+        public string highlight { get; set; }
     }
 }

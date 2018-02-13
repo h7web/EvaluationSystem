@@ -48,3 +48,9 @@ a:hover {
     margin: 20px;
     padding: 20px;
 }
+
+li.lihighlight {
+    padding:11px;
+    background-color:orangered;
+    color:white;
+}

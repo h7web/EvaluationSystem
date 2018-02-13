@@ -25,11 +25,11 @@ namespace StaffEvaluations.Models
             {
                 if (q.QuestionText == "Job Description")
                 {
-                    ret.Add(new Models.Question { QuestionCode = q.QuestionCode, QuestionText = q.QuestionText, QuestionComment = jd, CommentOnly = q.CommentOnly });
+                    ret.Add(new Models.Question { QuestionCode = q.QuestionCode, QuestionText = q.QuestionText, QuestionComment = jd, CommentOnly = q.CommentOnly, highlight = q.highlight });
                 }
                 else
                 {
-                    ret.Add(new Models.Question { QuestionCode = q.QuestionCode, QuestionText = q.QuestionText, CommentOnly = q.CommentOnly });
+                    ret.Add(new Models.Question { QuestionCode = q.QuestionCode, QuestionText = q.QuestionText, CommentOnly = q.CommentOnly, highlight = q.highlight });
                 }
             }
 
@@ -44,6 +44,8 @@ namespace StaffEvaluations.Models
             string netid = eval.NetId;
             string supervisorNetid = eval.EvaluatorNetid;
 
+            var needshighlighted = (from r in db.Ratings where r.CommentRequired == true select r.Rating1).ToList();
+
             List<Question> qs = QuestionHelper.GetQuestions(db, type, netid, supervisorNetid);
 
             foreach (StaffPerformanceQuestion q in answers)
@@ -53,6 +55,26 @@ namespace StaffEvaluations.Models
                 current.QuestionComment = q.Comment;
                 current.EvalId = q.EvalId;
                 current.QuestionId = q.QuestionId;
+
+                var qr = q.Rating;
+
+                if (qr == null)
+                {
+                    qr = "notapplicable";
+                }
+
+                if (needshighlighted.Contains(qr))
+                {
+                    current.highlight = "true";
+                }
+                else if (current.QuestionText == "Job Description" && current.QuestionComment == null)
+                {
+                    current.highlight = "true";
+                }
+                else
+                {
+                    current.highlight = "false";
+                }
             }
 
             return qs;

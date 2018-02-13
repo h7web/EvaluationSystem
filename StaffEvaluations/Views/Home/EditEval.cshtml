@@ -23,6 +23,7 @@
 {
     @Html.Hidden("Id", Model.eval.EvalId)
 
+    var highlight = "";
     var lsdate = Model.person.LibraryStartDate.AsDateTime().ToString("MM/dd/yyyy");
     var startdate = Model.eval.StartDate.ToString("MM/dd/yyyy");
     var subdate = Model.eval.SubmittedDate?.ToString("MM/dd/yyyy");
@@ -78,7 +79,15 @@
                     r.Selected = false;
                 }
             }
-            <li>
+            if(q.highlight == "true" && (string)TempData["editmode"] == "check")
+            {
+                highlight = "lihighlight";
+            }
+            else
+            {
+                highlight = "";
+            }
+            <li class="@highlight">
                 @Html.Hidden("Question.Index", q.Index)
                 @Html.Hidden(q.namePrefix + "QuestionId", q.QuestionId)
                 <div>

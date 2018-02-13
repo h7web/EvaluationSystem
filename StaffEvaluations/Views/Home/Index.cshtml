@@ -194,7 +194,7 @@
                     @TempData["error"]
                 </div>
                 <div class="modal-footer">
-                    <!--button type="button" id="gotoeval" class="btn btn-secondary" data-dismiss="modal" >Edit</button-->
+                    <button type="button" id="gotoeval" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='@Url.Action("EditEval", "Home", new { id = TempData["submittedevalid"]})'" >Edit</button>
                     <button type="button" id="modalclose" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
