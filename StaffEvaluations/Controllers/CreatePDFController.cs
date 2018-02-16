@@ -26,8 +26,14 @@ namespace StaffEvaluations.Controllers
 
             PdfDocument doc = converter.ConvertHtmlString(htmlString);
 
+            var eval = (from ev in db.StaffPerformanceEvaluations where ev.EvalId == id select ev).SingleOrDefault();
+            var reportinfo = LibDirectoryFactory.GetPerson(eval.NetId);
+
+            string filename = "PerformEval_" + reportinfo.name.Replace(" ", "_") + "_" + eval.Year + ".pdf";
+
             byte[] pdf = doc.Save();
             FileResult fileResult = new FileContentResult(pdf, "application/pdf");
+            fileResult.FileDownloadName = filename;
 
             return fileResult;
         }
@@ -61,7 +67,7 @@ namespace StaffEvaluations.Controllers
                 evaltypedesc = "Civil Service - Exempt";
             }
 
-            preparedpdf = "<html><body>";
+            preparedpdf = "<html><head><style>body { font-size:20; }</style></head><body>";
             preparedpdf = preparedpdf + "<H2>" + eval.Year + " " + evaltypedesc + " Performance Evaluation</H2>";
 
             preparedpdf = preparedpdf + "<p>" + reportinfo.name + " - " + reportinfo.banner_title + "<br />";
@@ -69,10 +75,11 @@ namespace StaffEvaluations.Controllers
             preparedpdf = preparedpdf + "Supervisor: " + supinfo.name + " - " + supinfo.banner_title + "</p>";
 
             preparedpdf = preparedpdf + "<p>Date Started: " + eval.StartDate.ToString("MM/dd/yyyy") + "<br />";
-            preparedpdf = preparedpdf + "Date Submitted: " + eval.SubmittedDate?.ToString("MM/dd/yyyy") + "<br />";
+            preparedpdf = preparedpdf + "Date Submitted to Employee: " + eval.SubmittedDate?.ToString("MM/dd/yyyy") + "<br />";
             preparedpdf = preparedpdf + "Date Accepted: " + eval.AcceptedDate?.ToString("MM/dd/yyyy") + "<br />";
             preparedpdf = preparedpdf + "Date Contested: " + eval.ContestedDate?.ToString("MM/dd/yyyy") + "<br />";
-            preparedpdf = preparedpdf + "Date Completed: " + eval.CompleteDate?.ToString("MM/dd/yyyy") + "</p>";
+            preparedpdf = preparedpdf + "Date Completed: " + eval.CompleteDate?.ToString("MM/dd/yyyy") + "<br />";
+            preparedpdf = preparedpdf + "Date Received by HR: " + eval.ProcessedDate?.ToString("MM/dd/yyyy") + "</p>";
 
             preparedpdf = preparedpdf + "<ol>";
             foreach (Question q in qa)

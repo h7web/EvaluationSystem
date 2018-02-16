@@ -234,14 +234,15 @@ namespace StaffEvaluations.Controllers
             newEval.Status = "In-Work";
             newEval.Title = title;
             newEval.StartDate = DateTime.Now;
+            newEval.StartNetid = GetUser();
+
             var msgflag = false;
 
             if (Session["Masquerade"] != null)
             {
                 if (Session["Masquerade"].Equals(true))
                 {
-                    newEval.TouchedByMasqeradeNetID = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
-                    newEval.TouchedByMasqeradeDate = DateTime.Now;
+                    newEval.StartProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
                 }
             }
 
@@ -381,14 +382,16 @@ namespace StaffEvaluations.Controllers
             if (button.Equals("Complete"))
             {
                 eval.CompleteDate = DateTime.Now;
+                eval.CompleteNetid = GetUser();
                 eval.Status = "Complete";
+
+                if (Session["Masquerade"].Equals(true))
+                {
+                    eval.CompleteProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+                }
+
             }
 
-            if (Session["Masquerade"].Equals(true))
-            {
-                eval.TouchedByMasqeradeNetID = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
-                eval.TouchedByMasqeradeDate = DateTime.Now;
-            }
 
             if (msgflag == true)
             {
@@ -397,7 +400,13 @@ namespace StaffEvaluations.Controllers
 
             db.SaveChanges();
 
-            return RedirectToAction("Index");
+            if (button.Equals("Submit"))
+                {
+                return RedirectToAction("SubmitEval", new { id = eval.EvalId });
+            }
+            else {
+                return RedirectToAction("Index");
+            }
         }
 
         [SessionTimeout]
@@ -410,6 +419,7 @@ namespace StaffEvaluations.Controllers
             if (eval.NetId == GetUser() && button == "Contest")
             {
                 eval.ContestedDate = DateTime.Now;
+                eval.ContestedNetid = eval.NetId;
                 eval.Status = "Contested";
                 var name = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.NetId).name;
 
@@ -433,6 +443,7 @@ namespace StaffEvaluations.Controllers
                 try
                 {
                     eval.AcceptedDate = DateTime.Now;
+                    eval.AcceptedNetid = eval.NetId;
                     eval.Status = "Accepted";
                     var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.NetId).name;
 
@@ -537,11 +548,11 @@ namespace StaffEvaluations.Controllers
             {
                 eval.Status = "Submitted";
                 eval.SubmittedDate = DateTime.Now;
+                eval.SubmittedNetid = GetUser();
 
                 if (Session["Masquerade"].Equals(true))
                 {
-                    eval.TouchedByMasqeradeNetID = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
-                    eval.TouchedByMasqeradeDate = DateTime.Now;
+                    eval.SubmittedProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
                 }
 
                 db.SaveChanges();
@@ -581,11 +592,11 @@ namespace StaffEvaluations.Controllers
             db.SaveChanges();
             newEval.Status = "Deferred";
             newEval.DeferredDate = DateTime.Now;
-
+            newEval.DeferredNetid = GetUser();
+            
             if (Session["Masquerade"].Equals(true))
             {
-                newEval.TouchedByMasqeradeNetID = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
-                newEval.TouchedByMasqeradeDate = DateTime.Now;
+                newEval.DeferredProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
             }
 
             db.SaveChanges();
@@ -599,6 +610,99 @@ namespace StaffEvaluations.Controllers
             message.To.Add(new MailAddress(newEval.EvaluatorNetid + "@illinois.edu")); //change this to BHSRC address in production
             message.From = new MailAddress(newEval.EvaluatorNetid + "@illinois.edu");
             message.Subject = newEval.Year + " Performance Evaluation Deferred";
+            message.Body = body;
+            message.IsBodyHtml = true;
+
+            using (var smtp = new SmtpClient())
+            {
+                smtp.Host = "Express-SMTP.cites.illinois.edu ";
+                await smtp.SendMailAsync(message);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        public async System.Threading.Tasks.Task<ActionResult> ReturnEvaltoSupervisor(int id)
+        {
+            var eval = db.StaffPerformanceEvaluations.Find(id);
+            
+                eval.Status = "In-Work";
+                eval.ReturntoSupervisorDate = DateTime.Now;
+                eval.ReturntoSupervisorNetid = GetUser();
+            if (Session["Masquerade"].Equals(true))
+            {
+                eval.ReturntoSupervisorProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+
+                eval.CompleteDate = null;
+                eval.CompleteNetid = null;
+                eval.CompleteProxy = null;
+            }
+
+            eval.SubmittedDate = null;
+            eval.SubmittedNetid = null;
+            eval.AcceptedDate = null;
+            eval.AcceptedNetid = null;
+            eval.AcceptedProxy = null;
+            eval.ContestedDate = null;
+            eval.ContestedNetid = null;
+            eval.ContestedProxy = null;
+
+            db.SaveChanges();
+
+                var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.NetId).name;
+
+                var body = "<p>The " + eval.Year + " Performance Evaluation you prepared for " + evalname + " has been returned for you to review and comment at the following URL:</p>";
+                body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
+                var message = new MailMessage();
+
+                message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
+                message.From = new MailAddress(eval.NetId + "@illinois.edu");
+                message.Subject = eval.Year + " Performance Evaluation";
+                message.Body = body;
+                message.IsBodyHtml = true;
+
+                using (var smtp = new SmtpClient())
+                {
+                    smtp.Host = "Express-SMTP.cites.illinois.edu ";
+                    await smtp.SendMailAsync(message);
+                }
+
+            return RedirectToAction("Index");
+        }
+
+        public async System.Threading.Tasks.Task<ActionResult> ReturnEvaltoEmployee(int id)
+        {
+            var eval = db.StaffPerformanceEvaluations.Find(id);
+
+            eval.Status = "Submitted";
+            eval.ReturntoEmployeeDate = DateTime.Now;
+            eval.ReturntoEmployeeNetid = GetUser();
+            if (Session["Masquerade"].Equals(true))
+            {
+                eval.ReturntoEmployeeProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+
+                eval.CompleteDate = null;
+                eval.CompleteNetid = null;
+                eval.CompleteProxy = null;
+            }
+
+            eval.AcceptedDate = null;
+            eval.AcceptedNetid = null;
+            eval.AcceptedProxy = null;
+            eval.ContestedDate = null;
+            eval.ContestedNetid = null;
+            eval.ContestedProxy = null;
+
+            db.SaveChanges();
+            var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
+
+            var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + evalname + " has been returned for you to review and comment at the following URL:</p>";
+            body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
+            var message = new MailMessage();
+
+            message.To.Add(new MailAddress(eval.NetId + "@illinois.edu"));
+            message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
+            message.Subject = eval.Year + " Performance Evaluation";
             message.Body = body;
             message.IsBodyHtml = true;
 
@@ -772,6 +876,11 @@ namespace StaffEvaluations.Controllers
             db.SaveChanges();
 
             return RedirectToAction("EditJDs");
+        }
+
+        public ActionResult Logoff()
+        {
+            return View();
         }
     }
 }

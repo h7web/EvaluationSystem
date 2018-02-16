@@ -10,6 +10,12 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Create Job Description</title>
+
+    <style>
+        .txtarea {
+            height: 400px;
+        }
+    </style>
 </head>
 <body>
     @using (Html.BeginForm())
@@ -50,7 +56,7 @@
             <div class="form-group">
                 @Html.Label("Job Description", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.TextAreaFor(model => model.description, new { @class = "form-control wysiwyg" })
+                    @Html.TextAreaFor(model => model.description, new { @class = "form-control wysiwyg ", @rows=40 })
                     @Html.ValidationMessageFor(model => model.description, "", new { @class = "text-danger" })
                 </div>
             </div>

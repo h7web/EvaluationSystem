@@ -458,6 +458,7 @@
     <Content Include="Views\Home\EditJDs.cshtml" />
     <Content Include="Views\Home\CreateJD.cshtml" />
     <Content Include="Views\Home\EditJD.cshtml" />
+    <Content Include="Views\Home\Logoff.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

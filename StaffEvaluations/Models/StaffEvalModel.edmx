@@ -51,16 +51,34 @@
           <Property Name="EvalId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="EvalCode" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="Year" Type="int" Nullable="false" />
-          <Property Name="NetId" Type="nvarchar" MaxLength="64" Nullable="false" />
+          <Property Name="NetId" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Title" Type="nvarchar" MaxLength="64" />
           <Property Name="EvaluatorNetid" Type="nvarchar" MaxLength="64" Nullable="false" />
           <Property Name="Status" Type="nvarchar" MaxLength="10" />
           <Property Name="StartDate" Type="datetime" Nullable="false" />
+          <Property Name="StartNetid" Type="nvarchar" MaxLength="64" />
+          <Property Name="StartProxy" Type="nvarchar" MaxLength="50" />
           <Property Name="DeferredDate" Type="datetime" />
+          <Property Name="DeferredNetid" Type="nvarchar" MaxLength="64" />
+          <Property Name="DeferredProxy" Type="nvarchar" MaxLength="64" />
           <Property Name="SubmittedDate" Type="datetime" />
+          <Property Name="SubmittedNetid" Type="nvarchar" MaxLength="64" />
+          <Property Name="SubmittedProxy" Type="nvarchar" MaxLength="64" />
+          <Property Name="ReturntoSupervisorDate" Type="datetime" />
+          <Property Name="ReturntoSupervisorNetid" Type="nvarchar" MaxLength="64" />
+          <Property Name="ReturntoSupervisorProxy" Type="nvarchar" MaxLength="64" />
           <Property Name="AcceptedDate" Type="datetime" />
+          <Property Name="AcceptedNetid" Type="nvarchar" MaxLength="64" />
+          <Property Name="AcceptedProxy" Type="nvarchar" MaxLength="64" />
           <Property Name="ContestedDate" Type="datetime" />
+          <Property Name="ContestedNetid" Type="nvarchar" MaxLength="64" />
+          <Property Name="ContestedProxy" Type="nvarchar" MaxLength="64" />
+          <Property Name="ReturntoEmployeeDate" Type="datetime" />
+          <Property Name="ReturntoEmployeeNetid" Type="nvarchar" MaxLength="64" />
+          <Property Name="ReturntoEmployeeProxy" Type="nvarchar" MaxLength="64" />
           <Property Name="CompleteDate" Type="datetime" />
+          <Property Name="CompleteNetid" Type="nvarchar" MaxLength="64" />
+          <Property Name="CompleteProxy" Type="nvarchar" MaxLength="64" />
           <Property Name="ProcessedDate" Type="datetime" />
           <Property Name="EmployeeComments" Type="nvarchar(max)" />
           <Property Name="EvaluatorComments" Type="nvarchar(max)" />
@@ -158,7 +176,7 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <Property Name="EvalId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="EvalCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Year" Type="Int32" Nullable="false" />
-          <Property Name="NetId" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NetId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Title" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
           <Property Name="EvaluatorNetid" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Status" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
@@ -174,6 +192,24 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <Property Name="TouchedByMasqeradeNetID" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
           <Property Name="TouchedByMasqeradeDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="StaffPerformanceQuestions" Relationship="StaffEvaluationsModel.FK_StaffPerformanceQuestions_StaffPerformanceEvaluations" FromRole="StaffPerformanceEvaluation" ToRole="StaffPerformanceQuestion" />
+          <Property Name="StartNetid" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="StartProxy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DeferredNetid" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="DeferredProxy" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="SubmittedNetid" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="SubmittedProxy" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="AcceptedNetid" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="AcceptedProxy" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="ContestedNetid" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="ContestedProxy" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="CompleteNetid" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="CompleteProxy" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="ReturntoSupervisorDate" Type="DateTime" Precision="3" />
+          <Property Name="ReturntoSupervisorNetid" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="ReturntoEmployeeDate" Type="DateTime" Precision="3" />
+          <Property Name="ReturntoEmployeeNetid" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="ReturntoEmployeeProxy" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="ReturntoSupervisorProxy" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="StaffPerformanceQuestion">
           <Key>
@@ -280,6 +316,24 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <EntitySetMapping Name="StaffPerformanceEvaluations">
             <EntityTypeMapping TypeName="StaffEvaluationsModel.StaffPerformanceEvaluation">
               <MappingFragment StoreEntitySet="StaffPerformanceEvaluations">
+                <ScalarProperty Name="ReturntoSupervisorProxy" ColumnName="ReturntoSupervisorProxy" />
+                <ScalarProperty Name="ReturntoEmployeeProxy" ColumnName="ReturntoEmployeeProxy" />
+                <ScalarProperty Name="ReturntoEmployeeNetid" ColumnName="ReturntoEmployeeNetid" />
+                <ScalarProperty Name="ReturntoEmployeeDate" ColumnName="ReturntoEmployeeDate" />
+                <ScalarProperty Name="ReturntoSupervisorNetid" ColumnName="ReturntoSupervisorNetid" />
+                <ScalarProperty Name="ReturntoSupervisorDate" ColumnName="ReturntoSupervisorDate" />
+                <ScalarProperty Name="CompleteProxy" ColumnName="CompleteProxy" />
+                <ScalarProperty Name="CompleteNetid" ColumnName="CompleteNetid" />
+                <ScalarProperty Name="ContestedProxy" ColumnName="ContestedProxy" />
+                <ScalarProperty Name="ContestedNetid" ColumnName="ContestedNetid" />
+                <ScalarProperty Name="AcceptedProxy" ColumnName="AcceptedProxy" />
+                <ScalarProperty Name="AcceptedNetid" ColumnName="AcceptedNetid" />
+                <ScalarProperty Name="SubmittedProxy" ColumnName="SubmittedProxy" />
+                <ScalarProperty Name="SubmittedNetid" ColumnName="SubmittedNetid" />
+                <ScalarProperty Name="DeferredProxy" ColumnName="DeferredProxy" />
+                <ScalarProperty Name="DeferredNetid" ColumnName="DeferredNetid" />
+                <ScalarProperty Name="StartProxy" ColumnName="StartProxy" />
+                <ScalarProperty Name="StartNetid" ColumnName="StartNetid" />
                 <ScalarProperty Name="EvalId" ColumnName="EvalId" />
                 <ScalarProperty Name="EvalCode" ColumnName="EvalCode" />
                 <ScalarProperty Name="Year" ColumnName="Year" />

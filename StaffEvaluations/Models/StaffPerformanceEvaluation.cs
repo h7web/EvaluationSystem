@@ -38,6 +38,24 @@ namespace StaffEvaluations.Models
         public string EvaluatorComments { get; set; }
         public string TouchedByMasqeradeNetID { get; set; }
         public Nullable<System.DateTime> TouchedByMasqeradeDate { get; set; }
+        public string StartNetid { get; set; }
+        public string StartProxy { get; set; }
+        public string DeferredNetid { get; set; }
+        public string DeferredProxy { get; set; }
+        public string SubmittedNetid { get; set; }
+        public string SubmittedProxy { get; set; }
+        public string AcceptedNetid { get; set; }
+        public string AcceptedProxy { get; set; }
+        public string ContestedNetid { get; set; }
+        public string ContestedProxy { get; set; }
+        public string CompleteNetid { get; set; }
+        public string CompleteProxy { get; set; }
+        public Nullable<System.DateTime> ReturntoSupervisorDate { get; set; }
+        public string ReturntoSupervisorNetid { get; set; }
+        public Nullable<System.DateTime> ReturntoEmployeeDate { get; set; }
+        public string ReturntoEmployeeNetid { get; set; }
+        public string ReturntoEmployeeProxy { get; set; }
+        public string ReturntoSupervisorProxy { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StaffPerformanceQuestion> StaffPerformanceQuestions { get; set; }

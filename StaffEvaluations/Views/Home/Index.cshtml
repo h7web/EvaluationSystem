@@ -32,6 +32,7 @@
                     &nbsp;(@eval.Status)
                     @if (@eval.Status == "Submitted")
                     {
+                        @Html.ActionLink("Return to Supvervisor", "ReturnEvaltoSupervisor", new { id = eval.EvalId, button = "Return" })
                         @:|
                         @Html.ActionLink("Accept", "AcceptEval", new { id = eval.EvalId, button = "Accept" })
                         @:|
@@ -70,6 +71,7 @@
                     {
                         var eid = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().EvalId;
                         var status = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().Status;
+                        var ret = Model.MyStaffEvaluations.Where(e => e.ReturntoSupervisorNetid != null).SingleOrDefault();
 
                         if (status == "Submitted")
                         {
@@ -80,24 +82,49 @@
                         <td></td>
                         <td>@directReport.employee_type_code</td>
                         <td>@lsdate</td>
-                        <td @if (status == "Submitted to Employee") { @: colspan="2"
-                                                }>
+
+                        <!--if the eval is with the employee for comments-->
+                        <td @if (status == "Submitted to Employee") { @: colspan="2" 
+                             }>
                             (@status)
                         </td>
                         <td>
+
+                            <!-- if the eval has been sent to HR by the supervisor-->
                             @if (status == "Complete")
                             {
                                 @Html.ActionLink("View", "EditEval", new { id = eid })
                             }
-                            @if (status == "Contested" || status == "Accepted" || status == "In-Work")
+                            <!-- if the eval has been sent to HR by the supervisor AND HR is acting as superuser-->
+                            @if (status == "Complete" && Session["Masquerade"].Equals(true))
+                            {
+                                @:|
+                                @Html.ActionLink("Return to Supervisor [Proxy]", "ReturnEvaltoSupervisor", new { id = eid })
+                                @:|
+                                @Html.ActionLink("Return to Employee [Proxy]", "ReturnEvaltoEmployee", new { id = eid })
+                            }
+                            <!-- if the eval has been returned to supervisor by employee-->
+
+                            @if (status == "Contested" || status == "Accepted")
                             {
                                 @Html.ActionLink("Edit", "EditEval", new { id = eid })
+                                @:|
+                                @Html.ActionLink("Return to Employee", "ReturnEvaltoEmployee", new { id = eid })
                             }
+
 
                             @if (status == "In-Work")
                             {
+                                @Html.ActionLink("Edit", "EditEval", new { id = eid })
                                 @:|
-                                @Html.ActionLink("Submit", "SubmitEval", new { id = eid }, new { onclick = "setid(" + eid + ");" })
+                                if (ret != null)
+                                {
+                                    @Html.ActionLink("Return to Employee", "ReturnEvaltoEmployee", new { id = eid })
+                                }
+                                else
+                                {
+                                    @Html.ActionLink("Submit", "SubmitEval", new { id = eid })
+                                }
                                 @:|
                                 @Html.ActionLink("Delete", "DeleteEval", new { id = eid })
                             }
@@ -142,102 +169,88 @@
         <ul><li>No staff found.</li></ul>
     }
 
+</div>
+
+<div id="editevalno"></div>
+
+@if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)) && Session["Masquerade"].Equals(false))
+{
+    <br />
+    <div>
+        <button type="button" data-toggle="modal" data-target="#Masquerade" class="btn">Masquerade as Supervisor</button>
+        <button type="button" onclick="location.href='@Url.Action("EditJDs", "Home")'" class="btn">Edit Job Descriptions</button>
     </div>
+}
 
-    <div id="editevalno"></div>
-
-    @if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)) && Session["Masquerade"].Equals(false))
-    {
-        <br />
-        <div>
-            <button type="button" data-toggle="modal" data-target="#Masquerade" class="btn">Masquerade as Supervisor</button>
-            <button type="button" onclick="location.href='@Url.Action("EditJDs", "Home")'" class="btn">Edit Job Descriptions</button>
-        </div>
-    }
-
-    <div class="modal fade" id="Masquerade" tabindex="-1" role="dialog" aria-labelledby="ChooseSupervisorLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="ChooseSupervisorLabel">Masquerade as a Supervisor</h4>
-                </div>
-                <div class="modal-body">
-                    @using (Html.BeginForm("MasqueradeAs", "Home"))
-                    {
-                        <span>
-                            Search:
-                            @Html.DropDownList("netid", (List<SelectListItem>)StaffEvaluations.Models.SuperUserHelper.GetSupervisors())
-                            <input type="submit" value="Masquerade" class="btn" />
-                        </span>
-                    }
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
+<div class="modal fade" id="Masquerade" tabindex="-1" role="dialog" aria-labelledby="ChooseSupervisorLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="ChooseSupervisorLabel">Masquerade as a Supervisor</h4>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("MasqueradeAs", "Home"))
+                {
+                    <span>
+                        Search:
+                        @Html.DropDownList("netid", (List<SelectListItem>)StaffEvaluations.Models.SuperUserHelper.GetSupervisors())
+                        <input type="submit" value="Masquerade" class="btn" />
+                    </span>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="modal fade" id="evalerror" tabindex="-1" role="dialog" aria-labelledby="evalerrorLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="findLibExpenseLabel" style="color:red;">Error!</h4>
-                </div>
-                <div class="modal-body">
-                    @TempData["error"]
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="gotoeval" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='@Url.Action("EditEval", "Home", new { id = TempData["submittedevalid"]})'" >Edit</button>
-                    <button type="button" id="modalclose" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
+<div class="modal fade" id="evalerror" tabindex="-1" role="dialog" aria-labelledby="evalerrorLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="findLibExpenseLabel" style="color:red;">Error!</h4>
+            </div>
+            <div class="modal-body">
+                @TempData["error"]
+            </div>
+            <div class="modal-footer">
+                <!--
+                <button type="button" id="gotoeval" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='@Url.Action("EditEval", "Home", new { id = TempData["submittedevalid"]})'" >Edit</button>
+                    -->
+                <button type="button" id="modalclose" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
-    @section scripts {
-        <script>
-            var modal = document.getElementById('evalerror');
-            var btn = document.getElementById("modalclose");
-            var btn2 = document.getElementById("gotoeval");
-            var err = '@TempData["error"]';
-            var evalid = "";
-            var url = "";
+@section scripts {
+    <script>
+        var modal = document.getElementById('evalerror');
+        var btn = document.getElementById("modalclose");
+        var btn2 = document.getElementById("gotoeval");
+        var err = '@TempData["error"]';
+        var evalid = "";
+        var url = "";
 
-            $(document).ready(
-            function openpopup() {
-                if (err != null && err != '') {
-                    $('#evalerror').modal('show');
-                }
-
-            });
-
-            //trying to pass the evalid (eid) from the clicked submit link to the code for the edit button to take you to the correct button
-            //but also trying to open the modal box at the same time
-            //jquery is dueling with javascript, jquery document ready is clearing the operations of the javascript but no parameters are making it past the document ready jquery initiator
-
-            //function setid(eid) {
-            //    document.getElementById("editevalno").innerHTML = eid;
-            //    evalid = eid;
-            //    alert(evalid);
-            //}
-
-            //btn2.onclick = function () {
-            //    var id = document.getElementById("editevalno").innerHTML;
-            //    url = "http://localhost:63886/Home/EditEval/" + evalid;
-            //    window.location = url;
-            //}
-
-            window.onclick = function (event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
+        $(document).ready(
+        function openpopup() {
+            if (err != null && err != '') {
+                $('#evalerror').modal('show');
             }
-        </script>
-    }
+
+        });
+
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+}

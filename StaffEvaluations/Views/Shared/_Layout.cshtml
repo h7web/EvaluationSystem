@@ -60,7 +60,7 @@
                         @Html.ActionLink("Stop Masquerade", "StopMasquerade", "Home", new { @style = "color:red;" })
                     }
                     <br/>
-                    <a href="https://www.library.illinois.edu/">LOGOFF</a>
+                    <a href="@Url.Action("Logoff", "Home")" onclick="return confirm('Are you sure you saved all work in progress?'); close();">LOGOFF</a>
                 </p>
             </div>
         </div>
@@ -84,3 +84,10 @@
     @RenderSection("scripts", required: false)
 </body>
 </html>
+
+<script>
+    function close()
+    {
+        window.close();
+    }
+</script>
