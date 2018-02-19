@@ -40,23 +40,23 @@
         Supervisor: @Model.super.name - @Model.super.banner_title<br />
     </p>
     <p>
-        Date Started: @startdate<br />
+        Date Started: @startdate (@Model.eval.EvaluatorNetid)<br />
 
         @if (Model.eval.SubmittedDate != null)
         {
-            @:Date Submitted to Employee: @subdate<br />
+            @:Date Submitted to Employee: @subdate (@Model.eval.EvaluatorNetid)<br />
         }
         @if (Model.eval.AcceptedDate != null)
         {
-            @:Date Accepted: @acceptdate<br />
+            @:Date Accepted: @acceptdate (@Model.eval.NetId)<br />
         }
         @if (Model.eval.ContestedDate != null)
         {
-            @:Date Contested: @contdate<br />
+            @:Date Contested: @contdate (@Model.eval.NetId)<br />
         }
         @if (Model.eval.CompleteDate != null)
         {
-            @:Date Completed: @compdate<br />
+            @:Date Completed: @compdate (@Model.eval.EvaluatorNetid)<br />
         }
         @if (Model.eval.ProcessedDate != null)
         {

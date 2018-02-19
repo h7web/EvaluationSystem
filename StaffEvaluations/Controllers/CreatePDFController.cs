@@ -27,9 +27,10 @@ namespace StaffEvaluations.Controllers
             PdfDocument doc = converter.ConvertHtmlString(htmlString);
 
             var eval = (from ev in db.StaffPerformanceEvaluations where ev.EvalId == id select ev).SingleOrDefault();
+            var posn = (from p in db.JobDescriptions where p.netid == eval.NetId && p.supervisorNetid == eval.EvaluatorNetid select p.posn_number).SingleOrDefault();
             var reportinfo = LibDirectoryFactory.GetPerson(eval.NetId);
 
-            string filename = "PerformEval_" + reportinfo.name.Replace(" ", "_") + "_" + eval.Year + ".pdf";
+            string filename = "PerformEval_" + posn + "_" + reportinfo.last.Replace(" ", "_") + "_" + eval.Year + ".pdf";
 
             byte[] pdf = doc.Save();
             FileResult fileResult = new FileContentResult(pdf, "application/pdf");
@@ -74,12 +75,27 @@ namespace StaffEvaluations.Controllers
             preparedpdf = preparedpdf + "Library Start Date: " + reportinfo.LibraryStartDate + "<br />";
             preparedpdf = preparedpdf + "Supervisor: " + supinfo.name + " - " + supinfo.banner_title + "</p>";
 
-            preparedpdf = preparedpdf + "<p>Date Started: " + eval.StartDate.ToString("MM/dd/yyyy") + "<br />";
-            preparedpdf = preparedpdf + "Date Submitted to Employee: " + eval.SubmittedDate?.ToString("MM/dd/yyyy") + "<br />";
-            preparedpdf = preparedpdf + "Date Accepted: " + eval.AcceptedDate?.ToString("MM/dd/yyyy") + "<br />";
-            preparedpdf = preparedpdf + "Date Contested: " + eval.ContestedDate?.ToString("MM/dd/yyyy") + "<br />";
-            preparedpdf = preparedpdf + "Date Completed: " + eval.CompleteDate?.ToString("MM/dd/yyyy") + "<br />";
-            preparedpdf = preparedpdf + "Date Received by HR: " + eval.ProcessedDate?.ToString("MM/dd/yyyy") + "</p>";
+            preparedpdf = preparedpdf + "<p>Date Started: " + eval.StartDate.ToString("MM/dd/yyyy") + " (" + eval.EvaluatorNetid + ")" + "<br />";
+            if (eval.SubmittedDate != null)
+            {
+                preparedpdf = preparedpdf + "Date Submitted to Employee: " + eval.SubmittedDate?.ToString("MM/dd/yyyy") + " (" + eval.EvaluatorNetid + ")" + "<br />";
+            }
+            if (eval.AcceptedDate != null)
+            {
+            preparedpdf = preparedpdf + "Date Accepted: " + eval.AcceptedDate?.ToString("MM/dd/yyyy") + " (" + eval.NetId + ")" + "<br />";
+            }
+            if (eval.ContestedDate != null)
+            {
+                preparedpdf = preparedpdf + "Date Contested: " + eval.ContestedDate?.ToString("MM/dd/yyyy") + " (" + eval.NetId + ")" + "<br />";
+            }
+            if (eval.CompleteDate != null)
+            {
+                preparedpdf = preparedpdf + "Date Completed: " + eval.CompleteDate?.ToString("MM/dd/yyyy") + " (" + eval.EvaluatorNetid + ")" + "<br />";
+            }
+            if (eval.ProcessedDate != null)
+            {
+                preparedpdf = preparedpdf + "Date Received by HR: " + eval.ProcessedDate?.ToString("MM/dd/yyyy") + "</p>";
+            }
 
             preparedpdf = preparedpdf + "<ol>";
             foreach (Question q in qa)
