@@ -64,6 +64,7 @@
                 {
                     unit = directReport.unit_name;
                     <tr><td colspan="6"><h3>@unit</h3></td></tr>
+                    <tr class="table_header"><td><b>Name</b></td><td colspan="2"><b>E-class</b></td><td><b>Anniversary&nbsp;Date&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td><b>Status</b></td><td><b>Actions</b></td></tr>
                 }
                 <tr>
 
@@ -117,9 +118,12 @@
                             {
                                 @Html.ActionLink("Edit", "EditEval", new { id = eid })
                                 @:|
-                                if (ret != null)
+                                if (ret.SubmittedNetid != null)
                                 {
-                                    @Html.ActionLink("Return to Employee", "ReturnEvaltoEmployee", new { id = eid })
+                                    @Html.ActionLink("Return to Employee", "ReturnEvaltoEmployee", new { id = eid }) 
+                                    @:(
+                                    @ret.SubmittedNetid
+                                    @:)
                                 }
                                 else
                                 {
@@ -179,6 +183,7 @@
     <div>
         <button type="button" data-toggle="modal" data-target="#Masquerade" class="btn">Masquerade as Supervisor</button>
         <button type="button" onclick="location.href='@Url.Action("EditJDs", "Home")'" class="btn">Edit Job Descriptions</button>
+        <button type="button" onclick="location.href = 'http://mssql_dev2.library.illinois.edu/reportportal/report/HR%20Reports/Staff%20Performance%20Evaluation%20Counts'" class="btn">Counts Report</button>
     </div>
 }
 
@@ -221,9 +226,7 @@
                 @TempData["error"]
             </div>
             <div class="modal-footer">
-                <!--
                 <button type="button" id="gotoeval" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='@Url.Action("EditEval", "Home", new { id = TempData["submittedevalid"]})'" >Edit</button>
-                    -->
                 <button type="button" id="modalclose" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

@@ -22,6 +22,7 @@
 @using (Html.BeginForm())
 {
     @Html.Hidden("Id", Model.eval.EvalId)
+    @Html.Hidden("editmode", (string)TempData["editmode"])
 
     var highlight = "";
     var lsdate = Model.person.LibraryStartDate.AsDateTime().ToString("MM/dd/yyyy");
@@ -33,6 +34,13 @@
     var processdate = Model.eval.ProcessedDate?.ToString("MM/dd/yyyy");
 
     <h2>@Model.eval.Year @evaltypedesc Performance Evaluation</h2>
+
+    <p class="alert-info">
+        @if(Model.sub == true)
+        {
+            @:This evaluation is completed, you now have the option to submit below.
+        }
+    </p>
 
     <p>
         <strong>@Model.person.name - @Model.person.banner_title</strong> <br />
@@ -79,9 +87,9 @@
                     r.Selected = false;
                 }
             }
-            if(q.highlight == "true" && (string)TempData["editmode"] == "check")
+            if(q.highlight == "true" && (string)TempData["editmode"] == "check" && q.QuestionComment == null)
             {
-                //highlight = "lihighlight";
+                highlight = "lihighlight";
             }
             else
             {
@@ -174,7 +182,12 @@
         @if ((Model.eval.Status == "" || Model.eval.Status == "In-Work" || Model.eval.Status == "Deferred") && Model.eval.NetId != User.Identity.Name.Substring(5))
         {
             <input type="submit" name="button" value="Save" class="btn" />
+            if (Model.sub == true)
+            {
             <input type="submit" name="button" value="Submit" class="btn" />
+            @:|
+            @Html.ActionLink("Return to List","Index")
+            }
         }
         else if ((Model.eval.Status == "Accepted" || Model.eval.Status == "Contested") && Model.eval.NetId != User.Identity.Name.Substring(5))
         {

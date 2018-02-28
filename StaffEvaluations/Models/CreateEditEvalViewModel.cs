@@ -16,6 +16,8 @@ namespace StaffEvaluations.Models
 
         public List<Question> questions { get; set; }
 
+        public bool? sub { get; set; }
+
         public CreateEditEvalViewModel()
         {
             questions = new List<Question>();

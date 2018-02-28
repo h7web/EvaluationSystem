@@ -51,6 +51,10 @@ a:hover {
 
 li.lihighlight {
     padding:11px;
-    background-color:orangered;
+    background-color:red;
     color:white;
+}
+
+tr.table_header td {
+    border-bottom: 1px solid #b7b7b7;
 }

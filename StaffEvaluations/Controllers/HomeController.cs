@@ -285,7 +285,7 @@ namespace StaffEvaluations.Controllers
         }
 
         [SessionTimeout]
-        public ActionResult EditEval(int id)
+        public ActionResult EditEval(int id, bool? sub)
         {
             var getEval = (from e in db.StaffPerformanceEvaluations where e.EvalId == id select e).Single();
             var getsup = LibDirectoryFactory.GetPersonsSupervisors(getEval.NetId);
@@ -322,6 +322,11 @@ namespace StaffEvaluations.Controllers
 
                 ViewData["RatingList"] = QuestionHelper.GetRatings(db, getEval.EvalCode);
 
+                if(sub == true)
+                {
+                    crvm.sub = true;
+                }
+
                 return View(crvm);
             }
             else
@@ -339,6 +344,10 @@ namespace StaffEvaluations.Controllers
 
             var eval = db.StaffPerformanceEvaluations.Find(id);
             var msgflag = false;
+            var jdflag = false;
+            var subflag = false;
+
+            var answers = from a in db.StaffPerformanceQuestions where a.Rating == "* You must select a value *" && a.EvalId == id select a;
 
             if (eval.Status == "In-Work")
             {
@@ -368,6 +377,13 @@ namespace StaffEvaluations.Controllers
                                 msgflag = true;
                             }
                         }
+                        else if (q.QuestionCode == "AP12" && q.QuestionCode == "CA11" && q.QuestionCode == "CC9")
+                        {
+                            if (q.QuestionComment == null)
+                            {
+                                jdflag = true;
+                            }
+                        }
                     }
                 }
             }
@@ -393,9 +409,22 @@ namespace StaffEvaluations.Controllers
             }
 
 
-            if (msgflag == true)
+            //the variable answers is a list of questions with the value "You must select a value"
+            if (answers.Count() > 0)
+            {
+                TempData["error"] = "You must answer all questions in order to Submit an Evaluation.";
+            }
+            else if (msgflag == true)
             {
                 TempData["warning"] = "Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.";
+            }
+            else if (jdflag == true)
+            {
+                TempData["error"] = "A Job Description is required before submission.";
+            }
+            else
+            {
+                subflag = true;
             }
 
             db.SaveChanges();
@@ -404,9 +433,44 @@ namespace StaffEvaluations.Controllers
                 {
                 return RedirectToAction("SubmitEval", new { id = eval.EvalId });
             }
+            else if (subflag == true)
+            {
+                return RedirectToAction("EditEval", new { id = eval.EvalId, sub = true });
+            }
             else {
                 return RedirectToAction("Index");
             }
+        }
+
+        public bool CheckEval(int id)
+        {
+
+            var eval = db.StaffPerformanceEvaluations.Find(id);
+            var msgflag = false;
+            var question = from q in db.StaffPerformanceQuestions where q.EvalId == id select q;
+
+                string CommentList = "";
+                var CommentReq = from r in db.Ratings where r.EvalCode == eval.EvalCode && r.CommentRequired == true select r;
+                foreach (Rating r in CommentReq)
+                {
+                    CommentList += r.Rating1;
+                }
+
+                foreach (StaffPerformanceQuestion q in question)
+                {
+                    var orig = db.StaffPerformanceQuestions.Find(q.QuestionId);
+                    if (orig != null)
+                    {
+                        if (q.QuestionCode != "AP12" && q.QuestionCode != "CA11" && q.QuestionCode != "CC9" && q.Rating != null)
+                        {
+                            if (CommentList.Contains(q.Rating) && q.Comment == null)
+                            {
+                                msgflag = true;
+                            }
+                        }
+                    }
+                }
+            return msgflag;
         }
 
         [SessionTimeout]
@@ -494,6 +558,7 @@ namespace StaffEvaluations.Controllers
                 return RedirectToAction("Index");
         }
 
+        //accept and contest use this same method
         [SessionTimeout]
         public async System.Threading.Tasks.Task<ActionResult> SubmitEval(int id)
         {
@@ -558,7 +623,7 @@ namespace StaffEvaluations.Controllers
                 db.SaveChanges();
                 var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
 
-                var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + evalname + " is available for you to review and comment at the following URL:</p>";
+                var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + evalname + " is <b>available</b> for you to review and comment at the following URL:</p>";
                 body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
                 var message = new MailMessage();
 
@@ -672,46 +737,49 @@ namespace StaffEvaluations.Controllers
 
         public async System.Threading.Tasks.Task<ActionResult> ReturnEvaltoEmployee(int id)
         {
-            var eval = db.StaffPerformanceEvaluations.Find(id);
 
-            eval.Status = "Submitted";
-            eval.ReturntoEmployeeDate = DateTime.Now;
-            eval.ReturntoEmployeeNetid = GetUser();
-            if (Session["Masquerade"].Equals(true))
+            if ( CheckEval(id) == false )
             {
-                eval.ReturntoEmployeeProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+                var eval = db.StaffPerformanceEvaluations.Find(id);
 
-                eval.CompleteDate = null;
-                eval.CompleteNetid = null;
-                eval.CompleteProxy = null;
+                eval.Status = "Submitted";
+                eval.ReturntoEmployeeDate = DateTime.Now;
+                eval.ReturntoEmployeeNetid = GetUser();
+                if (Session["Masquerade"].Equals(true))
+                {
+                    eval.ReturntoEmployeeProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+
+                    eval.CompleteDate = null;
+                    eval.CompleteNetid = null;
+                    eval.CompleteProxy = null;
+                }
+
+                eval.AcceptedDate = null;
+                eval.AcceptedNetid = null;
+                eval.AcceptedProxy = null;
+                eval.ContestedDate = null;
+                eval.ContestedNetid = null;
+                eval.ContestedProxy = null;
+
+                db.SaveChanges();
+                var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
+
+                var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + evalname + " has been <b>returned</b> for you to review and comment at the following URL:</p>";
+                body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
+                var message = new MailMessage();
+
+                message.To.Add(new MailAddress(eval.NetId + "@illinois.edu"));
+                message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
+                message.Subject = eval.Year + " Performance Evaluation";
+                message.Body = body;
+                message.IsBodyHtml = true;
+
+                using (var smtp = new SmtpClient())
+                {
+                    smtp.Host = "Express-SMTP.cites.illinois.edu ";
+                    await smtp.SendMailAsync(message);
+                }
             }
-
-            eval.AcceptedDate = null;
-            eval.AcceptedNetid = null;
-            eval.AcceptedProxy = null;
-            eval.ContestedDate = null;
-            eval.ContestedNetid = null;
-            eval.ContestedProxy = null;
-
-            db.SaveChanges();
-            var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
-
-            var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + evalname + " has been returned for you to review and comment at the following URL:</p>";
-            body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
-            var message = new MailMessage();
-
-            message.To.Add(new MailAddress(eval.NetId + "@illinois.edu"));
-            message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
-            message.Subject = eval.Year + " Performance Evaluation";
-            message.Body = body;
-            message.IsBodyHtml = true;
-
-            using (var smtp = new SmtpClient())
-            {
-                smtp.Host = "Express-SMTP.cites.illinois.edu ";
-                await smtp.SendMailAsync(message);
-            }
-
             return RedirectToAction("Index");
         }
 
