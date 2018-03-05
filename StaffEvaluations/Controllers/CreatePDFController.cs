@@ -48,6 +48,7 @@ namespace StaffEvaluations.Controllers
             var eval = (from e in db.StaffPerformanceEvaluations where e.EvalId == id select e).SingleOrDefault();
             var reportinfo = LibDirectoryFactory.GetPerson(eval.NetId);
             var supinfo = LibDirectoryFactory.GetPerson(eval.EvaluatorNetid);
+            var yr = eval.Year - 1;
 
             var qa = QuestionHelper.GetQuestions(db, eval.EvalCode, eval.EvalId, eval.StaffPerformanceQuestions.ToList() );
 
@@ -74,6 +75,8 @@ namespace StaffEvaluations.Controllers
             preparedpdf = preparedpdf + "<p>" + reportinfo.name + " - " + reportinfo.banner_title + "<br />";
             preparedpdf = preparedpdf + "Library Start Date: " + reportinfo.LibraryStartDate + "<br />";
             preparedpdf = preparedpdf + "Supervisor: " + supinfo.name + " - " + supinfo.banner_title + "</p>";
+
+            preparedpdf = preparedpdf + "<p>Review period: January 1 " + yr + " to December 31 " + yr + "</p>";
 
             preparedpdf = preparedpdf + "<p>Date Started: " + eval.StartDate.ToString("MM/dd/yyyy") + " (" + eval.EvaluatorNetid + ")" + "<br />";
             if (eval.SubmittedDate != null)

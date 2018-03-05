@@ -33,6 +33,8 @@
     var compdate = Model.eval.CompleteDate?.ToString("MM/dd/yyyy");
     var processdate = Model.eval.ProcessedDate?.ToString("MM/dd/yyyy");
 
+    var yr = Model.eval.Year - 1;
+
     <h2>@Model.eval.Year @evaltypedesc Performance Evaluation</h2>
 
     <p class="alert-info">
@@ -47,6 +49,7 @@
         Library Start Date: @lsdate<br />
         Supervisor: @Model.super.name - @Model.super.banner_title<br />
     </p>
+    <p>Review Period: January 1 @yr through December 31 @yr</p>
     <p>
         Date Started: @startdate (@Model.eval.EvaluatorNetid)<br />
 

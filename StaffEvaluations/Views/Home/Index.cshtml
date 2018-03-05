@@ -85,8 +85,8 @@
                         <td>@lsdate</td>
 
                         <!--if the eval is with the employee for comments-->
-                        <td @if (status == "Submitted to Employee") { @: colspan="2" 
-                             }>
+                        <td @if (status == "Submitted to Employee") { @: colspan="2"
+                                                         }>
                             (@status)
                         </td>
                         <td>
@@ -117,17 +117,20 @@
                             @if (status == "In-Work")
                             {
                                 @Html.ActionLink("Edit", "EditEval", new { id = eid })
-                                @:|
-                                if (ret.SubmittedNetid != null)
+                                if (ret != null)
                                 {
-                                    @Html.ActionLink("Return to Employee", "ReturnEvaltoEmployee", new { id = eid }) 
-                                    @:(
-                                    @ret.SubmittedNetid
-                                    @:)
+                                    @:|
+                                    if (ret.SubmittedNetid != null)
+                                    {
+                                        @Html.ActionLink("Return to Employee", "ReturnEvaltoEmployee", new { id = eid })
+                                        @:(
+                                        @ret.SubmittedNetid
+                                        @:)
                                 }
-                                else
-                                {
-                                    @Html.ActionLink("Submit", "SubmitEval", new { id = eid })
+                                    else
+                                    {
+                                        @Html.ActionLink("Submit", "SubmitEval", new { id = eid })
+                                    }
                                 }
                                 @:|
                                 @Html.ActionLink("Delete", "DeleteEval", new { id = eid })
@@ -226,7 +229,7 @@
                 @TempData["error"]
             </div>
             <div class="modal-footer">
-                <button type="button" id="gotoeval" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='@Url.Action("EditEval", "Home", new { id = TempData["submittedevalid"]})'" >Edit</button>
+                <button type="button" id="gotoeval" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='@Url.Action("EditEval", "Home", new { id = TempData["submittedevalid"]})'">Edit</button>
                 <button type="button" id="modalclose" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

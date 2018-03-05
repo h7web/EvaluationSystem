@@ -300,7 +300,7 @@ namespace StaffEvaluations.Controllers
                 }
             }
 
-            if (suplist.ToString().Contains(GetUser()) || getEval.NetId == GetUser() || getEval.NetId == "yoskye" || getEval.NetId == "atJohnsn" || getEval.NetId == "mikesweb" || getEval.NetId == "strutz" || getEval.NetId == "gknott63" || getEval.NetId == "jlockmil")
+            if (suplist.ToString().Contains(GetUser()) || getEval.NetId == GetUser())
             {
                 var reportinfo = LibDirectoryFactory.GetPerson(getEval.NetId);
 
@@ -422,7 +422,7 @@ namespace StaffEvaluations.Controllers
             {
                 TempData["error"] = "A Job Description is required before submission.";
             }
-            else
+            else if (eval.NetId != GetUser())
             {
                 subflag = true;
             }

@@ -17,6 +17,8 @@
         {
             evaltypedesc = "Civil Service - Exempt";
         }
+
+        var yr = Model.eval.Year - 1;
     }
 
     @using (Html.BeginForm())
@@ -36,7 +38,7 @@
             Date: @DateTime.Now.ToString("MM/dd/yyyy")
             <br />
         </p>
-
+        <p>Review Period: January 1 @yr through December 31 @yr</p>
         <ol>
             @foreach (StaffEvaluations.Models.Question q in Model.questions)
             {
