@@ -12,6 +12,8 @@ namespace StaffEvaluations.Models
         public string JDName { get; set; }
 
         public string JDSuper { get; set; }
+
+        public string Order { get; set; }
     }
 
     public class JobDescriptionMD

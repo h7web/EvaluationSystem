@@ -38,7 +38,7 @@
     <h2>@Model.eval.Year @evaltypedesc Performance Evaluation</h2>
 
     <p class="alert-info">
-        @if(Model.sub == true)
+        @if (Model.sub == true)
         {
             @:This evaluation is completed, you now have the option to submit below.
         }
@@ -90,7 +90,7 @@
                     r.Selected = false;
                 }
             }
-            if(q.highlight == "true" && (string)TempData["editmode"] == "check" && q.QuestionComment == null)
+            if (q.highlight == "true" && (string)TempData["editmode"] == "check" && q.QuestionComment == null)
             {
                 highlight = "lihighlight";
             }
@@ -123,7 +123,7 @@
 
                     @if (q.CommentOnly == true) //if its Job Desc
                     {
-                        if (Model.eval.Status == "In-Work" ) //in-work means super has it (1st time) submitted means employee has it
+                        if (Model.eval.Status == "In-Work") //in-work means super has it (1st time) submitted means employee has it
                         {
                             <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" rows="40" style="max-width:none;" class="text-info wysiwyg">@q.QuestionComment</textarea>
                         }
@@ -189,13 +189,15 @@
             {
             <input type="submit" name="button" value="Submit" class="btn" />
             @:|
-            @Html.ActionLink("Return to List","Index")
+            @Html.ActionLink("Return to List", "Index")
             }
         }
         else if ((Model.eval.Status == "Accepted" || Model.eval.Status == "Contested") && Model.eval.NetId != User.Identity.Name.Substring(5))
         {
             <input type="submit" name="button" value="Complete" class="btn" onclick="confirm('Really Complete?\n\r No further comments can be added and the evaluation will be marked for processing by HR.')" />
         }
+
+        @Html.ActionLink("Cancel", "Index", null, new { @class="btn btn-warning" })
     </div>
 }
 

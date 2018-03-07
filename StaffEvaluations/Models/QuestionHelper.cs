@@ -67,6 +67,10 @@ namespace StaffEvaluations.Models
                 {
                     current.highlight = "true";
                 }
+                else if (current.QuestionText != "Job Description" && current.QuestionRating == "* You must select a value *")
+                {
+                    current.highlight = "true";
+                }
                 else if (current.QuestionText == "Job Description" && current.QuestionComment == null)
                 {
                     current.highlight = "true";

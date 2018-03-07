@@ -65,11 +65,11 @@ else
             <td>
                 @if (item.jdid == null)
                 {
-                    @Html.ActionLink("Create", "CreateJD", new { netid = item.empNetId, supervisorNetid = item.supNetId, JDname = item.JDname, JDSuper = item.JDSuper }) 
+                    @Html.ActionLink("Create", "CreateJD", new { netid = item.empNetId, supervisorNetid = item.supNetId, JDname = item.JDname, JDSuper = item.JDSuper, Order = item.Order }) 
                 }
                 else
                 {
-                @Html.ActionLink("Edit", "EditJD", new { id = item.jdid }) 
+                @Html.ActionLink("Edit", "EditJD", new { id = item.jdid, Order = item.Order }) 
 //                @:|
 //                @Html.ActionLink("Delete", "DeleteJD", new { id = item.jdid }, new { onclick = "return confirm('Are you sure you wish to delete this Job Description?');" })
                 }

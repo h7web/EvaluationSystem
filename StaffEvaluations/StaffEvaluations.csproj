@@ -195,6 +195,7 @@
       <DependentUpon>StaffEvalModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\PartialEvaluationQuestionSet.cs" />
+    <Compile Include="Models\PartialJDList.cs" />
     <Compile Include="Models\PartialJobDescription.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\position.cs">

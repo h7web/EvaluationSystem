@@ -370,14 +370,14 @@ namespace StaffEvaluations.Controllers
                             orig.LastUpdateDate = DateTime.Now;
                             db.SaveChanges();
                         }
-                        if (q.QuestionCode != "AP12" && q.QuestionCode != "CA11" && q.QuestionCode != "CC9" && q.QuestionRating != null)
+                        if (orig.QuestionCode != "AP12" && orig.QuestionCode != "CA11" && orig.QuestionCode != "CC9" && q.QuestionRating != null)
                         {
                             if (CommentList.Contains(q.QuestionRating) && q.QuestionComment == null)
                             {
                                 msgflag = true;
                             }
                         }
-                        else if (q.QuestionCode == "AP12" && q.QuestionCode == "CA11" && q.QuestionCode == "CC9")
+                        else if (orig.QuestionCode == "AP12" && orig.QuestionCode == "CA11" && orig.QuestionCode == "CC9")
                         {
                             if (q.QuestionComment == null)
                             {
@@ -416,7 +416,9 @@ namespace StaffEvaluations.Controllers
             }
             else if (msgflag == true)
             {
-                TempData["warning"] = "Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.";
+                TempData["error"] = "Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.";
+                TempData["submittedevalid"] = id;
+                TempData["editmode"] = "check";
             }
             else if (jdflag == true)
             {
@@ -799,12 +801,16 @@ namespace StaffEvaluations.Controllers
                     newJD.JDSuper = item.supervisor.name;
                     newJD.empNetId = item2.netid;
                     newJD.JDname = item2.name;
+                    newJD.EmployeeFirst = item2.first;
+                    newJD.EmployeeLast = item2.last;
                     jds1.Add(newJD);
                 }
             }
 
             foreach (var item in jds1)
             {
+                item.Order = sortOrder;
+
                 var jds = (from j in db.JobDescriptions where j.netid == item.empNetId && j.supervisorNetid == item.supNetId select j).SingleOrDefault();
 
                 if (jds != null)
@@ -822,14 +828,12 @@ namespace StaffEvaluations.Controllers
                 }
             }
 
-            List<JDList> ret = new List<JDList>();
-
             IOrderedEnumerable<JDList> sorted;
 
             switch (sortOrder)
             {
                 case "employee":
-                    sorted=jds1.OrderBy(j => j.JDname);
+                    sorted=jds1.OrderBy(j => j.EmployeeLast);
                     break;
                 case "super":
                     sorted=jds1.OrderBy(j => j.JDSuper);
@@ -838,13 +842,13 @@ namespace StaffEvaluations.Controllers
                     sorted=jds1.OrderByDescending(j => j.lastUpdatedDate);
                     break;
                 default:
-                    sorted = jds1.OrderBy(j => j.JDname);
+                    sorted = jds1.OrderBy(j => j.EmployeeLast);
                     break;
             }
             return View(sorted.ToList());
         }
 
-        public ActionResult CreateJD(string netid, string supervisorNetid, string JDname, string JDSuper)
+        public ActionResult CreateJD(string netid, string supervisorNetid, string JDname, string JDSuper, string Order = null)
         {
             JobDescription newJD = new JobDescription();
             var lsdate = DateTime.Now;
@@ -863,13 +867,13 @@ namespace StaffEvaluations.Controllers
             else
             {
                 TempData["error"] = "You do not have authorization work with Job Descriptions.";
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { sortOrder = Order });
             }
         }
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult CreateJD(string netid, string supervisorNetid, string description, string posn_number, string val = null)
+        public ActionResult CreateJD(string netid, string supervisorNetid, string description, string posn_number, string val = null, string Order = null)
         {
             JobDescription newJD = new JobDescription();
             var lsdate = DateTime.Now;
@@ -886,10 +890,10 @@ namespace StaffEvaluations.Controllers
 
             db.SaveChanges();
 
-            return RedirectToAction("EditJDs");
+            return RedirectToAction("EditJDs", new { sortOrder = Order });
         }
 
-        public ActionResult EditJD(int id)
+        public ActionResult EditJD(int id, string Order = null)
         {
             if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)))
             { 
@@ -902,12 +906,12 @@ namespace StaffEvaluations.Controllers
             else
             {
                 TempData["error"] = "You do not have authorization to work with Job Descriptions.";
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { sortOrder = Order });
             }
         }
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult EditJD (int id, string netid, string supervisorNetid, string description, string posn_number, string submit)
+        public ActionResult EditJD (int id, string netid, string supervisorNetid, string description, string posn_number, string submit, string Order = null)
         {
             var JD = db.JobDescriptions.Find(id);
 
@@ -932,18 +936,18 @@ namespace StaffEvaluations.Controllers
 
                 db.SaveChanges();
 
-                return RedirectToAction("EditJDs");
+                return RedirectToAction("EditJDs", new { sortOrder = Order });
             }
         }
 
-        public ActionResult DeleteJD(int id)
+        public ActionResult DeleteJD(int id, string Order = null)
         {
             var JD = db.JobDescriptions.Find(id);
 
             db.JobDescriptions.Remove(JD);
             db.SaveChanges();
 
-            return RedirectToAction("EditJDs");
+            return RedirectToAction("EditJDs", new { sortOrder = Order });
         }
 
         public ActionResult Logoff()

@@ -132,6 +132,11 @@
                                         @Html.ActionLink("Submit", "SubmitEval", new { id = eid })
                                     }
                                 }
+                                else
+                                {
+                                    @:|
+                                    @Html.ActionLink("Submit", "SubmitEval", new { id = eid })
+                                }
                                 @:|
                                 @Html.ActionLink("Delete", "DeleteEval", new { id = eid })
                             }
@@ -185,7 +190,7 @@
     <br />
     <div>
         <button type="button" data-toggle="modal" data-target="#Masquerade" class="btn">Masquerade as Supervisor</button>
-        <button type="button" onclick="location.href='@Url.Action("EditJDs", "Home")'" class="btn">Edit Job Descriptions</button>
+        <button type="button" onclick="location.href = '@Url.Action("EditJDs", "Home")'" class="btn">Edit Job Descriptions</button>
         <button type="button" onclick="location.href = 'http://mssql_dev2.library.illinois.edu/reportportal/report/HR%20Reports/Staff%20Performance%20Evaluation%20Counts'" class="btn">Counts Report</button>
     </div>
 }
