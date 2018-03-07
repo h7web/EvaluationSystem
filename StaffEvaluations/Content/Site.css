@@ -58,3 +58,9 @@ li.lihighlight {
 tr.table_header td {
     border-bottom: 1px solid #b7b7b7;
 }
+
+tr.highlighted td {
+    background-color:cornsilk;
+
+}
+

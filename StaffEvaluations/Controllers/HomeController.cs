@@ -80,8 +80,10 @@ namespace StaffEvaluations.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult Index()
+        public ActionResult Index(string go)
         {
+            ViewData["go"] = go;
+
             if (Session["Masquerade"] == null)
             {
                 Session["Masquerade"] = false;
@@ -440,7 +442,7 @@ namespace StaffEvaluations.Controllers
                 return RedirectToAction("EditEval", new { id = eval.EvalId, sub = true });
             }
             else {
-                return RedirectToAction("Index");
+                return RedirectToAction("Index",new { go = eval.NetId });
             }
         }
 
