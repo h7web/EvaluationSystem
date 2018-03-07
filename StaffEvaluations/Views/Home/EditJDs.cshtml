@@ -32,7 +32,7 @@
         </tr>
     
     @foreach (var item in Model) {
-        <tr>
+        <tr  id="netid_@item.empNetId" class="@(( (string)ViewData["gojd"]==item.empNetId)? "highlighted": "not_highlighted")">
 
             <td>
                 @if (item.JDname == null)
@@ -80,3 +80,11 @@ else
     </table>
 </body>
 </html>
+@section scripts {
+    <script>
+        $(document).ready(function() {
+
+            document.getElementById("netid_@ViewData["gojd"]").scrollIntoView();
+        });
+    </script>
+}

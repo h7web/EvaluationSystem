@@ -219,7 +219,7 @@ namespace StaffEvaluations.Controllers
             else
             {
                 TempData["error"] = "You do not have authorization to view this record.";
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { go = id });
             }
         }
 
@@ -279,11 +279,11 @@ namespace StaffEvaluations.Controllers
 
             db.SaveChanges();
 
-            if (msgflag == true)
-            {
-                TempData["error"] = "Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.";
-            }
-            return RedirectToAction("Index");
+            //if (msgflag == true)
+            //{
+            //    TempData["error"] = "Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.";
+            //}
+            return RedirectToAction("Index", new { go = newEval.NetId });
         }
 
         [SessionTimeout]
@@ -334,7 +334,7 @@ namespace StaffEvaluations.Controllers
             else
             {
                 TempData["error"] = "You do not have authorization to view this record.";
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { go = getEval.NetId });
             }
         }
 
@@ -412,38 +412,38 @@ namespace StaffEvaluations.Controllers
 
 
             //the variable answers is a list of questions with the value "You must select a value"
-            if (answers.Count() > 0)
-            {
-                TempData["error"] = "You must answer all questions in order to Submit an Evaluation.";
-            }
-            else if (msgflag == true)
-            {
-                TempData["error"] = "Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.";
-                TempData["submittedevalid"] = id;
-                TempData["editmode"] = "check";
-            }
-            else if (jdflag == true)
-            {
-                TempData["error"] = "A Job Description is required before submission.";
-            }
-            else if (eval.NetId != GetUser())
-            {
-                subflag = true;
-            }
+            //if (answers.Count() > 0)
+            //{
+            //    TempData["error"] = "You must answer all questions in order to Submit an Evaluation.";
+            //}
+            //else if (msgflag == true)
+            //{
+            //    TempData["error"] = "Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.";
+            //    TempData["submittedevalid"] = id;
+            //    TempData["editmode"] = "check";
+            //}
+            //else if (jdflag == true)
+            //{
+            //    TempData["error"] = "A Job Description is required before submission.";
+            //}
+            //else if (eval.NetId != GetUser())
+            //{
+            //    subflag = true;
+            //}
 
             db.SaveChanges();
 
-            if (button.Equals("Submit"))
-                {
-                return RedirectToAction("SubmitEval", new { id = eval.EvalId });
-            }
-            else if (subflag == true)
-            {
-                return RedirectToAction("EditEval", new { id = eval.EvalId, sub = true });
-            }
-            else {
+            //if (button.Equals("Submit"))
+            //    {
+            //    return RedirectToAction("SubmitEval", new { id = eval.EvalId });
+            //}
+            //else if (subflag == true)
+            //{
+            //    return RedirectToAction("EditEval", new { id = eval.EvalId, sub = true });
+            //}
+            //else {
                 return RedirectToAction("Index",new { go = eval.NetId });
-            }
+            //}
         }
 
         public bool CheckEval(int id)
@@ -477,6 +477,7 @@ namespace StaffEvaluations.Controllers
             return msgflag;
         }
 
+        //accept and contest use this same method
         [SessionTimeout]
         public async System.Threading.Tasks.Task<ActionResult> AcceptEval(int id, string button)
         {
@@ -559,16 +560,17 @@ namespace StaffEvaluations.Controllers
                 }
                 throw;
             }
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { go = eval.NetId });
         }
 
-        //accept and contest use this same method
         [SessionTimeout]
         public async System.Threading.Tasks.Task<ActionResult> SubmitEval(int id)
         {
             var eval = db.StaffPerformanceEvaluations.Find(id);
             var msgflag = false;
             var jdflag = false;
+            var naflag = false;
+            var validate = true;
 
             string CommentList = "";
             var CommentReq = from r in db.Ratings where r.EvalCode == eval.EvalCode && r.CommentRequired == true select r;
@@ -579,6 +581,9 @@ namespace StaffEvaluations.Controllers
 
             var answers = from a in db.StaffPerformanceQuestions where a.Rating == "* You must select a value *" && a.EvalId == id select a;
             var answers2 = from a in db.StaffPerformanceQuestions where a.EvalId == id select a;
+
+            string nalist = "AP1AP2AP3AP4AP5AP6AP7AP8";
+
             foreach (StaffPerformanceQuestion q in answers2)
             {
                 if (q.QuestionCode != "AP12" && q.QuestionCode != "CA11" && q.QuestionCode != "CC9" && q.Rating != null)
@@ -586,34 +591,48 @@ namespace StaffEvaluations.Controllers
                     if (CommentList.Contains(q.Rating) && q.Comment == null)
                     {
                         msgflag = true;
+                        validate = false;
                     }
                 }
-                else if (q.QuestionCode == "AP12" && q.QuestionCode == "CA11" && q.QuestionCode == "CC9")
+                if (q.QuestionCode == "AP12" && q.QuestionCode == "CA11" && q.QuestionCode == "CC9")
                 {
                     if (q.Comment == null)
                     {
                         jdflag = true;
+                        validate = false;
                     }
+                }
+                if (nalist.Contains(q.QuestionCode) && q.Rating == "Not Applicable")
+                {
+                    naflag = true;
+                    validate = false;
                 }
             }
 
             TempData["submittedevalid"] = id;
             TempData["editmode"] = "check";
+            TempData["error"] = "";
 
             //the variable answers is a list of questions with the value "You must select a value"
             if (answers.Count() > 0)
             {
-                TempData["error"] = "You must answer all questions in order to Submit an Evaluation.";
+                TempData["error"] += "* You must answer all questions in order to Submit an Evaluation.<br />";
+                validate = false;
             }
-            else if (msgflag == true)
+            if (msgflag == true)
             {
-                TempData["error"] = "Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.";
+                TempData["error"] += "* Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.<br />";
             }
-            else if (jdflag == true)
+            if (jdflag == true)
             {
-                TempData["error"] = "A Job Description is required before submission.";
+                TempData["error"] += "* A Job Description is required before submission.<br />";
             }
-            else
+            if (naflag == true)
+            {
+                TempData["error"] += "* You may only select 'Not Applicable' as a rating for optional questions.";
+            }
+
+            if(validate == true)
             {
                 eval.Status = "Submitted";
                 eval.SubmittedDate = DateTime.Now;
@@ -643,7 +662,7 @@ namespace StaffEvaluations.Controllers
                     await smtp.SendMailAsync(message);
                 }
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { go = eval.NetId });
         }
 
         [SessionTimeout]
@@ -688,7 +707,7 @@ namespace StaffEvaluations.Controllers
                 await smtp.SendMailAsync(message);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { go = newEval.NetId });
         }
 
         public async System.Threading.Tasks.Task<ActionResult> ReturnEvaltoSupervisor(int id)
@@ -736,15 +755,16 @@ namespace StaffEvaluations.Controllers
                     await smtp.SendMailAsync(message);
                 }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { go = eval.NetId });
         }
 
         public async System.Threading.Tasks.Task<ActionResult> ReturnEvaltoEmployee(int id)
         {
 
+            var eval = db.StaffPerformanceEvaluations.Find(id);
+
             if ( CheckEval(id) == false )
             {
-                var eval = db.StaffPerformanceEvaluations.Find(id);
 
                 eval.Status = "Submitted";
                 eval.ReturntoEmployeeDate = DateTime.Now;
@@ -784,12 +804,14 @@ namespace StaffEvaluations.Controllers
                     await smtp.SendMailAsync(message);
                 }
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { go = eval.NetId });
         }
 
         //This is the list of JDs
-        public ActionResult EditJDs (string sortOrder)
+        public ActionResult EditJDs (string sortOrder, string gojd)
         {
+            ViewData["gojd"] = gojd;
+
             var suplist = LibDirectoryFactory.GetAllSupervisors();
 
             List<JDList> jds1 = new List<JDList>();
@@ -869,7 +891,7 @@ namespace StaffEvaluations.Controllers
             else
             {
                 TempData["error"] = "You do not have authorization work with Job Descriptions.";
-                return RedirectToAction("Index", new { sortOrder = Order });
+                return RedirectToAction("Index");
             }
         }
 
@@ -892,7 +914,7 @@ namespace StaffEvaluations.Controllers
 
             db.SaveChanges();
 
-            return RedirectToAction("EditJDs", new { sortOrder = Order });
+            return RedirectToAction("EditJDs", new { sortOrder = Order, gojd = newJD.netid });
         }
 
         public ActionResult EditJD(int id, string Order = null)
@@ -908,7 +930,7 @@ namespace StaffEvaluations.Controllers
             else
             {
                 TempData["error"] = "You do not have authorization to work with Job Descriptions.";
-                return RedirectToAction("Index", new { sortOrder = Order });
+                return RedirectToAction("Index");
             }
         }
         [HttpPost]
@@ -938,7 +960,7 @@ namespace StaffEvaluations.Controllers
 
                 db.SaveChanges();
 
-                return RedirectToAction("EditJDs", new { sortOrder = Order });
+                return RedirectToAction("EditJDs", new { sortOrder = Order, gojd = JD.netid });
             }
         }
 
@@ -949,7 +971,7 @@ namespace StaffEvaluations.Controllers
             db.JobDescriptions.Remove(JD);
             db.SaveChanges();
 
-            return RedirectToAction("EditJDs", new { sortOrder = Order });
+            return RedirectToAction("EditJDs", new { sortOrder = Order, gojd = JD.netid });
         }
 
         public ActionResult Logoff()
