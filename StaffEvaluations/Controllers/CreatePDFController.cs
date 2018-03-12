@@ -79,11 +79,11 @@ namespace StaffEvaluations.Controllers
             preparedpdf = preparedpdf + "<p>Review period: January 1 " + yr + " to December 31 " + yr + "</p></td>";
             if (eval.Status == "Processed")
             {
-                preparedpdf = preparedpdf + "<td align='right'><img src='Content/final.jpg' border='0' width='200' height='134' /></td>";
+                preparedpdf = preparedpdf + "<td align='right'><img src='http://iisdev1.library.illinois.edu/StaffEvaluations/Content/final.jpg' border='0' width='200' height='134' /></td>";
             }
             else
             {
-                preparedpdf = preparedpdf + "<td align='right'><img src='Content/pending.jpg' border='0' width='200' height='134' /></td>";
+                preparedpdf = preparedpdf + "<td align='right'><img src='http://iisdev1.library.illinois.edu/StaffEvaluations/Content/pending.jpg' border='0' width='200' height='134' /></td>";
             }
             preparedpdf = preparedpdf + "</tr></table>";
 
