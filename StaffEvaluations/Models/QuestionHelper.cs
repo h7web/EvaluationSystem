@@ -43,6 +43,7 @@ namespace StaffEvaluations.Models
             var eval = (from e in db.StaffPerformanceEvaluations where e.EvalId == EvalId select e).SingleOrDefault();
             string netid = eval.NetId;
             string supervisorNetid = eval.EvaluatorNetid;
+            string nalist = "AP1AP2AP3AP4AP5AP6AP7AP8";
 
             var needshighlighted = (from r in db.Ratings where r.CommentRequired == true select r.Rating1).ToList();
 
@@ -63,15 +64,19 @@ namespace StaffEvaluations.Models
                     qr = "notapplicable";
                 }
 
-                if (needshighlighted.Contains(qr))
+                if (needshighlighted.Contains(qr)) //if the rating requires a comment
                 {
                     current.highlight = "true";
                 }
-                else if (current.QuestionText != "Job Description" && current.QuestionRating == "* You must select a value *")
+                else if (current.QuestionText != "Job Description" && current.QuestionRating == "* You must select a value *") //if rating not selected
                 {
                     current.highlight = "true";
                 }
-                else if (current.QuestionText == "Job Description" && current.QuestionComment == null)
+                else if (current.QuestionText == "Job Description" && current.QuestionComment == null) //if job desc not entered
+                {
+                    current.highlight = "true";
+                }
+                else if (current.QuestionRating != null && nalist.Contains(current.QuestionRating)) //if rating of Not Applicable chosen for question that is NOT optional
                 {
                     current.highlight = "true";
                 }

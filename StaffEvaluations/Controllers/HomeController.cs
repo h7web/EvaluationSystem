@@ -10,6 +10,7 @@ using System.Configuration;
 using Mayur.Web.Attributes;
 using System.Data.Entity.Validation;
 using StaffEvaluations.Helpers;
+using StaffEvaluations.Controllers;
 
 namespace StaffEvaluations.Controllers
 {
@@ -446,6 +447,7 @@ namespace StaffEvaluations.Controllers
             //}
         }
 
+        //this is to perform validation on the eval
         public bool CheckEval(int id)
         {
 
@@ -475,6 +477,18 @@ namespace StaffEvaluations.Controllers
                     }
                 }
             return msgflag;
+        }
+
+        //this is for the employee to ensure they have looked at the eval before the accept/contest it
+        public ActionResult DoubleCheckEval(int id, string button)
+        {
+            var eval = db.StaffPerformanceEvaluations.Find(id);
+
+            TempData["evaltoreview"] = new CreatePDFController().PrepareEval(eval.EvalId, false);
+            TempData["submittedevalid"] = eval.EvalId;
+            TempData["evalbutton"] = button;
+
+            return RedirectToAction("Index");
         }
 
         //accept and contest use this same method
@@ -560,7 +574,7 @@ namespace StaffEvaluations.Controllers
                 }
                 throw;
             }
-                return RedirectToAction("Index", new { go = eval.NetId });
+                return RedirectToAction("Index");
         }
 
         [SessionTimeout]
@@ -666,15 +680,17 @@ namespace StaffEvaluations.Controllers
         }
 
         [SessionTimeout]
-        public async System.Threading.Tasks.Task<ActionResult> DeferEval(string id, string type, string title)
+        public async System.Threading.Tasks.Task<ActionResult> DeferEval(string id, string type)
         {
+            var reportinfo = LibDirectoryFactory.GetPerson(id);
+
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
             newEval.NetId = id;
             newEval.EvaluatorNetid = GetUser();
             newEval.Year = DateTime.Now.Year;
             newEval.EvalCode = type;
             newEval.Status = "In-Work";
-            newEval.Title = title;
+            newEval.Title = reportinfo.banner_title;
             newEval.StartDate = DateTime.Now;
             db.StaffPerformanceEvaluations.Add(newEval);
             db.SaveChanges();
@@ -755,16 +771,14 @@ namespace StaffEvaluations.Controllers
                     await smtp.SendMailAsync(message);
                 }
 
-            return RedirectToAction("Index", new { go = eval.NetId });
+            return RedirectToAction("Index");
         }
 
+        [SessionTimeout]
         public async System.Threading.Tasks.Task<ActionResult> ReturnEvaltoEmployee(int id)
         {
 
             var eval = db.StaffPerformanceEvaluations.Find(id);
-
-            if ( CheckEval(id) == false )
-            {
 
                 eval.Status = "Submitted";
                 eval.ReturntoEmployeeDate = DateTime.Now;
@@ -803,7 +817,24 @@ namespace StaffEvaluations.Controllers
                     smtp.Host = "Express-SMTP.cites.illinois.edu ";
                     await smtp.SendMailAsync(message);
                 }
+
+            return RedirectToAction("Index", new { go = eval.NetId });
+        }
+
+        public ActionResult CompleteEval(int id)
+        {
+            var eval = db.StaffPerformanceEvaluations.Find(id);
+
+            eval.Status = "Complete";
+            eval.CompleteDate = DateTime.Now;
+            eval.CompleteNetid = GetUser();
+            if (Session["Masquerade"].Equals(true))
+            {
+                eval.CompleteProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
             }
+
+            db.SaveChanges();
+
             return RedirectToAction("Index", new { go = eval.NetId });
         }
 

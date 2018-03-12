@@ -69,14 +69,23 @@ namespace StaffEvaluations.Controllers
                 evaltypedesc = "Civil Service - Exempt";
             }
 
-            preparedpdf = "<html><head><style>body { font-size:20; }</style></head><body>";
-            preparedpdf = preparedpdf + "<H2>" + eval.Year + " " + evaltypedesc + " Performance Evaluation</H2>";
+            preparedpdf = "<html><head><style>body, td, td p { font-size:20; }</style></head><body><table width='100%'><tr><td colspan='2'>";
+            preparedpdf = preparedpdf + "<H2>" + eval.Year + " " + evaltypedesc + " Performance Evaluation</H2></td></tr>";
 
-            preparedpdf = preparedpdf + "<p>" + reportinfo.name + " - " + reportinfo.banner_title + "<br />";
+            preparedpdf = preparedpdf + "<tr><td><p>" + reportinfo.name + " - " + reportinfo.banner_title + "<br />";
             preparedpdf = preparedpdf + "Library Start Date: " + reportinfo.LibraryStartDate + "<br />";
             preparedpdf = preparedpdf + "Supervisor: " + supinfo.name + " - " + supinfo.banner_title + "</p>";
 
-            preparedpdf = preparedpdf + "<p>Review period: January 1 " + yr + " to December 31 " + yr + "</p>";
+            preparedpdf = preparedpdf + "<p>Review period: January 1 " + yr + " to December 31 " + yr + "</p></td>";
+            if (eval.Status == "Processed")
+            {
+                preparedpdf = preparedpdf + "<td align='right'><img src='Content/final.jpg' border='0' width='200' height='134' /></td>";
+            }
+            else
+            {
+                preparedpdf = preparedpdf + "<td align='right'><img src='Content/pending.jpg' border='0' width='200' height='134' /></td>";
+            }
+            preparedpdf = preparedpdf + "</tr></table>";
 
             preparedpdf = preparedpdf + "<p>Date Started: " + eval.StartDate.ToString("MM/dd/yyyy") + " (" + eval.EvaluatorNetid + ")" + "<br />";
             if (eval.SubmittedDate != null)
@@ -93,11 +102,11 @@ namespace StaffEvaluations.Controllers
             }
             if (eval.CompleteDate != null)
             {
-                preparedpdf = preparedpdf + "Date Completed: " + eval.CompleteDate?.ToString("MM/dd/yyyy") + " (" + eval.EvaluatorNetid + ")" + "<br />";
+                preparedpdf = preparedpdf + "Date Submitted to HR: " + eval.CompleteDate?.ToString("MM/dd/yyyy") + " (" + eval.EvaluatorNetid + ")" + "<br />";
             }
             if (eval.ProcessedDate != null)
             {
-                preparedpdf = preparedpdf + "Date Received by HR: " + eval.ProcessedDate?.ToString("MM/dd/yyyy") + "</p>";
+                preparedpdf = preparedpdf + "Date Processed by HR: " + eval.ProcessedDate?.ToString("MM/dd/yyyy") + "</p>";
             }
 
             preparedpdf = preparedpdf + "<ol>";

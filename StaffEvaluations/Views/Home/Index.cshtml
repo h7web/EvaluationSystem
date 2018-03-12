@@ -17,6 +17,7 @@
         <ul>
             @foreach (StaffEvaluations.Models.StaffPerformanceEvaluation eval in Model.MyEvaluations)
             {
+                var mystatus = "";
                 var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
                 <li>
                     @if (@eval.Status != "In-Work" && @eval.Status != "Deferred")
@@ -29,14 +30,27 @@
                         @evalname.ToString()
                         @: is in progress
 }
-                    &nbsp;(@eval.Status)
                     @if (@eval.Status == "Submitted")
                     {
-                        @Html.ActionLink("Return to Supvervisor", "ReturnEvaltoSupervisor", new { id = eval.EvalId, button = "Return" })
+                        mystatus = "Submitted to Employee";
+                    }
+                    else if (@eval.Status == "Complete")
+                    {
+                        mystatus = "Submitted to HR";
+                    }
+                    else
+                    {
+                        mystatus = eval.Status;
+                    }
+
+                    &nbsp;(@mystatus)
+                    @if (@eval.Status == "Submitted")
+                    {
+                        @Html.ActionLink("Return to Supervisor", "ReturnEvaltoSupervisor", new { id = eval.EvalId, button = "Return" })
                         @:|
-                        @Html.ActionLink("Accept", "AcceptEval", new { id = eval.EvalId, button = "Accept" })
+                        @Html.ActionLink("Accept", "DoubleCheckEval", new { id = eval.EvalId, button = "Accept" })
                         @:|
-                        @Html.ActionLink("Contest", "AcceptEval", new { id = eval.EvalId, button = "Contest" })
+                        @Html.ActionLink("Contest", "DoubleCheckEval", new { id = eval.EvalId, button = "Contest" })
                         @:|
                 }
                     @Html.ActionLink("Pdf", "Print2Pdf", "CreatePDF", new { id = eval.EvalId, e = true }, null)
@@ -64,7 +78,7 @@
                 {
                     unit = directReport.unit_name;
                     <tr><td colspan="6"><h3>@unit</h3></td></tr>
-                    <tr class="table_header"><td><b>Name</b></td><td colspan="2"><b>E-class</b></td><td><b>Anniversary&nbsp;Date&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td><b>Status</b></td><td><b>Actions</b></td></tr>
+                    <tr class="table_header"><td><b>Name</b></td><td colspan="2"><b>E-class</b></td><td><b>Anniversary&nbsp;Date&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td><b>Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td><b>Actions</b></td></tr>
                 }
                 <tr id="netid_@directReport.netid" class="@(( (string)ViewData["go"]==directReport.netid)? "highlighted": "not_highlighted")">
 
@@ -77,6 +91,10 @@
                         if (status == "Submitted")
                         {
                             status = "Submitted to Employee";
+                        }
+                        else if (status == "Complete")
+                        {
+                            status = "Submitted to HR";
                         }
 
                         <td><strong>@directReport.name</strong></td>
@@ -92,12 +110,12 @@
                         <td>
 
                             <!-- if the eval has been sent to HR by the supervisor-->
-                            @if (status == "Complete")
+                            @if (status == "Submitted to HR")
                             {
                                 @Html.ActionLink("View", "EditEval", new { id = eid })
                             }
                             <!-- if the eval has been sent to HR by the supervisor AND HR is acting as superuser-->
-                            @if (status == "Complete" && Session["Masquerade"].Equals(true))
+                            @if (status == "Submitted to HR" && Session["Masquerade"].Equals(true))
                             {
                                 @:|
                                 @Html.ActionLink("Return to Supervisor [Proxy]", "ReturnEvaltoSupervisor", new { id = eid })
@@ -111,6 +129,8 @@
                                 @Html.ActionLink("Edit", "EditEval", new { id = eid })
                                 @:|
                                 @Html.ActionLink("Return to Employee", "ReturnEvaltoEmployee", new { id = eid })
+                                @:|
+                                @Html.ActionLink("Submit to HR", "CompleteEval", new { id = eid })
                             }
 
 
@@ -129,13 +149,13 @@
                                 }
                                     else
                                     {
-                                        @Html.ActionLink("Submit", "SubmitEval", new { id = eid })
+                                        @Html.ActionLink("Submit to Employee", "SubmitEval", new { id = eid })
                                     }
                                 }
                                 else
                                 {
                                     @:|
-                                    @Html.ActionLink("Submit", "SubmitEval", new { id = eid })
+                                    @Html.ActionLink("Submit to Employee", "SubmitEval", new { id = eid })
                                 }
                                 @:|
                                 @Html.ActionLink("Delete", "DeleteEval", new { id = eid })
@@ -231,7 +251,7 @@
                 <h4 class="modal-title" id="findLibExpenseLabel" style="color:red;">Error!</h4>
             </div>
             <div class="modal-body">
-                @TempData["error"]
+                @Html.Raw(TempData["error"])
             </div>
             <div class="modal-footer">
                 <button type="button" id="gotoeval" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='@Url.Action("EditEval", "Home", new { id = TempData["submittedevalid"]})'">Edit</button>
@@ -241,18 +261,37 @@
     </div>
 </div>
 
+<div class="modal fade" id="doublecheck" tabindex="-1" role="dialog" aria-labelledby="doublecheckLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="findLibExpenseLabel" style="color:orange;">You must review and confirm!</h4>
+            </div>
+            <div class="modal-body">
+                @Html.Raw(TempData["evaltoreview"])
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="confirmaction" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='@Url.Action("AcceptEval", "Home", new { id = TempData["submittedevalid"], button = TempData["evalbutton"]})'">Confirm</button>
+                <button type="button" id="gotoeval2" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='@Url.Action("EditEval", "Home", new { id = TempData["submittedevalid"]})'">Edit</button>
+                <button type="button" id="modalclose2" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section scripts {
     <script>
         var modal = document.getElementById('evalerror');
-        var btn = document.getElementById('modalclose');
-        var btn2 = document.getElementById('gotoeval');
         var err = '@TempData["error"]';
+        var dc = '@TempData["evaltoreview"]';
         var evalid = "";
         var url = "";
+        var go = '@ViewData["go"]';
 
         $(document).ready(function() {
-
-            document.getElementById("netid_@ViewData["go"]").scrollIntoView();
 
             openpopup();
 
@@ -260,6 +299,11 @@
                 if (event.target == modal) {
                     modal.style.display = "none";
                 }
+
+            }
+
+            if(go != null && go != '' && isNumeric(go) == false){
+                document.getElementById("netid_@ViewData["go"]").scrollIntoView();
             }
         });
 
@@ -267,9 +311,15 @@
             if (err != null && err != '') {
                 $('#evalerror').modal('show');
             }
+            else if (dc != null && dc != '') {
+                $('#doublecheck').modal('show');
+    }
 
         };
 
+        function isNumeric(n) {
+            return !isNaN(parseFloat(n)) && isFinite(n);
+        };
 
     </script>
 }
