@@ -32,7 +32,19 @@
         </tr>
     
     @foreach (var item in Model) {
-        <tr  id="netid_@item.empNetId" class="@(( (string)ViewData["gojd"]==item.empNetId)? "highlighted": "not_highlighted")">
+
+        var css = "not_highlighted";
+        var jdid = item.jdid.ToString();
+
+        if(item.jdid != null)
+        {
+            if(jdid == (string)ViewData["gojd"])
+            {
+                css = "highlighted";
+            }
+        }
+
+        <tr  id="jdid_@item.jdid" class="@css">
 
             <td>
                 @if (item.JDname == null)
@@ -83,8 +95,11 @@ else
 @section scripts {
     <script>
         $(document).ready(function() {
+            var gojd = '@ViewData["gojd"]';
 
-            document.getElementById("netid_@ViewData["gojd"]").scrollIntoView();
+            if (gojd != null && gojd !='') {
+            document.getElementById("jdid_@ViewData["gojd"]").scrollIntoView();
+        }
         });
     </script>
 }

@@ -891,7 +891,7 @@ namespace StaffEvaluations.Controllers
                     sorted=jds1.OrderBy(j => j.EmployeeLast);
                     break;
                 case "super":
-                    sorted=jds1.OrderBy(j => j.JDSuper);
+                    sorted=jds1.OrderBy(j => j.JDSuper).ThenBy(j => j.EmployeeLast);
                     break;
                 case "date":
                     sorted=jds1.OrderByDescending(j => j.lastUpdatedDate);
@@ -928,7 +928,7 @@ namespace StaffEvaluations.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult CreateJD(string netid, string supervisorNetid, string description, string posn_number, string val = null, string Order = null)
+        public ActionResult CreateJD(string netid, string supervisorNetid, string description, string posn_number, string submit = null, string Order = null)
         {
             JobDescription newJD = new JobDescription();
             var lsdate = DateTime.Now;
@@ -940,12 +940,24 @@ namespace StaffEvaluations.Controllers
             newJD.description = description;
             newJD.posn_number = posn_number;
 
+            db.JobDescriptions.Add(newJD);
 
+            if (submit == "Formatting")
+            {
+                newJD.description = FormatHelper.JDFormat(description);
+
+                db.SaveChanges();
+
+                return RedirectToAction("EditJD", new { @id = newJD.jdid });
+            }
+            else
+            { 
             db.JobDescriptions.Add(newJD);
 
             db.SaveChanges();
 
             return RedirectToAction("EditJDs", new { sortOrder = Order, gojd = newJD.netid });
+        }
         }
 
         public ActionResult EditJD(int id, string Order = null)
@@ -991,7 +1003,7 @@ namespace StaffEvaluations.Controllers
 
                 db.SaveChanges();
 
-                return RedirectToAction("EditJDs", new { sortOrder = Order, gojd = JD.netid });
+                return RedirectToAction("EditJDs", new { sortOrder = Order, gojd = JD.jdid });
             }
         }
 
@@ -1002,7 +1014,7 @@ namespace StaffEvaluations.Controllers
             db.JobDescriptions.Remove(JD);
             db.SaveChanges();
 
-            return RedirectToAction("EditJDs", new { sortOrder = Order, gojd = JD.netid });
+            return RedirectToAction("EditJDs", new { sortOrder = Order});
         }
 
         public ActionResult Logoff()
