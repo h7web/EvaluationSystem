@@ -12,7 +12,7 @@
     <title>EditJDs</title>
 </head>
 <body>
-    <h2>Job Description Master List</h2>
+    <h2>Job Description Master List </h2>
     <p>
         Note: A netid in brackets denotes that our data shows that person in that employee to supervisor relationship, but that netid is not found in our list of current employees, so no full name can be displayed.
     </p>
@@ -20,13 +20,13 @@
     <table class="table">
         <tr>
             <th>
-                @Html.ActionLink("Name", "EditJDs", new { sortOrder = "employee" })
+                @Html.ActionLink("Name", "EditJDs", "Home", new { sortOrder = "employee" }, new { @class = (string)ViewData["jdsort"] == "employee" ? "selected" : "" })
             </th>
             <th>
-                @Html.ActionLink("Supervisor", "EditJDs", new { sortOrder = "super" })
+                @Html.ActionLink("Supervisor", "EditJDs", new { sortOrder = "super" }, new { @class = (string)ViewData["jdsort"] == "super" ? "selected" : "" })
             </th>
             <th>
-                @Html.ActionLink("Last Updated Date", "EditJDs", new { sortOrder = "date" })
+                @Html.ActionLink("Last Updated Date", "EditJDs", new { sortOrder = "date" }, new { @class = (string)ViewData["jdsort"] == "date" ? "selected" : "" })
             </th>
             <th></th>
         </tr>

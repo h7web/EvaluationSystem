@@ -64,3 +64,6 @@ tr.highlighted td {
 
 }
 
+a.selected {
+    text-decoration:underline;
+}

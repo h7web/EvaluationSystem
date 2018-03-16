@@ -900,6 +900,16 @@ namespace StaffEvaluations.Controllers
                     sorted = jds1.OrderBy(j => j.EmployeeLast);
                     break;
             }
+
+            if (sortOrder == null)
+            {
+                ViewData["jdsort"] = "employee";
+            }
+            else
+            {
+                ViewData["jdsort"] = sortOrder;
+            }
+
             return View(sorted.ToList());
         }
 

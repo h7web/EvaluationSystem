@@ -20,16 +20,8 @@
                 var mystatus = "";
                 var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
                 <li>
-                    @if (@eval.Status != "In-Work" && @eval.Status != "Deferred")
-                    {
-                        @Html.ActionLink("Go to your evaluation from " + evalname, "EditEval", new { id = eval.EvalId })
-                    }
-                    else
-                    {
-                        @:Your evaluation from
-                        @evalname.ToString()
-                        @: is in progress
-}
+                       Evaluation from @evalname.ToString()
+
                     @if (@eval.Status == "Submitted")
                     {
                         mystatus = "Submitted to Employee";
@@ -46,6 +38,8 @@
                     &nbsp;(@mystatus)
                     @if (@eval.Status == "Submitted")
                     {
+                        @Html.ActionLink("Edit", "EditEval", new { id = eval.EvalId })
+                        @:|
                         @Html.ActionLink("Return to Supervisor", "ReturnEvaltoSupervisor", new { id = eval.EvalId, button = "Return" })
                         @:|
                         @Html.ActionLink("Accept", "DoubleCheckEval", new { id = eval.EvalId, button = "Accept" })
