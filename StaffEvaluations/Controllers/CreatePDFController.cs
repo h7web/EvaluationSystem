@@ -16,13 +16,15 @@ namespace StaffEvaluations.Controllers
         public ActionResult Print2Pdf(int id, bool e = false)
         {
             string htmlString = PrepareEval(id, e);
+            
+            SelectPdf.GlobalProperties.LicenseKey = "g6iyo7G2sqOyo7K7rbOjsLKtsrGturq6ug==";
 
             HtmlToPdf converter = new HtmlToPdf();
 
-            converter.Options.MarginTop = 20;
             converter.Options.MarginBottom = 20;
             converter.Options.MarginLeft = 20;
             converter.Options.MarginRight = 20;
+            converter.Options.MarginTop = 20;
 
             PdfDocument doc = converter.ConvertHtmlString(htmlString);
 
