@@ -17,7 +17,7 @@ namespace StaffEvaluations.Controllers
         {
             string htmlString = PrepareEval(id, e);
             
-            SelectPdf.GlobalProperties.LicenseKey = "g6iyo7G2sqOyo7K7rbOjsLKtsrGturq6ug==";
+            SelectPdf.GlobalProperties.LicenseKey = "CSI4KTs8OCk4KTgxJzkpOjgnODsnMDAwMA==";
 
             HtmlToPdf converter = new HtmlToPdf();
 
