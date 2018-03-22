@@ -80,7 +80,7 @@
                     {
                         var eid = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().EvalId;
                         var status = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().Status;
-                        var ret = Model.MyStaffEvaluations.Where(e => e.ReturntoSupervisorNetid != null).SingleOrDefault();
+                        var ret = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid && e.ReturntoSupervisorNetid != null).SingleOrDefault();
 
                         if (status == "Submitted")
                         {
