@@ -391,7 +391,7 @@ namespace StaffEvaluations.Controllers
                 }
             }
 
-            if (eval.EvaluatorComments != EvaluatorComments || eval.EmployeeComments != EmployeeComments)
+            if ((eval.EvaluatorComments != EvaluatorComments && EvaluatorComments != "") || (eval.EmployeeComments != EmployeeComments && EmployeeComments != ""))
             {
                 eval.EmployeeComments = EmployeeComments;
                 eval.EvaluatorComments = EvaluatorComments;
