@@ -64,6 +64,16 @@ tr.highlighted td {
 
 }
 
+tr.fix td {
+    background-color:#c68989;
+    color:white;
+
+}
+
+tr.fix td a {
+    color:white;
+}
+
 a.selected {
     text-decoration:underline;
 }

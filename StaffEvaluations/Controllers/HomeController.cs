@@ -485,6 +485,7 @@ namespace StaffEvaluations.Controllers
             var eval = db.StaffPerformanceEvaluations.Find(id);
 
             TempData["evaltoreview"] = new CreatePDFController().PrepareEval(eval.EvalId, false);
+            TempData["showeval"] = true;
             TempData["submittedevalid"] = eval.EvalId;
             TempData["evalbutton"] = button;
 
@@ -854,10 +855,12 @@ namespace StaffEvaluations.Controllers
                     var newJD = new JDList();
                     newJD.supNetId = item.supervisor.netid;
                     newJD.JDSuper = item.supervisor.name;
+                    newJD.SuperLast = item.supervisor.last;
                     newJD.empNetId = item2.netid;
                     newJD.JDname = item2.name;
                     newJD.EmployeeFirst = item2.first;
                     newJD.EmployeeLast = item2.last;
+                    newJD.Order = sortOrder;
                     jds1.Add(newJD);
                 }
             }
@@ -883,7 +886,30 @@ namespace StaffEvaluations.Controllers
                 }
             }
 
-            IOrderedEnumerable<JDList> sorted;
+            var jds2 = from j in db.JobDescriptions select j;
+
+            foreach (var item in jds2)
+            {
+                var jdo = jds1.Where(j => j.empNetId == item.netid && j.supNetId == item.supervisorNetid).SingleOrDefault();
+                if (jdo == null)
+                {
+                    var newJD = new JDList();
+                    newJD.jdid = item.jdid;
+                    newJD.supNetId = item.supervisorNetid;
+                    newJD.JDSuper = item.JDSuper;
+                    newJD.SuperLast = LibDirectoryFactory.GetPerson(item.supervisorNetid).last;
+                    newJD.empNetId = item.netid;
+                    newJD.JDname = item.JDName;
+                    newJD.EmployeeFirst = LibDirectoryFactory.GetPerson(item.netid).first;
+                    newJD.EmployeeLast = LibDirectoryFactory.GetPerson(item.netid).last;
+                    newJD.Fix = "true";
+                    newJD.Order = sortOrder;
+                    jds1.Add(newJD);
+                }
+            }
+
+
+            IOrderedEnumerable< JDList > sorted;
 
             switch (sortOrder)
             {
@@ -891,7 +917,7 @@ namespace StaffEvaluations.Controllers
                     sorted=jds1.OrderBy(j => j.EmployeeLast);
                     break;
                 case "super":
-                    sorted=jds1.OrderBy(j => j.JDSuper).ThenBy(j => j.EmployeeLast);
+                    sorted=jds1.OrderBy(j => j.SuperLast).ThenBy(j => j.EmployeeLast);
                     break;
                 case "date":
                     sorted=jds1.OrderByDescending(j => j.lastUpdatedDate);

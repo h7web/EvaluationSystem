@@ -280,7 +280,7 @@
     <script>
         var modal = document.getElementById('evalerror');
         var err = '@TempData["error"]';
-        var dc = '@TempData["evaltoreview"]';
+        var dc = '@TempData["showeval"]';
         var evalid = "";
         var url = "";
         var go = '@ViewData["go"]';
@@ -305,7 +305,7 @@
             if (err != null && err != '') {
                 $('#evalerror').modal('show');
             }
-            else if (dc != null && dc != '') {
+            else if (dc == 'True') {
                 $('#doublecheck').modal('show');
     }
 
