@@ -67,7 +67,7 @@
                 <div class="col-md-offset-2 col-md-10">
                     <input type="submit" value="Save" name="submit" class="btn btn-primary" />
                     <input type="submit" value="Formatting" name="submit" class="btn btn-default" />
-                    @Html.ActionLink("Cancel", "EditJDs", null, new { @class = "btn btn-warning" })
+                    @Html.ActionLink("Cancel", "EditJDs", new { sortOrder = Model.Order }, new { @class = "btn btn-warning"})
                 </div>
             </div>
         </div>

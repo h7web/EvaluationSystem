@@ -950,6 +950,7 @@ namespace StaffEvaluations.Controllers
             newJD.supervisorNetid = supervisorNetid;
             newJD.JDName = JDname;
             newJD.JDSuper = JDSuper;
+            newJD.Order = Order;
 
             if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)))
             {
@@ -1003,6 +1004,7 @@ namespace StaffEvaluations.Controllers
                 var getJD = (from e in db.JobDescriptions where e.jdid == id select e).SingleOrDefault();
                 getJD.JDName = (from e in db1.employees where e.NETID == getJD.netid select e.FULLNAME).FirstOrDefault().ToString();
                 getJD.JDSuper = (from e in db1.employees where e.NETID == getJD.supervisorNetid select e.FULLNAME).FirstOrDefault().ToString();
+                getJD.Order = Order;
 
                 return View(getJD);
             }
