@@ -967,34 +967,45 @@ namespace StaffEvaluations.Controllers
         [ValidateInput(false)]
         public ActionResult CreateJD(string netid, string supervisorNetid, string description, string posn_number, string submit = null, string Order = null)
         {
-            JobDescription newJD = new JobDescription();
-            var lsdate = DateTime.Now;
 
-            newJD.lastUpdatedDate = lsdate;
+            var exists = from d in db.JobDescriptions where d.netid == netid && d.supervisorNetid == supervisorNetid select d;
 
-            newJD.netid = netid;
-            newJD.supervisorNetid = supervisorNetid;
-            newJD.description = description;
-            newJD.posn_number = posn_number;
-
-            db.JobDescriptions.Add(newJD);
-
-            if (submit == "Formatting")
+            if (exists.Count() == 0)
             {
-                newJD.description = FormatHelper.JDFormat(description);
+                JobDescription newJD = new JobDescription();
+                var lsdate = DateTime.Now;
 
-                db.SaveChanges();
+                newJD.lastUpdatedDate = lsdate;
 
-                return RedirectToAction("EditJD", new { @id = newJD.jdid });
+                newJD.netid = netid;
+                newJD.supervisorNetid = supervisorNetid;
+                newJD.description = description;
+                newJD.posn_number = posn_number;
+
+
+                db.JobDescriptions.Add(newJD);
+
+                if (submit == "Formatting")
+                {
+                    newJD.description = FormatHelper.JDFormat(description);
+
+                    db.SaveChanges();
+
+                    return RedirectToAction("EditJD", new { @id = newJD.jdid });
+                }
+                else
+                {
+                    db.JobDescriptions.Add(newJD);
+
+                    db.SaveChanges();
+
+                    return RedirectToAction("EditJDs", new { sortOrder = Order, gojd = newJD.netid });
+                }
             }
             else
-            { 
-            db.JobDescriptions.Add(newJD);
-
-            db.SaveChanges();
-
-            return RedirectToAction("EditJDs", new { sortOrder = Order, gojd = newJD.netid });
-        }
+            {
+                return RedirectToAction("EditJDs", new { sortOrder = Order });
+            }
         }
 
         public ActionResult EditJD(int id, string Order = null)
