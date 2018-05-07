@@ -67,9 +67,9 @@
     <h2>@Model.eval.Year @evaltypedesc Performance Evaluation</h2>
 
     <p class="alert-info">
-        @if (Model.sub == true)
+        @if (Model.hr == true)
         {
-            @:This evaluation is completed, you now have the option to submit below.
+            @:This evaluation is displayed in read-only mode. Please masquerade as @Model.eval.EvaluatorName to edit.
         }
     </p>
 
@@ -137,7 +137,7 @@
                     <br />
                     @if (q.CommentOnly == false)
                     {
-                        if (Model.eval.Status == "" || Model.eval.Status == "In-Work" || Model.eval.Status == "Deferred")
+                        if ((Model.eval.Status == "" || Model.eval.Status == "In-Work" || Model.eval.Status == "Deferred" ) && Model.hr != true)
                         {
                             @Html.DropDownList(q.namePrefix + "QuestionRating", (List<SelectListItem>)ViewData["RatingList"])
                         }
@@ -151,16 +151,16 @@
                 <div>
 
                     @if (q.CommentOnly == true) //if its Job Desc
-                    {
-                        if (Model.eval.Status == "In-Work") //in-work means super has it (1st time) submitted means employee has it
+                        {
+                        if (Model.eval.Status == "In-Work" && Model.hr != true) //in-work means super has it (1st time) submitted means employee has it
                         {
                             <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" rows="40" style="max-width:none;" class="text-info wysiwyg">@q.QuestionComment</textarea>
                         }
-                        else if (Model.eval.Status == "Accepted" && Model.eval.NetId != System.Web.HttpContext.Current.User.Identity.Name.Substring(5) || Model.eval.Status == "Contested" && Model.eval.Status == "Accepted" && Model.eval.NetId != System.Web.HttpContext.Current.User.Identity.Name.Substring(5))
+                        else if ((Model.eval.Status == "Accepted" && Model.eval.NetId != System.Web.HttpContext.Current.User.Identity.Name.Substring(5) || Model.eval.Status == "Contested" && Model.eval.Status == "Accepted" && Model.eval.NetId != System.Web.HttpContext.Current.User.Identity.Name.Substring(5)) && Model.hr != true)
                         //means sup has it (2nd time)
                         {
                             <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" rows="40" style="max-width:none;" class="text-info wysiwyg">@q.QuestionComment</textarea>
-                        }
+                    }
                         else //otherwise read only
                         {
                             @Html.Raw(q.QuestionComment)
@@ -170,14 +170,14 @@
                     else//not job desc
                     {
                         <br /> @:Comments: <br />
-                        if (Model.eval.Status == "In-Work") //not comment only and sup has it (1st time)
+                        if (Model.eval.Status == "In-Work" && Model.hr != true) //not comment only and sup has it (1st time)
                         {
                             <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;" class="text-info">@q.QuestionComment</textarea>
                         }
                         else //otherwise readonly
                         {
                             <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" readonly style="background-color:lightgray; max-width:none;" cols="100">@q.QuestionComment</textarea>
-                        }
+                    }
                     }
 
                 </div>
@@ -187,7 +187,7 @@
         }
     </ol>
 
-    if (showempc == "write") //&& Model.eval.NetId == User.Identity.Name.Substring(5))
+    if (showempc == "write" && Model.hr != true)
     {
         <div> Employee Comments:<br />@Html.TextArea("EmployeeComments", Model.eval.EmployeeComments, new { @style = "width:700px;max-width:none;" })</div>
     }
@@ -195,7 +195,7 @@
     {
         <div>Employee Comments:<br />@Html.TextArea("EmployeeComments", Model.eval.EmployeeComments, new { @readonly = "readonly", @style = "background-color:lightgray;width:700px;max-width:none;" })</div>
     }
-    if (showevc == "write")
+    if (showevc == "write" && Model.hr != true)
     {
         <div>Evaluator Comments:<br />@Html.TextArea("EvaluatorComments", Model.eval.EvaluatorComments, new { @style = "width:700px;max-width:none;" })</div>
     }
@@ -205,7 +205,7 @@
     }
 
     <div>
-        @if ((Model.eval.Status != "Complete" || Model.eval.Status != "Processed" || (Model.eval.Status == "Accepted") && Model.eval.NetId != User.Identity.Name.Substring(5)) || (Model.eval.Status == "Contested") && Model.eval.NetId != User.Identity.Name.Substring(5))
+        @if (((Model.eval.Status != "Complete" || Model.eval.Status != "Processed" || (Model.eval.Status == "Accepted") && Model.eval.NetId != User.Identity.Name.Substring(5)) || (Model.eval.Status == "Contested") && Model.eval.NetId != User.Identity.Name.Substring(5)) && Model.hr != true)
         {
             <input type="submit" name="button" value="Save" class="btn" />
             @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-warning" })

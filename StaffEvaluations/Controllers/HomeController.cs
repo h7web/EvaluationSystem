@@ -293,7 +293,7 @@ namespace StaffEvaluations.Controllers
         }
 
         [SessionTimeout]
-        public ActionResult EditEval(int id, bool? sub)
+        public ActionResult EditEval(int id, bool? hr)
         {
             var getEval = (from e in db.StaffPerformanceEvaluations where e.EvalId == id select e).Single();
             var getsup = LibDirectoryFactory.GetPersonsSupervisors(getEval.NetId);
@@ -308,7 +308,7 @@ namespace StaffEvaluations.Controllers
                 }
             }
 
-            if (suplist.ToString().Contains(GetUser()) || getEval.NetId == GetUser())
+            if ((suplist.ToString().Contains(GetUser()) || getEval.NetId == GetUser()) || hr == true)
             {
                 var reportinfo = LibDirectoryFactory.GetPerson(getEval.NetId);
 
@@ -328,9 +328,9 @@ namespace StaffEvaluations.Controllers
 
                 ViewData["RatingList"] = QuestionHelper.GetRatings(db, getEval.EvalCode);
 
-                if(sub == true)
+                if(hr == true)
                 {
-                    crvm.sub = true;
+                    crvm.hr = true;
                 }
 
                 return View(crvm);
@@ -844,7 +844,7 @@ namespace StaffEvaluations.Controllers
 
         public ActionResult SearchEvals(string query, int fy)
         {
-            var results = from n in db.StaffPerformanceEvaluations where n.NetId.Contains(query) && n.Year.Equals(fy) select n;
+            var results = from n in db.StaffPerformanceEvaluations where (n.NetId.Contains(query) || n.Name.Contains(query)) && n.Year.Equals(fy) select n;
 
             return PartialView(results);
         }
