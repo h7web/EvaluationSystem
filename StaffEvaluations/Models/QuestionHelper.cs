@@ -9,11 +9,11 @@ namespace StaffEvaluations.Models
     public class QuestionHelper
     {
 
-        public static List<Question> GetQuestions(Models.Entities db, string type, string netid, string supervisorNetid)
+        public static List<Question> GetQuestions(Models.Entities db, string type, string netid, string supervisorNetid, Int32 year)
         {
             List<Question> ret = new List<Question>();
 
-            var yr = 2017;
+            var yr = year;
 
             var questionlist = (from q in db.EvaluationQuestionSets where (q.QuestionType == type && q.Year == yr) select q).ToList();
 
@@ -47,7 +47,7 @@ namespace StaffEvaluations.Models
 
             var needshighlighted = (from r in db.Ratings where r.CommentRequired == true select r.Rating1).ToList();
 
-            List<Question> qs = QuestionHelper.GetQuestions(db, type, netid, supervisorNetid);
+            List<Question> qs = QuestionHelper.GetQuestions(db, type, netid, supervisorNetid, eval.Year);
 
             foreach (StaffPerformanceQuestion q in answers)
             {

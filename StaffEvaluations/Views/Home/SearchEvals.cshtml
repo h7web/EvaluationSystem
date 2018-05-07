@@ -1,0 +1,43 @@
+﻿@model IEnumerable<StaffEvaluations.Models.StaffPerformanceEvaluation>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Year
+        </th>
+        <th>
+            Name
+        </th>
+        <th>
+            Supervisor
+        </th>
+        <th>
+            Status
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Year)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EvaluatorName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @Html.ActionLink("View", "EditEval", new {  id=item.EvalId }) |
+        </td>
+    </tr>
+}
+
+</table>

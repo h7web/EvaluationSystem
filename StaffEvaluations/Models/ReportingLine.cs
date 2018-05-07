@@ -17,5 +17,11 @@ namespace StaffEvaluations.Models
         public int id { get; set; }
         public string empNetId { get; set; }
         public string supNetId { get; set; }
+        public string empFirst { get; set; }
+        public string empLast { get; set; }
+        public string empName { get; set; }
+        public string supFirst { get; set; }
+        public string supLast { get; set; }
+        public string supName { get; set; }
     }
 }

@@ -56,6 +56,10 @@ namespace StaffEvaluations.Models
         public string ReturntoEmployeeNetid { get; set; }
         public string ReturntoEmployeeProxy { get; set; }
         public string ReturntoSupervisorProxy { get; set; }
+        public string Name { get; set; }
+        public string EvaluatorName { get; set; }
+        public string EvaluatorTitle { get; set; }
+        public Nullable<System.DateTime> LibraryStartDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StaffPerformanceQuestion> StaffPerformanceQuestions { get; set; }

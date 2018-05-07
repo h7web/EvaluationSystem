@@ -74,6 +74,14 @@ tr.fix td a {
     color:white;
 }
 
+.suswitch {
+    float:right;
+}
+
 a.selected {
     text-decoration:underline;
+}
+
+.divbox.su, .suswitch {
+    display:none;
 }

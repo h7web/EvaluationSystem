@@ -74,9 +74,9 @@ namespace StaffEvaluations.Controllers
             preparedpdf = "<html><head><style>body, td, td p { font-size:20; }</style></head><body><table width='100%'><tr><td colspan='2'>";
             preparedpdf = preparedpdf + "<H2>" + eval.Year + " " + evaltypedesc + " Performance Evaluation</H2></td></tr>";
 
-            preparedpdf = preparedpdf + "<tr><td><p>" + reportinfo.name + " - " + reportinfo.banner_title + "<br />";
-            preparedpdf = preparedpdf + "Library Start Date: " + reportinfo.LibraryStartDate + "<br />";
-            preparedpdf = preparedpdf + "Supervisor: " + supinfo.name + " - " + supinfo.banner_title + "</p>";
+            preparedpdf = preparedpdf + "<tr><td><p>" + eval.Name + " - " + eval.Title + "<br />";
+            preparedpdf = preparedpdf + "Library Start Date: " + eval.LibraryStartDate?.ToShortDateString() + "<br />";
+            preparedpdf = preparedpdf + "Supervisor: " + eval.EvaluatorName + " - " + eval.EvaluatorTitle + "</p>";
 
             preparedpdf = preparedpdf + "<p>Review period: January 1 " + yr + " to December 31 " + yr + "</p></td>";
             if (eval.Status == "Processed")

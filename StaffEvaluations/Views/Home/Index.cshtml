@@ -3,8 +3,50 @@
 @{
     ViewBag.Title = "Home Page";
     var unit = "";
+
+    if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)) && Session["Masquerade"].Equals(false))
+    {
+        <style>
+            .suswitch {
+                display:block;
+                float:right;
+                margin-top:10px;
+                margin-bottom:10px;
+                padding-bottom:20px;
+            }
+            .sulink, .emplink {
+                padding:10px;
+            }
+            .sulink{
+                background-color:#cccccc;
+            }
+            .divbox.su {
+                clear:both;
+                display:block;
+            }
+            .divbox.emp {
+                clear:both;
+                display:none;
+            }
+        </style>
+    }
 }
-<div class="divbox">
+<div class="suswitch">
+    <a href="#" onclick="changeview('su');" class="sulink">HR View</a> |
+    <a href="#" onclick="changeview('emp');" class="emplink">Employee View</a>
+</div>
+
+<div class="divbox su">
+    <h2>Super User Options (HR)</h2>
+
+        <div>
+            <p><button type="button" data-toggle="modal" data-target="#Masquerade" class="btn">Masquerade as Supervisor</button></p>
+            <p><button type="button" onclick="location.href = '@Url.Action("EditJDs", "Home")'" class="btn">Edit Job Descriptions</button></p>
+            <p><button type="button" onclick="location.href = 'http://mssql_dev2.library.illinois.edu/reportportal/report/HR%20Reports/Staff%20Performance%20Evaluation%20Counts'" class="btn">Counts Report</button></p>
+            <p><button type="button" data-toggle="modal" data-target="#SearchWindow" class="btn">Find Employee</button></p>
+        </div>
+</div>
+<div class="divbox emp">
     <h2>Evaluations from your supervisor</h2>
 
     <div>
@@ -58,7 +100,7 @@
     }
 
 </div>
-<div class="divbox">
+<div class="divbox emp">
 
 
     <h2>Evaluations for your staff</h2>
@@ -199,16 +241,6 @@
 
 <div id="editevalno"></div>
 
-@if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)) && Session["Masquerade"].Equals(false))
-{
-    <br />
-    <div>
-        <button type="button" data-toggle="modal" data-target="#Masquerade" class="btn">Masquerade as Supervisor</button>
-        <button type="button" onclick="location.href = '@Url.Action("EditJDs", "Home")'" class="btn">Edit Job Descriptions</button>
-        <button type="button" onclick="location.href = 'http://mssql_dev2.library.illinois.edu/reportportal/report/HR%20Reports/Staff%20Performance%20Evaluation%20Counts'" class="btn">Counts Report</button>
-    </div>
-}
-
 <div class="modal fade" id="Masquerade" tabindex="-1" role="dialog" aria-labelledby="ChooseSupervisorLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -276,8 +308,36 @@
     </div>
 </div>
 
-@section scripts {
-    <script>
+<div class="modal fade" id="SearchWindow" tabindex="-1" role="dialog" aria-labelledby="SearchLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="SearchLabel">Masquerade as a Supervisor</h4>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm())
+                {
+                    <span>
+                        Search:
+                        @Html.TextBox("searchnetid")
+                        <input type="button" value="Search" class="btn" onclick="SearchEvals();" />
+                    </span>
+                }
+
+                <div id="searchResults"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    @section scripts {
+        <script>
         var modal = document.getElementById('evalerror');
         var err = '@TempData["error"]';
         var dc = '@TempData["showeval"]';
@@ -315,5 +375,35 @@
             return !isNaN(parseFloat(n)) && isFinite(n);
         };
 
-    </script>
-}
+        function SearchEvals() {
+
+            var srch = $("#searchnetid").val();
+            var fy = "2018";
+
+            $.get('@Url.Action("SearchEvals", "Home")?query=' + srch + '&fy=' + fy, function (data) {
+                $('#searchResults').empty();
+                $('#searchResults').append(data);
+            }).fail(function (jq, stat, err) {
+                alert('Error: ' + jq + ' ' + stat + ' ' + err);
+            });
+
+            //alert(srch);
+        };
+
+        function changeview(v) {
+            if (v == "su") {
+                $("div.emp").css("display", "none");
+                $("div.su").css("display", "block");
+                $("a.sulink").css("background-color", "#cccccc");
+                $("a.emplink").css("background-color", "#ffffff");
+            }
+            else {
+                $("div.divbox.emp").css("display", "block");
+                $("div.divbox.su").css("display", "none");
+                $("a.sulink").css("background-color", "#ffffff");
+                $("a.emplink").css("background-color", "#cccccc");
+            }
+        };
+
+        </script>
+    }

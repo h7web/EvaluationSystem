@@ -178,6 +178,7 @@ namespace StaffEvaluations.Controllers
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
             newEval.NetId = id;
             newEval.EvalCode = type;
+            newEval.Year = 2018;
 
             var reportinfo = LibDirectoryFactory.GetPerson(id);
 
@@ -211,7 +212,7 @@ namespace StaffEvaluations.Controllers
                 crvm.super = superinfo;
 
                 crvm.eval = newEval;
-                crvm.questions = QuestionHelper.GetQuestions(db, type, reportinfo.netid, supervisorNetid);
+                crvm.questions = QuestionHelper.GetQuestions(db, type, reportinfo.netid, supervisorNetid, 2018);
 
                 ViewData["RatingList"] = QuestionHelper.GetRatings(db, type);
 
@@ -227,11 +228,15 @@ namespace StaffEvaluations.Controllers
         [SessionTimeout]
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult CreateEval(string id, string type, string title, List<Question> question)
+        public ActionResult CreateEval(string id, string type, string title, string name, string EvaluatorNetid, string EvaluatorName, string EvaluatorTitle, DateTime libraryStartDate, List<Question> question)
         {
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
             newEval.NetId = id;
-            newEval.EvaluatorNetid = GetUser();
+            newEval.Name = name;
+            newEval.LibraryStartDate = libraryStartDate;
+            newEval.EvaluatorNetid = EvaluatorNetid;
+            newEval.EvaluatorName = EvaluatorName;
+            newEval.EvaluatorTitle = EvaluatorTitle;
             newEval.Year = DateTime.Now.Year;
             newEval.EvalCode = type;
             newEval.Status = "In-Work";
@@ -309,13 +314,11 @@ namespace StaffEvaluations.Controllers
 
                 var superinfo = LibDirectoryFactory.GetPerson(GetUser());
 
-                var lsdate = (from e in db1.employees where e.NETID == getEval.NetId select e.LIBRARY_START_DATE).FirstOrDefault().ToString();
-
                 CreateEditEvalViewModel crvm = new CreateEditEvalViewModel();
 
                 crvm.person = new LibDirectoryPerson();
                 crvm.person = reportinfo;
-                crvm.person.LibraryStartDate = lsdate;
+                crvm.person.LibraryStartDate = getEval.LibraryStartDate.ToString() ;
 
                 crvm.super = new LibDirectoryPerson();
                 crvm.super = superinfo;
@@ -837,6 +840,13 @@ namespace StaffEvaluations.Controllers
             db.SaveChanges();
 
             return RedirectToAction("Index", new { go = eval.NetId });
+        }
+
+        public ActionResult SearchEvals(string query, int fy)
+        {
+            var results = from n in db.StaffPerformanceEvaluations where n.NetId.Contains(query) && n.Year.Equals(fy) select n;
+
+            return PartialView(results);
         }
 
         //This is the list of JDs

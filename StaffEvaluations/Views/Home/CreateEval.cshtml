@@ -28,6 +28,12 @@
         @Html.Hidden("Id", Model.eval.NetId)
         @Html.Hidden("Type", Model.eval.EvalCode)
         @Html.Hidden("Title", Model.person.banner_title)
+        @Html.Hidden("Name", Model.person.name)
+        @Html.Hidden("LibraryStartDate", lsdate)
+        @Html.Hidden("EvaluatorNetid", Model.super.netid)
+        @Html.Hidden("EvaluatorName", Model.super.name)
+        @Html.Hidden("EvaluatorTitle", Model.super.banner_title)
+
 
         <h2>@DateTime.Now.Year @evaltypedesc Performance Evaluation</h2>
 

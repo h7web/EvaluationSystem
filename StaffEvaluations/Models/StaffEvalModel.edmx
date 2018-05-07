@@ -42,7 +42,13 @@
           </Key>
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="empNetId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="empFirst" Type="nvarchar" MaxLength="50" />
+          <Property Name="empLast" Type="nvarchar" MaxLength="50" />
+          <Property Name="empName" Type="nvarchar" MaxLength="100" />
           <Property Name="supNetId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="supFirst" Type="nvarchar" MaxLength="50" />
+          <Property Name="supLast" Type="nvarchar" MaxLength="50" />
+          <Property Name="supName" Type="nvarchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="StaffPerformanceEvaluations">
           <Key>
@@ -51,9 +57,13 @@
           <Property Name="EvalId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="EvalCode" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="Year" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" />
           <Property Name="NetId" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="64" />
+          <Property Name="Title" Type="nvarchar" MaxLength="100" />
+          <Property Name="LibraryStartDate" Type="date" />
+          <Property Name="EvaluatorName" Type="nvarchar" MaxLength="100" />
           <Property Name="EvaluatorNetid" Type="nvarchar" MaxLength="64" Nullable="false" />
+          <Property Name="EvaluatorTitle" Type="nvarchar" MaxLength="100" />
           <Property Name="Status" Type="nvarchar" MaxLength="10" />
           <Property Name="StartDate" Type="datetime" Nullable="false" />
           <Property Name="StartNetid" Type="nvarchar" MaxLength="64" />
@@ -177,7 +187,7 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <Property Name="EvalCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Year" Type="Int32" Nullable="false" />
           <Property Name="NetId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Title" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="EvaluatorNetid" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Status" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
@@ -210,6 +220,10 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <Property Name="ReturntoEmployeeNetid" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
           <Property Name="ReturntoEmployeeProxy" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
           <Property Name="ReturntoSupervisorProxy" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="EvaluatorName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="EvaluatorTitle" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="LibraryStartDate" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="StaffPerformanceQuestion">
           <Key>
@@ -278,6 +292,12 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="empNetId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="supNetId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="empFirst" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="empLast" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="empName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="supFirst" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="supLast" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="supName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="JDList">
           <Key>
@@ -316,6 +336,10 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <EntitySetMapping Name="StaffPerformanceEvaluations">
             <EntityTypeMapping TypeName="StaffEvaluationsModel.StaffPerformanceEvaluation">
               <MappingFragment StoreEntitySet="StaffPerformanceEvaluations">
+                <ScalarProperty Name="LibraryStartDate" ColumnName="LibraryStartDate" />
+                <ScalarProperty Name="EvaluatorTitle" ColumnName="EvaluatorTitle" />
+                <ScalarProperty Name="EvaluatorName" ColumnName="EvaluatorName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ReturntoSupervisorProxy" ColumnName="ReturntoSupervisorProxy" />
                 <ScalarProperty Name="ReturntoEmployeeProxy" ColumnName="ReturntoEmployeeProxy" />
                 <ScalarProperty Name="ReturntoEmployeeNetid" ColumnName="ReturntoEmployeeNetid" />
@@ -393,6 +417,12 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <EntitySetMapping Name="ReportingLines">
             <EntityTypeMapping TypeName="StaffEvaluationsModel.ReportingLine">
               <MappingFragment StoreEntitySet="ReportingLines">
+                <ScalarProperty Name="supName" ColumnName="supName" />
+                <ScalarProperty Name="supLast" ColumnName="supLast" />
+                <ScalarProperty Name="supFirst" ColumnName="supFirst" />
+                <ScalarProperty Name="empName" ColumnName="empName" />
+                <ScalarProperty Name="empLast" ColumnName="empLast" />
+                <ScalarProperty Name="empFirst" ColumnName="empFirst" />
                 <ScalarProperty Name="supNetId" ColumnName="supNetId" />
                 <ScalarProperty Name="empNetId" ColumnName="empNetId" />
                 <ScalarProperty Name="id" ColumnName="id" />
