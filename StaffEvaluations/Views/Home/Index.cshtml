@@ -318,14 +318,11 @@
                 <h4 class="modal-title" id="SearchLabel">Employee Evaluation Search</h4>
             </div>
             <div class="modal-body">
-                @using (Html.BeginForm())
-                {
                     <span>
                         Search:
-                        @Html.TextBox("searchnetid")
-                        <input type="button" value="Search" class="btn" onclick="SearchEvals();" />
+                        @Html.TextBox("searchnetid", "", new { id = "searchnetid" })
+                        <button type="submit" class="btn" onclick="SearchEvals(); return false;">Search</button>
                     </span>
-                }
                 <br />
                 <div id="searchResults"></div>
             </div>
@@ -345,7 +342,13 @@
         var url = "";
         var go = '@ViewData["go"]';
 
-        $(document).ready(function() {
+            $(document).ready(function () {
+
+                $("#searchnetid").keyup(function (event) {
+                    if (event.keyCode == 13) {
+                        SearchEvals();
+                    }
+                });
 
             openpopup();
 
