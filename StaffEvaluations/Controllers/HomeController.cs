@@ -450,6 +450,16 @@ namespace StaffEvaluations.Controllers
             //}
         }
 
+        public ActionResult DeleteEval(int id, string Order = null)
+        {
+            var Eval = db.StaffPerformanceEvaluations.Find(id);
+
+            db.StaffPerformanceEvaluations.Remove(Eval);
+            db.SaveChanges();
+
+            return RedirectToAction("Index", new { sortOrder = Order });
+        }
+
         //this is to perform validation on the eval
         public bool CheckEval(int id)
         {

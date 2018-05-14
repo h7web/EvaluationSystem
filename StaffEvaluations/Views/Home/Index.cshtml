@@ -193,8 +193,12 @@
                                     @:|
                                     @Html.ActionLink("Submit to Employee", "SubmitEval", new { id = eid })
                                 }
-                                @:|
-                                @Html.ActionLink("Delete", "DeleteEval", new { id = eid })
+
+                                if (ret == null)
+                                {
+                                    @:|
+                                    @Html.ActionLink("Delete", "DeleteEval", new { id = eid }, new { onclick = "return confirm('Deletions cannot be recovered. Please confirm you wish to delete this eval.');" })
+                                }
                             }
                             @if (status == "Deferred")
                             {
