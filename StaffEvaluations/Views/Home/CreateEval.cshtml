@@ -66,6 +66,7 @@
                         <br />
                         @if (q.CommentOnly == true)
                         {
+
                             //                            <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" readonly cols="100" style="background-color:lightgray; max-width:none;">@q.QuestionComment</textarea>
                             <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" rows="40" style="max-width:none;" class="text-info wysiwyg">@q.QuestionComment</textarea>
                         }
@@ -91,7 +92,14 @@
 
 
 @section scripts {
-    <script>tinymce.init({ selector:'textarea.wysiwyg' });</script>
-}
+    <script>$(function () { tinymce.init({ selector: 'textarea.wysiwyg' }); });
+    
+        $(function () {
+            $("textarea").each(function () {
+                $(this).height($(this)[0].scrollHeight);
+            });
+        });
+    </script>
+    }
 
 

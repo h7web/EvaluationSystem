@@ -280,6 +280,7 @@
       <DependentUpon>StaffEvalModel.edmx</DependentUpon>
     </Content>
     <None Include="Properties\PublishProfiles\iisdev1.pubxml" />
+    <None Include="Properties\PublishProfiles\iisprod1.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -450,6 +451,12 @@
     <Content Include="Views\Home\CreateEval.cshtml" />
     <Content Include="Views\Home\EditEval.cshtml" />
     <Content Include="secret_connectionStrings.config" />
+    <Content Include="Views\Home\EditJDs.cshtml" />
+    <Content Include="Views\Home\CreateJD.cshtml" />
+    <Content Include="Views\Home\EditJD.cshtml" />
+    <Content Include="Views\Home\Logoff.cshtml" />
+    <Content Include="Views\Home\SearchEvals.cshtml" />
+    <Content Include="secret_connectionStrings-prod.config" />
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce.woff" />
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce.ttf" />
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce.eot" />
@@ -458,11 +465,6 @@
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce-small.eot" />
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce-mobile.woff" />
     <Content Include="Scripts\tinymce\langs\readme.md" />
-    <Content Include="Views\Home\EditJDs.cshtml" />
-    <Content Include="Views\Home\CreateJD.cshtml" />
-    <Content Include="Views\Home\EditJD.cshtml" />
-    <Content Include="Views\Home\Logoff.cshtml" />
-    <Content Include="Views\Home\SearchEvals.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

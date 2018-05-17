@@ -79,5 +79,11 @@
 </body>
 </html>
 @section scripts {
-    <script>tinymce.init({ selector:'textarea.wysiwyg' });</script>
+    <script>tinymce.init({ selector: 'textarea.wysiwyg' });
+        $(function () {
+            $("textarea").each(function () {
+                $(this).height($(this)[0].scrollHeight);
+            });
+        });
+    </script>
 }
