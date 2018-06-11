@@ -59,11 +59,11 @@
           <Property Name="Year" Type="int" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="100" />
           <Property Name="NetId" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="100" />
+          <Property Name="Title" Type="nvarchar" MaxLength="500" />
           <Property Name="LibraryStartDate" Type="date" />
           <Property Name="EvaluatorName" Type="nvarchar" MaxLength="100" />
           <Property Name="EvaluatorNetid" Type="nvarchar" MaxLength="64" Nullable="false" />
-          <Property Name="EvaluatorTitle" Type="nvarchar" MaxLength="100" />
+          <Property Name="EvaluatorTitle" Type="nvarchar" MaxLength="500" />
           <Property Name="Status" Type="nvarchar" MaxLength="10" />
           <Property Name="StartDate" Type="datetime" Nullable="false" />
           <Property Name="StartNetid" Type="nvarchar" MaxLength="64" />
@@ -187,7 +187,7 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <Property Name="EvalCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Year" Type="Int32" Nullable="false" />
           <Property Name="NetId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="EvaluatorNetid" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Status" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
@@ -222,7 +222,7 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <Property Name="ReturntoSupervisorProxy" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
           <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="EvaluatorName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="EvaluatorTitle" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="EvaluatorTitle" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="LibraryStartDate" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="StaffPerformanceQuestion">

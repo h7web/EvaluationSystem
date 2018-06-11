@@ -82,7 +82,9 @@
     <script>tinymce.init({ selector: 'textarea.wysiwyg' });
         $(function () {
             $("textarea").each(function () {
+               // if($(this).attr("id") != "description") {
                 $(this).height($(this)[0].scrollHeight);
+            //}
             });
         });
     </script>

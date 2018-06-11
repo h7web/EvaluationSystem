@@ -254,7 +254,15 @@ namespace StaffEvaluations.Controllers
                 }
             }
 
-            db.StaffPerformanceEvaluations.Add(newEval);
+            try
+            {
+                db.StaffPerformanceEvaluations.Add(newEval);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("eval err is " + ex.Message);
+            }
 
             string CommentList = "";
             var CommentReq = from r in db.Ratings where r.EvalCode == type && r.CommentRequired == true select r;
@@ -283,7 +291,14 @@ namespace StaffEvaluations.Controllers
                 db.StaffPerformanceQuestions.Add(newQuestion);
             }
 
-            db.SaveChanges();
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("save err is " + ex.Message);
+            }
 
             //if (msgflag == true)
             //{
@@ -675,7 +690,7 @@ namespace StaffEvaluations.Controllers
                 var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
 
                 var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + evalname + " is <b>available</b> for you to review and comment at the following URL:</p>";
-                body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
+                body = body + "http://quest.library.illinois.edu/StaffEvaluations/";
                 var message = new MailMessage();
 
                 message.To.Add(new MailAddress(eval.NetId + "@illinois.edu")); 
@@ -722,7 +737,7 @@ namespace StaffEvaluations.Controllers
             var name = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.EvaluatorNetid).name;
 
             var body = "<p> " + newEval.Year + " Performance Evaluation for " + name + " has been deferred by " + evalname + " on " + newEval.DeferredDate + "</p>";
-            body = body + "Here is the Application URL: http://iisdev1.library.illinois.edu/StaffEvaluations/";
+            body = body + "Here is the Application URL: http://quest.library.illinois.edu/StaffEvaluations/";
             var message = new MailMessage();
 
             message.To.Add(new MailAddress(newEval.EvaluatorNetid + "@illinois.edu")); //change this to BHSRC address in production
@@ -770,7 +785,7 @@ namespace StaffEvaluations.Controllers
                 var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.NetId).name;
 
                 var body = "<p>The " + eval.Year + " Performance Evaluation you prepared for " + evalname + " has been returned for you to review and comment at the following URL:</p>";
-                body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
+                body = body + "http://quest.library.illinois.edu/StaffEvaluations/";
                 var message = new MailMessage();
 
                 message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
@@ -817,7 +832,7 @@ namespace StaffEvaluations.Controllers
                 var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
 
                 var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + evalname + " has been <b>returned</b> for you to review and comment at the following URL:</p>";
-                body = body + "http://iisdev1.library.illinois.edu/StaffEvaluations/";
+                body = body + "http://quest.library.illinois.edu/StaffEvaluations/";
                 var message = new MailMessage();
 
                 message.To.Add(new MailAddress(eval.NetId + "@illinois.edu"));
@@ -1065,7 +1080,7 @@ namespace StaffEvaluations.Controllers
 
                 db.SaveChanges();
 
-                return RedirectToAction("EditJD", new { @id = id });
+                return RedirectToAction("EditJD", new { Order = Order, id = id });
             }
                 else
             {
