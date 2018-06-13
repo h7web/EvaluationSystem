@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 
@@ -15,7 +16,18 @@ namespace StaffEvaluations.Models
 
             var yr = year;
 
-            var questionlist = (from q in db.EvaluationQuestionSets where (q.QuestionType == type && q.Year == yr) select q).ToList();
+            var unorderedquestionlist = (from q in db.EvaluationQuestionSets where (q.QuestionType == type && q.Year == yr) select q).ToList();
+
+            var questionlist = unorderedquestionlist
+                .Select(item => new
+                {
+                    value = item,
+                    match = Regex.Match(item.QuestionCode, @"^(?<name>.*?)\s*(?<number>[0-9]*)$"),
+                })
+                .OrderBy(item => item.match.Groups["name"].Value)
+                .ThenBy(item => item.match.Groups["number"].Value.Length)
+                .ThenBy(item => item.match.Groups["number"].Value)
+                .Select(item => item.value);
 
             var convquestionlist = questionlist.Select(x => new Question() { QuestionText = x.QuestionText, QuestionCode = x.QuestionCode, CommentOnly = x.CommentOnly });
 

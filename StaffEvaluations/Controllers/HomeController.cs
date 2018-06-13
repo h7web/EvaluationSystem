@@ -175,6 +175,11 @@ namespace StaffEvaluations.Controllers
         [SessionTimeout]
         public ActionResult CreateEval(string id, string type)
         {
+            if (type == null)
+            {
+                type = "BA";
+            }
+
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
             newEval.NetId = id;
             newEval.EvalCode = type;
@@ -281,7 +286,7 @@ namespace StaffEvaluations.Controllers
                     QuestionCode = myQuestion.QuestionCode,
                     FirstAnsweredDate = DateTime.Now
                 };
-                if (myQuestion.QuestionCode != "AP12" && myQuestion.QuestionCode != "CA11" && myQuestion.QuestionCode != "CC9")
+                if (myQuestion.QuestionCode != "AP14" && myQuestion.QuestionCode != "CA11" && myQuestion.QuestionCode != "CC9")
                 {
                     if (CommentList.Contains(myQuestion.QuestionRating) && myQuestion.QuestionComment == null)
                     {
@@ -391,14 +396,14 @@ namespace StaffEvaluations.Controllers
                             orig.LastUpdateDate = DateTime.Now;
                             db.SaveChanges();
                         }
-                        if (orig.QuestionCode != "AP12" && orig.QuestionCode != "CA11" && orig.QuestionCode != "CC9" && q.QuestionRating != null)
+                        if (orig.QuestionCode != "AP14" && orig.QuestionCode != "CA11" && orig.QuestionCode != "CC9" && q.QuestionRating != null)
                         {
                             if (CommentList.Contains(q.QuestionRating) && q.QuestionComment == null)
                             {
                                 msgflag = true;
                             }
                         }
-                        else if (orig.QuestionCode == "AP12" && orig.QuestionCode == "CA11" && orig.QuestionCode == "CC9")
+                        else if (orig.QuestionCode == "AP14" && orig.QuestionCode == "CA11" && orig.QuestionCode == "CC9")
                         {
                             if (q.QuestionComment == null)
                             {
@@ -495,7 +500,7 @@ namespace StaffEvaluations.Controllers
                     var orig = db.StaffPerformanceQuestions.Find(q.QuestionId);
                     if (orig != null)
                     {
-                        if (q.QuestionCode != "AP12" && q.QuestionCode != "CA11" && q.QuestionCode != "CC9" && q.Rating != null)
+                        if (q.QuestionCode != "AP14" && q.QuestionCode != "CA11" && q.QuestionCode != "CC9" && q.Rating != null)
                         {
                             if (CommentList.Contains(q.Rating) && q.Comment == null)
                             {
@@ -629,7 +634,7 @@ namespace StaffEvaluations.Controllers
 
             foreach (StaffPerformanceQuestion q in answers2)
             {
-                if (q.QuestionCode != "AP12" && q.QuestionCode != "CA11" && q.QuestionCode != "CC9" && q.Rating != null)
+                if (q.QuestionCode != "AP14" && q.QuestionCode != "CA11" && q.QuestionCode != "CC9" && q.Rating != null)
                 {
                     if (CommentList.Contains(q.Rating) && q.Comment == null)
                     {
@@ -637,7 +642,7 @@ namespace StaffEvaluations.Controllers
                         validate = false;
                     }
                 }
-                if (q.QuestionCode == "AP12" && q.QuestionCode == "CA11" && q.QuestionCode == "CC9")
+                if (q.QuestionCode == "AP14" && q.QuestionCode == "CA11" && q.QuestionCode == "CC9")
                 {
                     if (q.Comment == null)
                     {
@@ -713,6 +718,11 @@ namespace StaffEvaluations.Controllers
         {
             var reportinfo = LibDirectoryFactory.GetPerson(id);
 
+            if (type == null)
+            {
+                type = "BA";
+            }
+
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
             newEval.NetId = id;
             newEval.EvaluatorNetid = GetUser();
@@ -722,7 +732,14 @@ namespace StaffEvaluations.Controllers
             newEval.Title = reportinfo.banner_title;
             newEval.StartDate = DateTime.Now;
             db.StaffPerformanceEvaluations.Add(newEval);
-            db.SaveChanges();
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("err is " + ex.Message);
+            }
             newEval.Status = "Deferred";
             newEval.DeferredDate = DateTime.Now;
             newEval.DeferredNetid = GetUser();
@@ -734,7 +751,7 @@ namespace StaffEvaluations.Controllers
 
             db.SaveChanges();
             var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.EvaluatorNetid).name;
-            var name = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.EvaluatorNetid).name;
+            var name = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.NetId).name;
 
             var body = "<p> " + newEval.Year + " Performance Evaluation for " + name + " has been deferred by " + evalname + " on " + newEval.DeferredDate + "</p>";
             body = body + "Here is the Application URL: http://quest.library.illinois.edu/StaffEvaluations/";
