@@ -5,6 +5,18 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="StaffEvaluationsModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="EvalEmails">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="list" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="interval" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="send_date" Type="date" />
+          <Property Name="email_subject" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="email_body" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="last_run_date" Type="date" />
+        </EntityType>
         <EntityType Name="EvaluationQuestionSets">
           <Key>
             <PropertyRef Name="QuestionSetId" />
@@ -140,6 +152,7 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="StaffEvaluationsModelStoreContainer">
+          <EntitySet Name="EvalEmails" EntityType="Self.EvalEmails" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EvaluationQuestionSets" EntityType="Self.EvaluationQuestionSets" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="JobDescriptions" EntityType="Self.JobDescriptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Ratings" EntityType="Self.Ratings" Schema="dbo" store:Type="Tables" />
@@ -250,6 +263,7 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <EntitySet Name="Ratings" EntityType="StaffEvaluationsModel.Rating" />
           <EntitySet Name="ReportingLines" EntityType="StaffEvaluationsModel.ReportingLine" />
           <EntitySet Name="JDLists" EntityType="StaffEvaluationsModel.JDList" />
+          <EntitySet Name="EvalEmails" EntityType="StaffEvaluationsModel.EvalEmail" />
         </EntityContainer>
         <Association Name="FK_StaffPerformanceQuestions_StaffPerformanceEvaluations">
           <End Type="StaffEvaluationsModel.StaffPerformanceEvaluation" Role="StaffPerformanceEvaluation" Multiplicity="1">
@@ -314,6 +328,18 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
           <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="lastUpdatedDate" Type="DateTime" Precision="3" />
           <Property Name="posn_number" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="EvalEmail">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="list" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="interval" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="send_date" Type="DateTime" Precision="0" />
+          <Property Name="email_subject" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="email_body" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="last_run_date" Type="DateTime" Precision="0" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -440,6 +466,19 @@ warning 6002: The table/view 'StaffEvaluations.dbo.JDList' does not have a prima
                 <ScalarProperty Name="JDname" ColumnName="JDname" />
                 <ScalarProperty Name="supNetId" ColumnName="supNetId" />
                 <ScalarProperty Name="empNetId" ColumnName="empNetId" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EvalEmails">
+            <EntityTypeMapping TypeName="StaffEvaluationsModel.EvalEmail">
+              <MappingFragment StoreEntitySet="EvalEmails">
+                <ScalarProperty Name="last_run_date" ColumnName="last_run_date" />
+                <ScalarProperty Name="email_body" ColumnName="email_body" />
+                <ScalarProperty Name="email_subject" ColumnName="email_subject" />
+                <ScalarProperty Name="send_date" ColumnName="send_date" />
+                <ScalarProperty Name="interval" ColumnName="interval" />
+                <ScalarProperty Name="list" ColumnName="list" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

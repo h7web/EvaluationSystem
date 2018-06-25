@@ -949,11 +949,19 @@ namespace StaffEvaluations.Controllers
                     newJD.jdid = item.jdid;
                     newJD.supNetId = item.supervisorNetid;
                     newJD.JDSuper = item.JDSuper;
-                    newJD.SuperLast = LibDirectoryFactory.GetPerson(item.supervisorNetid).last;
+                    var gs = LibDirectoryFactory.GetPerson(item.netid);
+                    if (gs != null)
+                    {
+                        newJD.SuperLast = gs.last;
+                    }
                     newJD.empNetId = item.netid;
                     newJD.JDname = item.JDName;
-                    newJD.EmployeeFirst = LibDirectoryFactory.GetPerson(item.netid).first;
-                    newJD.EmployeeLast = LibDirectoryFactory.GetPerson(item.netid).last;
+                    var gp = LibDirectoryFactory.GetPerson(item.netid);
+                    if (gp != null)
+                    {
+                        newJD.EmployeeFirst = gp.first;
+                        newJD.EmployeeLast = gp.last;
+                    }
                     newJD.Fix = "true";
                     newJD.Order = sortOrder;
                     jds1.Add(newJD);
@@ -1117,6 +1125,75 @@ namespace StaffEvaluations.Controllers
 
             return RedirectToAction("EditJDs", new { sortOrder = Order});
         }
+
+        public ActionResult EditEmails(string sortOrder)
+        {
+            List<EvalEmail> emllist = (from e in db.EvalEmails select e).ToList();
+
+            List<JDList> jds1 = new List<JDList>();
+
+            IOrderedEnumerable<EvalEmail> sorted;
+
+            switch (sortOrder)
+            {
+                case "subject":
+                    sorted = emllist.OrderBy(j => j.email_subject);
+                    break;
+                case "senddate":
+                    sorted = emllist.OrderBy(j => j.send_date);
+                    break;
+                default:
+                    sorted = emllist.OrderBy(j => j.id);
+                    break;
+            }
+
+            if (sortOrder == null)
+            {
+                ViewData["emlsort"] = "id";
+            }
+            else
+            {
+                ViewData["emlsort"] = sortOrder;
+            }
+
+            return View(sorted.ToList());
+        }
+
+        public ActionResult EditEmail(int id, string Order = null)
+        {
+            if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)))
+            {
+                var getEml = (from e in db.EvalEmails where e.id == id select e).SingleOrDefault();
+                getEml.Order = Order;
+
+                ViewData["EmlList"] = EmailHelper.GetEmlList(db, getEml.list);
+
+                return View(getEml);
+            }
+            else
+            {
+                TempData["error"] = "You do not have authorization to work with Evaluation Emails.";
+                return RedirectToAction("Index");
+            }
+        }
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult EditEmail(EvalEmail eml)
+        {
+            var geteml = db.EvalEmails.Find(eml.id);
+
+            var lsdate = DateTime.Now;
+
+            geteml.list = eml.list;
+            geteml.send_date = eml.send_date;
+            geteml.email_subject = eml.email_subject;
+            geteml.email_body = eml.email_body;
+
+            db.SaveChanges();
+
+            return RedirectToAction("EditEmails", new { sortOrder = eml.Order });
+        }
+
 
         public ActionResult Logoff()
         {

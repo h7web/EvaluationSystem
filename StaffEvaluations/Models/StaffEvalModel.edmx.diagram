@@ -13,6 +13,7 @@
         <EntityTypeShape EntityType="StaffEvaluationsModel.Rating" Width="1.5" PointX="8.5" PointY="3.25" />
         <EntityTypeShape EntityType="StaffEvaluationsModel.ReportingLine" Width="1.5" PointX="5.875" PointY="8.75" />
         <EntityTypeShape EntityType="StaffEvaluationsModel.JDList" Width="1.5" PointX="3.375" PointY="6.75" />
+        <EntityTypeShape EntityType="StaffEvaluationsModel.EvalEmail" Width="1.5" PointX="8.375" PointY="6.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

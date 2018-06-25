@@ -1,0 +1,83 @@
+﻿@model StaffEvaluations.Models.EvalEmail
+
+@{
+    ViewBag.Title = "EditEmail";
+}
+
+<h2>Edit Email</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>EvalEmail</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.id)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.list, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("list", (List<SelectListItem>)ViewData["EmlList"], new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.list, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.send_date, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.send_date, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.send_date, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.email_subject, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.email_subject, new { htmlAttributes = new { @class = "form-control", @style = "width:700px;max-width:none;" } })
+                @Html.ValidationMessageFor(model => model.email_subject, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.email_body, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.email_body, new { @class = "form-control wysiwyg" })
+                @Html.ValidationMessageFor(model => model.email_body, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "EditEmails")
+</div>
+
+@section scripts {
+    <script>
+        tinymce.init({
+            selector: 'textarea.wysiwyg',
+            theme: 'modern',
+            plugins: [
+          'advlist autolink lists link image charmap print preview anchor textcolor',
+          'searchreplace visualblocks code fullscreen',
+          'insertdatetime media table contextmenu paste code help wordcount'
+            ],
+            toolbar1: 'formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent'
+        });
+        $(function () {
+            $("textarea").each(function () {
+               // if($(this).attr("id") != "description") {
+                $(this).height($(this)[0].scrollHeight);
+            //}
+            });
+        });
+    </script>
+}

@@ -1,0 +1,44 @@
+﻿@model IEnumerable<StaffEvaluations.Models.EvalEmail>
+
+@{
+    ViewBag.Title = "EditEmails";
+}
+
+<h2>Edit Emails</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("Subject", "EditEmails", "Home", new { sortOrder = "subject" }, new { @class = (string)ViewData["emlsort"] == "subject" ? "selected" : "" })
+        </th>
+        <th>
+            @Html.ActionLink("Subject", "List", "Home", new { sortOrder = "list" }, new { @class = (string)ViewData["emlsort"] == "list" ? "selected" : "" })
+        </th>
+        <th>
+            @Html.ActionLink("Send Date", "EditEmails", "Home", new { sortOrder = "senddate" }, new { @class = (string)ViewData["emlsort"] == "senddate" ? "selected" : "" })
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.email_subject)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.list)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.send_date)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "EditEmail", new { id=item.id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.id })
+        </td>
+    </tr>
+}
+
+</table>

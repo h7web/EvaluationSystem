@@ -65,7 +65,11 @@
                 <li>
                        Evaluation from @evalname.ToString()
 
-                    @if (@eval.Status == "Submitted")
+                    @if (@eval.Status == "In-Work")
+                    {
+                        mystatus = "In Process";
+                    }
+                    else if (@eval.Status == "Submitted")
                     {
                         mystatus = "Submitted to Employee";
                     }
@@ -81,7 +85,7 @@
                     &nbsp;(@mystatus)
                     @if (@eval.Status == "Submitted")
                     {
-                        @Html.ActionLink("Edit", "EditEval", new { id = eval.EvalId })
+                        @Html.ActionLink("Review", "EditEval", new { id = eval.EvalId })
                         @:|
                         @Html.ActionLink("Return to Supervisor", "ReturnEvaltoSupervisor", new { id = eval.EvalId, button = "Return" })
                         @:|
@@ -125,7 +129,11 @@
                         var status = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid).Single().Status;
                         var ret = Model.MyStaffEvaluations.Where(e => e.NetId == directReport.netid && e.ReturntoSupervisorNetid != null).SingleOrDefault();
 
-                        if (status == "Submitted")
+                        if (status == "In-Work")
+                        {
+                            status = "In Process";
+                        }
+                        else if (status == "Submitted")
                         {
                             status = "Submitted to Employee";
                         }
@@ -171,7 +179,7 @@
                             }
 
 
-                            @if (status == "In-Work")
+                            @if (status == "In Process")
                             {
                                 @Html.ActionLink("Edit", "EditEval", new { id = eid })
                                 if (ret != null)
