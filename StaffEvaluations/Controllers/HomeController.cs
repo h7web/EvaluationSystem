@@ -235,80 +235,86 @@ namespace StaffEvaluations.Controllers
         [ValidateInput(false)]
         public ActionResult CreateEval(string id, string type, string title, string name, string EvaluatorNetid, string EvaluatorName, string EvaluatorTitle, DateTime libraryStartDate, List<Question> question)
         {
-            StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
-            newEval.NetId = id;
-            newEval.Name = name;
-            newEval.LibraryStartDate = libraryStartDate;
-            newEval.EvaluatorNetid = EvaluatorNetid;
-            newEval.EvaluatorName = EvaluatorName;
-            newEval.EvaluatorTitle = EvaluatorTitle;
-            newEval.Year = DateTime.Now.Year;
-            newEval.EvalCode = type;
-            newEval.Status = "In-Work";
-            newEval.Title = title;
-            newEval.StartDate = DateTime.Now;
-            newEval.StartNetid = GetUser();
+            var evalexists = from e in db.StaffPerformanceEvaluations where e.NetId == id && e.EvaluatorNetid == EvaluatorNetid select e;
 
-            var msgflag = false;
-
-            if (Session["Masquerade"] != null)
+            if (evalexists == null)
             {
-                if (Session["Masquerade"].Equals(true))
+                StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
+                newEval.NetId = id;
+                newEval.Name = name;
+                newEval.LibraryStartDate = libraryStartDate;
+                newEval.EvaluatorNetid = EvaluatorNetid;
+                newEval.EvaluatorName = EvaluatorName;
+                newEval.EvaluatorTitle = EvaluatorTitle;
+                newEval.Year = DateTime.Now.Year;
+                newEval.EvalCode = type;
+                newEval.Status = "In-Work";
+                newEval.Title = title;
+                newEval.StartDate = DateTime.Now;
+                newEval.StartNetid = GetUser();
+
+                var msgflag = false;
+
+                if (Session["Masquerade"] != null)
                 {
-                    newEval.StartProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
-                }
-            }
-
-            try
-            {
-                db.StaffPerformanceEvaluations.Add(newEval);
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("eval err is " + ex.Message);
-            }
-
-            string CommentList = "";
-            var CommentReq = from r in db.Ratings where r.EvalCode == type && r.CommentRequired == true select r;
-            foreach (Rating r in CommentReq)
-            {
-                CommentList += r.Rating1;
-            }
-
-            foreach (Question myQuestion in question)
-            {
-                StaffPerformanceQuestion newQuestion = new Models.StaffPerformanceQuestion()
-                {
-                    EvalId = newEval.EvalId,
-                    Comment = myQuestion.QuestionComment,
-                    Rating = myQuestion.QuestionRating,
-                    QuestionCode = myQuestion.QuestionCode,
-                    FirstAnsweredDate = DateTime.Now
-                };
-                if (myQuestion.QuestionCode != "AP14" && myQuestion.QuestionCode != "CA11" && myQuestion.QuestionCode != "CC9")
-                {
-                    if (CommentList.Contains(myQuestion.QuestionRating) && myQuestion.QuestionComment == null)
+                    if (Session["Masquerade"].Equals(true))
                     {
-                        msgflag = true;
+                        newEval.StartProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
                     }
                 }
-                db.StaffPerformanceQuestions.Add(newQuestion);
-            }
 
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("save err is " + ex.Message);
-            }
+                try
+                {
+                    db.StaffPerformanceEvaluations.Add(newEval);
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("eval err is " + ex.Message);
+                }
 
-            //if (msgflag == true)
-            //{
-            //    TempData["error"] = "Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.";
-            //}
+                string CommentList = "";
+                var CommentReq = from r in db.Ratings where r.EvalCode == type && r.CommentRequired == true select r;
+                foreach (Rating r in CommentReq)
+                {
+                    CommentList += r.Rating1;
+                }
+
+                foreach (Question myQuestion in question)
+                {
+                    StaffPerformanceQuestion newQuestion = new Models.StaffPerformanceQuestion()
+                    {
+                        EvalId = newEval.EvalId,
+                        Comment = myQuestion.QuestionComment,
+                        Rating = myQuestion.QuestionRating,
+                        QuestionCode = myQuestion.QuestionCode,
+                        FirstAnsweredDate = DateTime.Now
+                    };
+                    if (myQuestion.QuestionCode != "AP14" && myQuestion.QuestionCode != "CA11" && myQuestion.QuestionCode != "CC9")
+                    {
+                        if (CommentList.Contains(myQuestion.QuestionRating) && myQuestion.QuestionComment == null)
+                        {
+                            msgflag = true;
+                        }
+                    }
+                    db.StaffPerformanceQuestions.Add(newQuestion);
+                }
+
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("save err is " + ex.Message);
+                }
+
+                //if (msgflag == true)
+                //{
+                //    TempData["error"] = "Comments must be provided for all ratings other than SOLID PERFORMER (AP), SATISFACTORY (CS), or NOT APPLICABLE (CS) before submission.";
+                //}
+
+            }
             return RedirectToAction("Index", new { go = newEval.NetId });
         }
 
@@ -716,59 +722,65 @@ namespace StaffEvaluations.Controllers
         [SessionTimeout]
         public async System.Threading.Tasks.Task<ActionResult> DeferEval(string id, string type)
         {
-            var reportinfo = LibDirectoryFactory.GetPerson(id);
-
-            if (type == null)
-            {
-                type = "BA";
-            }
 
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
-            newEval.NetId = id;
-            newEval.EvaluatorNetid = GetUser();
-            newEval.Year = DateTime.Now.Year;
-            newEval.EvalCode = type;
-            newEval.Status = "In-Work";
-            newEval.Title = reportinfo.banner_title;
-            newEval.StartDate = DateTime.Now;
-            db.StaffPerformanceEvaluations.Add(newEval);
-            try
+
+            var evalexists = from e in db.StaffPerformanceEvaluations where e.NetId == id && e.EvaluatorNetid == GetUser() select e;
+
+            if (evalexists == null)
             {
+                var reportinfo = LibDirectoryFactory.GetPerson(id);
+
+                if (type == null)
+                {
+                    type = "BA";
+                }
+
+                newEval.NetId = id;
+                newEval.EvaluatorNetid = GetUser();
+                newEval.Year = DateTime.Now.Year;
+                newEval.EvalCode = type;
+                newEval.Status = "In-Work";
+                newEval.Title = reportinfo.banner_title;
+                newEval.StartDate = DateTime.Now;
+                db.StaffPerformanceEvaluations.Add(newEval);
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("err is " + ex.Message);
+                }
+                newEval.Status = "Deferred";
+                newEval.DeferredDate = DateTime.Now;
+                newEval.DeferredNetid = GetUser();
+
+                if (Session["Masquerade"].Equals(true))
+                {
+                    newEval.DeferredProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+                }
+
                 db.SaveChanges();
+                var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.EvaluatorNetid).name;
+                var name = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.NetId).name;
+
+                var body = "<p> " + newEval.Year + " Performance Evaluation for " + name + " has been deferred by " + evalname + " on " + newEval.DeferredDate + "</p>";
+                body = body + "Here is the Application URL: http://quest.library.illinois.edu/StaffEvaluations/";
+                var message = new MailMessage();
+
+                message.To.Add(new MailAddress(newEval.EvaluatorNetid + "@illinois.edu")); //change this to BHSRC address in production
+                message.From = new MailAddress(newEval.EvaluatorNetid + "@illinois.edu");
+                message.Subject = newEval.Year + " Performance Evaluation Deferred";
+                message.Body = body;
+                message.IsBodyHtml = true;
+
+                using (var smtp = new SmtpClient())
+                {
+                    smtp.Host = "Express-SMTP.cites.illinois.edu ";
+                    await smtp.SendMailAsync(message);
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("err is " + ex.Message);
-            }
-            newEval.Status = "Deferred";
-            newEval.DeferredDate = DateTime.Now;
-            newEval.DeferredNetid = GetUser();
-            
-            if (Session["Masquerade"].Equals(true))
-            {
-                newEval.DeferredProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
-            }
-
-            db.SaveChanges();
-            var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.EvaluatorNetid).name;
-            var name = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(newEval.NetId).name;
-
-            var body = "<p> " + newEval.Year + " Performance Evaluation for " + name + " has been deferred by " + evalname + " on " + newEval.DeferredDate + "</p>";
-            body = body + "Here is the Application URL: http://quest.library.illinois.edu/StaffEvaluations/";
-            var message = new MailMessage();
-
-            message.To.Add(new MailAddress(newEval.EvaluatorNetid + "@illinois.edu")); //change this to BHSRC address in production
-            message.From = new MailAddress(newEval.EvaluatorNetid + "@illinois.edu");
-            message.Subject = newEval.Year + " Performance Evaluation Deferred";
-            message.Body = body;
-            message.IsBodyHtml = true;
-
-            using (var smtp = new SmtpClient())
-            {
-                smtp.Host = "Express-SMTP.cites.illinois.edu ";
-                await smtp.SendMailAsync(message);
-            }
-
             return RedirectToAction("Index", new { go = newEval.NetId });
         }
 
@@ -1160,22 +1172,6 @@ namespace StaffEvaluations.Controllers
         }
 
         public ActionResult EditEmail(int id, string Order = null)
-        {
-            if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)))
-            {
-                var getEml = (from e in db.EvalEmails where e.id == id select e).SingleOrDefault();
-                getEml.Order = Order;
-
-                ViewData["EmlList"] = EmailHelper.GetEmlList(db, getEml.list);
-
-                return View(getEml);
-            }
-            else
-            {
-                TempData["error"] = "You do not have authorization to work with Evaluation Emails.";
-                return RedirectToAction("Index");
-            }
-        }
         [HttpPost]
         [ValidateInput(false)]
         public ActionResult EditEmail(EvalEmail eml)
