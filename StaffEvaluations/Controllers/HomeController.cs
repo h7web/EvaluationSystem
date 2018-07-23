@@ -111,7 +111,7 @@ namespace StaffEvaluations.Controllers
             vm.Super = super;
 
             List<DirectReport> mylist = null;
-           // string unit = "";
+            // string unit = "";
 
             if (User.Identity.Name.Substring(5) != "gknott6")
             {
@@ -132,7 +132,7 @@ namespace StaffEvaluations.Controllers
                             lp.LibraryStartDate = String.Format("{0:MM-dd-yyyy}", emp?.LIBRARY_START_DATE.ToString());
                         }
 
-                       // mylist.Sort((x, y) => string.Compare(x.last, y.last));
+                        // mylist.Sort((x, y) => string.Compare(x.last, y.last));
                     }
                 }
                 else
@@ -315,7 +315,7 @@ namespace StaffEvaluations.Controllers
                 //}
 
             }
-            return RedirectToAction("Index", new { go = newEval.NetId });
+            return RedirectToAction("Index", new { go = id });
         }
 
         [SessionTimeout]
@@ -344,7 +344,7 @@ namespace StaffEvaluations.Controllers
 
                 crvm.person = new LibDirectoryPerson();
                 crvm.person = reportinfo;
-                crvm.person.LibraryStartDate = getEval.LibraryStartDate.ToString() ;
+                crvm.person.LibraryStartDate = getEval.LibraryStartDate.ToString();
 
                 crvm.super = new LibDirectoryPerson();
                 crvm.super = superinfo;
@@ -354,7 +354,7 @@ namespace StaffEvaluations.Controllers
 
                 ViewData["RatingList"] = QuestionHelper.GetRatings(db, getEval.EvalCode);
 
-                if(hr == true)
+                if (hr == true)
                 {
                     crvm.hr = true;
                 }
@@ -472,7 +472,7 @@ namespace StaffEvaluations.Controllers
             //    return RedirectToAction("EditEval", new { id = eval.EvalId, sub = true });
             //}
             //else {
-                return RedirectToAction("Index",new { go = eval.NetId });
+            return RedirectToAction("Index", new { go = eval.NetId });
             //}
         }
 
@@ -494,27 +494,27 @@ namespace StaffEvaluations.Controllers
             var msgflag = false;
             var question = from q in db.StaffPerformanceQuestions where q.EvalId == id select q;
 
-                string CommentList = "";
-                var CommentReq = from r in db.Ratings where r.EvalCode == eval.EvalCode && r.CommentRequired == true select r;
-                foreach (Rating r in CommentReq)
-                {
-                    CommentList += r.Rating1;
-                }
+            string CommentList = "";
+            var CommentReq = from r in db.Ratings where r.EvalCode == eval.EvalCode && r.CommentRequired == true select r;
+            foreach (Rating r in CommentReq)
+            {
+                CommentList += r.Rating1;
+            }
 
-                foreach (StaffPerformanceQuestion q in question)
+            foreach (StaffPerformanceQuestion q in question)
+            {
+                var orig = db.StaffPerformanceQuestions.Find(q.QuestionId);
+                if (orig != null)
                 {
-                    var orig = db.StaffPerformanceQuestions.Find(q.QuestionId);
-                    if (orig != null)
+                    if (q.QuestionCode != "AP14" && q.QuestionCode != "CA11" && q.QuestionCode != "CC9" && q.Rating != null)
                     {
-                        if (q.QuestionCode != "AP14" && q.QuestionCode != "CA11" && q.QuestionCode != "CC9" && q.Rating != null)
+                        if (CommentList.Contains(q.Rating) && q.Comment == null)
                         {
-                            if (CommentList.Contains(q.Rating) && q.Comment == null)
-                            {
-                                msgflag = true;
-                            }
+                            msgflag = true;
                         }
                     }
                 }
+            }
             return msgflag;
         }
 
@@ -614,7 +614,7 @@ namespace StaffEvaluations.Controllers
                 }
                 throw;
             }
-                return RedirectToAction("Index");
+            return RedirectToAction("Index");
         }
 
         [SessionTimeout]
@@ -686,7 +686,7 @@ namespace StaffEvaluations.Controllers
                 TempData["error"] += "* You may only select 'Not Applicable' as a rating for optional questions.";
             }
 
-            if(validate == true)
+            if (validate == true)
             {
                 eval.Status = "Submitted";
                 eval.SubmittedDate = DateTime.Now;
@@ -704,7 +704,7 @@ namespace StaffEvaluations.Controllers
                 body = body + "http://quest.library.illinois.edu/StaffEvaluations/";
                 var message = new MailMessage();
 
-                message.To.Add(new MailAddress(eval.NetId + "@illinois.edu")); 
+                message.To.Add(new MailAddress(eval.NetId + "@illinois.edu"));
                 message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
                 message.Subject = eval.Year + " Performance Evaluation";
                 message.Body = body;
@@ -787,10 +787,10 @@ namespace StaffEvaluations.Controllers
         public async System.Threading.Tasks.Task<ActionResult> ReturnEvaltoSupervisor(int id)
         {
             var eval = db.StaffPerformanceEvaluations.Find(id);
-            
-                eval.Status = "In-Work";
-                eval.ReturntoSupervisorDate = DateTime.Now;
-                eval.ReturntoSupervisorNetid = GetUser();
+
+            eval.Status = "In-Work";
+            eval.ReturntoSupervisorDate = DateTime.Now;
+            eval.ReturntoSupervisorNetid = GetUser();
             if (Session["Masquerade"].Equals(true))
             {
                 eval.ReturntoSupervisorProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
@@ -811,23 +811,23 @@ namespace StaffEvaluations.Controllers
 
             db.SaveChanges();
 
-                var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.NetId).name;
+            var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.NetId).name;
 
-                var body = "<p>The " + eval.Year + " Performance Evaluation you prepared for " + evalname + " has been returned for you to review and comment at the following URL:</p>";
-                body = body + "http://quest.library.illinois.edu/StaffEvaluations/";
-                var message = new MailMessage();
+            var body = "<p>The " + eval.Year + " Performance Evaluation you prepared for " + evalname + " has been returned for you to review and comment at the following URL:</p>";
+            body = body + "http://quest.library.illinois.edu/StaffEvaluations/";
+            var message = new MailMessage();
 
-                message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
-                message.From = new MailAddress(eval.NetId + "@illinois.edu");
-                message.Subject = eval.Year + " Performance Evaluation";
-                message.Body = body;
-                message.IsBodyHtml = true;
+            message.To.Add(new MailAddress(eval.EvaluatorNetid + "@illinois.edu"));
+            message.From = new MailAddress(eval.NetId + "@illinois.edu");
+            message.Subject = eval.Year + " Performance Evaluation";
+            message.Body = body;
+            message.IsBodyHtml = true;
 
-                using (var smtp = new SmtpClient())
-                {
-                    smtp.Host = "Express-SMTP.cites.illinois.edu ";
-                    await smtp.SendMailAsync(message);
-                }
+            using (var smtp = new SmtpClient())
+            {
+                smtp.Host = "Express-SMTP.cites.illinois.edu ";
+                await smtp.SendMailAsync(message);
+            }
 
             return RedirectToAction("Index");
         }
@@ -838,43 +838,43 @@ namespace StaffEvaluations.Controllers
 
             var eval = db.StaffPerformanceEvaluations.Find(id);
 
-                eval.Status = "Submitted";
-                eval.ReturntoEmployeeDate = DateTime.Now;
-                eval.ReturntoEmployeeNetid = GetUser();
-                if (Session["Masquerade"].Equals(true))
-                {
-                    eval.ReturntoEmployeeProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
+            eval.Status = "Submitted";
+            eval.ReturntoEmployeeDate = DateTime.Now;
+            eval.ReturntoEmployeeNetid = GetUser();
+            if (Session["Masquerade"].Equals(true))
+            {
+                eval.ReturntoEmployeeProxy = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
 
-                    eval.CompleteDate = null;
-                    eval.CompleteNetid = null;
-                    eval.CompleteProxy = null;
-                }
+                eval.CompleteDate = null;
+                eval.CompleteNetid = null;
+                eval.CompleteProxy = null;
+            }
 
-                eval.AcceptedDate = null;
-                eval.AcceptedNetid = null;
-                eval.AcceptedProxy = null;
-                eval.ContestedDate = null;
-                eval.ContestedNetid = null;
-                eval.ContestedProxy = null;
+            eval.AcceptedDate = null;
+            eval.AcceptedNetid = null;
+            eval.AcceptedProxy = null;
+            eval.ContestedDate = null;
+            eval.ContestedNetid = null;
+            eval.ContestedProxy = null;
 
-                db.SaveChanges();
-                var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
+            db.SaveChanges();
+            var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
 
-                var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + evalname + " has been <b>returned</b> for you to review and comment at the following URL:</p>";
-                body = body + "http://quest.library.illinois.edu/StaffEvaluations/";
-                var message = new MailMessage();
+            var body = "<p>Your " + eval.Year + " Performance Evaluation prepared by " + evalname + " has been <b>returned</b> for you to review and comment at the following URL:</p>";
+            body = body + "http://quest.library.illinois.edu/StaffEvaluations/";
+            var message = new MailMessage();
 
-                message.To.Add(new MailAddress(eval.NetId + "@illinois.edu"));
-                message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
-                message.Subject = eval.Year + " Performance Evaluation";
-                message.Body = body;
-                message.IsBodyHtml = true;
+            message.To.Add(new MailAddress(eval.NetId + "@illinois.edu"));
+            message.From = new MailAddress(eval.EvaluatorNetid + "@illinois.edu");
+            message.Subject = eval.Year + " Performance Evaluation";
+            message.Body = body;
+            message.IsBodyHtml = true;
 
-                using (var smtp = new SmtpClient())
-                {
-                    smtp.Host = "Express-SMTP.cites.illinois.edu ";
-                    await smtp.SendMailAsync(message);
-                }
+            using (var smtp = new SmtpClient())
+            {
+                smtp.Host = "Express-SMTP.cites.illinois.edu ";
+                await smtp.SendMailAsync(message);
+            }
 
             return RedirectToAction("Index", new { go = eval.NetId });
         }
@@ -904,7 +904,7 @@ namespace StaffEvaluations.Controllers
         }
 
         //This is the list of JDs
-        public ActionResult EditJDs (string sortOrder, string gojd)
+        public ActionResult EditJDs(string sortOrder, string gojd)
         {
             ViewData["gojd"] = gojd;
 
@@ -981,18 +981,18 @@ namespace StaffEvaluations.Controllers
             }
 
 
-            IOrderedEnumerable< JDList > sorted;
+            IOrderedEnumerable<JDList> sorted;
 
             switch (sortOrder)
             {
                 case "employee":
-                    sorted=jds1.OrderBy(j => j.EmployeeLast);
+                    sorted = jds1.OrderBy(j => j.EmployeeLast);
                     break;
                 case "super":
-                    sorted=jds1.OrderBy(j => j.SuperLast).ThenBy(j => j.EmployeeLast);
+                    sorted = jds1.OrderBy(j => j.SuperLast).ThenBy(j => j.EmployeeLast);
                     break;
                 case "date":
-                    sorted=jds1.OrderByDescending(j => j.lastUpdatedDate);
+                    sorted = jds1.OrderByDescending(j => j.lastUpdatedDate);
                     break;
                 default:
                     sorted = jds1.OrderBy(j => j.EmployeeLast);
@@ -1083,7 +1083,7 @@ namespace StaffEvaluations.Controllers
         public ActionResult EditJD(int id, string Order = null)
         {
             if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)))
-            { 
+            {
                 var getJD = (from e in db.JobDescriptions where e.jdid == id select e).SingleOrDefault();
                 getJD.JDName = (from e in db1.employees where e.NETID == getJD.netid select e.FULLNAME).FirstOrDefault().ToString();
                 getJD.JDSuper = (from e in db1.employees where e.NETID == getJD.supervisorNetid select e.FULLNAME).FirstOrDefault().ToString();
@@ -1099,7 +1099,7 @@ namespace StaffEvaluations.Controllers
         }
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult EditJD (int id, string netid, string supervisorNetid, string description, string posn_number, string submit, string Order = null)
+        public ActionResult EditJD(int id, string netid, string supervisorNetid, string description, string posn_number, string submit, string Order = null)
         {
             var JD = db.JobDescriptions.Find(id);
 
@@ -1119,7 +1119,7 @@ namespace StaffEvaluations.Controllers
 
                 return RedirectToAction("EditJD", new { Order = Order, id = id });
             }
-                else
+            else
             {
 
                 db.SaveChanges();
@@ -1135,7 +1135,7 @@ namespace StaffEvaluations.Controllers
             db.JobDescriptions.Remove(JD);
             db.SaveChanges();
 
-            return RedirectToAction("EditJDs", new { sortOrder = Order});
+            return RedirectToAction("EditJDs", new { sortOrder = Order });
         }
 
         public ActionResult EditEmails(string sortOrder)
@@ -1172,6 +1172,20 @@ namespace StaffEvaluations.Controllers
         }
 
         public ActionResult EditEmail(int id, string Order = null)
+        {
+            if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)))
+            {
+                var getE = (from e in db.EvalEmails where e.id == id select e).SingleOrDefault();
+                ViewData["EmlList"] = EmailHelper.GetEmlList(db, getE.list);
+
+                return View(getE);
+            }
+            else
+            {
+                TempData["error"] = "You do not have authorization to work with Scheduled Emails.";
+                return RedirectToAction("Index");
+            }
+        }
         [HttpPost]
         [ValidateInput(false)]
         public ActionResult EditEmail(EvalEmail eml)
@@ -1190,6 +1204,41 @@ namespace StaffEvaluations.Controllers
             return RedirectToAction("EditEmails", new { sortOrder = eml.Order });
         }
 
+        public ActionResult DeleteEmail(int id, string Order = null)
+        {
+            var E = db.EvalEmails.Find(id);
+
+            db.EvalEmails.Remove(E);
+            db.SaveChanges();
+
+            return RedirectToAction("EditEmails", new { sortOrder = Order });
+        }
+
+        public ActionResult CreateEmail()
+        {
+            if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)))
+            {
+                ViewData["EmlList"] = EmailHelper.GetEmlList(db, null);
+
+                return View();
+            }
+            else
+            {
+                TempData["error"] = "You do not have authorization to work with Scheduled Emails.";
+                return RedirectToAction("Index");
+            }
+        }
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult CreateEmail(EvalEmail eml, string Order = null)
+        {
+            eml.send_date = (DateTime)eml.send_date;
+            db.EvalEmails.Add(eml);
+
+            db.SaveChanges();
+
+            return RedirectToAction("EditEmails", new { sortOrder = Order });
+        }
 
         public ActionResult Logoff()
         {
