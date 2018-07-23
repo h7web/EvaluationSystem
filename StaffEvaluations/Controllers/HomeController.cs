@@ -237,7 +237,7 @@ namespace StaffEvaluations.Controllers
         {
             var evalexists = from e in db.StaffPerformanceEvaluations where e.NetId == id && e.EvaluatorNetid == EvaluatorNetid select e;
 
-            if (evalexists == null)
+            if (evalexists == null  || evalexists.Count() == 0)
             {
                 StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
                 newEval.NetId = id;
@@ -266,11 +266,13 @@ namespace StaffEvaluations.Controllers
                 try
                 {
                     db.StaffPerformanceEvaluations.Add(newEval);
+
                     db.SaveChanges();
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("eval err is " + ex.Message);
+                    Logger.Log.Error("eval err is " + ex.Message);
                 }
 
                 string CommentList = "";

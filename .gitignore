@@ -5,6 +5,8 @@
 secret_connectionStrings.config
 secret_connectionStrings-prod.config
 
+logs/
+
 # User-specific files
 *.suo
 *.user
