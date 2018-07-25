@@ -152,7 +152,7 @@
 
                     @if (q.CommentOnly == true) //if its Job Desc
                         {
-                        if (Model.eval.Status == "In-Work" && Model.hr != true) //in-work means super has it (1st time) submitted means employee has it
+                        if ((Model.eval.Status == "In-Work" || Model.eval.Status == "Deferred") && Model.hr != true) //in-work means super has it (1st time) submitted means employee has it
                         {
                             <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" rows="40" style="max-width:none;" class="text-info wysiwyg">@q.QuestionComment</textarea>
                         }
@@ -170,7 +170,7 @@
                     else//not job desc
                     {
                         <br /> @:Comments: <br />
-                        if (Model.eval.Status == "In-Work" && Model.hr != true) //not comment only and sup has it (1st time)
+                        if ((Model.eval.Status == "In-Work" || Model.eval.Status == "Deferred") && Model.hr != true) //not comment only and sup has it (1st time)
                         {
                             <textarea id="@(q.namePrefixId + "QuestionComment")" name="@(q.namePrefix + "QuestionComment")" cols="100" style="max-width:none;" class="text-info">@q.QuestionComment</textarea>
                         }
