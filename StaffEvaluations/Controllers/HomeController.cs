@@ -727,9 +727,11 @@ namespace StaffEvaluations.Controllers
 
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
 
-            var evalexists = from e in db.StaffPerformanceEvaluations where e.NetId == id && e.EvaluatorNetid == GetUser() select e;
+            var evalnetid = GetUser();
 
-            if (evalexists == null)
+            var evalexists = from e in db.StaffPerformanceEvaluations where e.NetId == id && e.EvaluatorNetid == evalnetid select e;
+
+            if (evalexists == null || evalexists.Count() == 0)
             {
                 var reportinfo = LibDirectoryFactory.GetPerson(id);
 
