@@ -383,7 +383,7 @@ namespace StaffEvaluations.Controllers
 
             var answers = from a in db.StaffPerformanceQuestions where a.Rating == "* You must select a value *" && a.EvalId == id select a;
 
-            if (eval.Status == "In-Work")
+            if (eval.Status == "In-Work" || eval.Status == "Deferred")
             {
                 string CommentList = "";
                 var CommentReq = from r in db.Ratings where r.EvalCode == eval.EvalCode && r.CommentRequired == true select r;
@@ -748,6 +748,8 @@ namespace StaffEvaluations.Controllers
                 newEval.Title = reportinfo.banner_title;
                 newEval.StartDate = DateTime.Now;
                 db.StaffPerformanceEvaluations.Add(newEval);
+
+
                 try
                 {
                     db.SaveChanges();
