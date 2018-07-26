@@ -326,6 +326,17 @@ namespace StaffEvaluations.Controllers
             var getEval = (from e in db.StaffPerformanceEvaluations where e.EvalId == id select e).Single();
             var getsup = LibDirectoryFactory.GetPersonsSupervisors(getEval.NetId);
 
+            if (getEval.Status == "Deferred")
+            {
+                var netid = getEval.NetId;
+                var type = getEval.EvalCode;
+
+                db.StaffPerformanceEvaluations.Remove(getEval);
+                db.SaveChanges();
+
+                return RedirectToAction("CreateEval", new { @id=netid, @type=type });
+            }
+
             var suplist = "";
 
             if (getsup != null)
