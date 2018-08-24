@@ -478,6 +478,7 @@
     <Content Include="Views\Home\EditEmails.cshtml" />
     <Content Include="Views\Home\EditEmail.cshtml" />
     <Content Include="Views\Home\CreateEmail.cshtml" />
+    <Content Include="Views\Home\ListFlaggedevals.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

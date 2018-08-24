@@ -92,7 +92,16 @@
 
 
 @section scripts {
-    <script>$(function () { tinymce.init({ selector: 'textarea.wysiwyg' }); });
+    <script>tinymce.init({
+    selector: 'textarea.wysiwyg',
+    theme: 'modern',
+    plugins: [
+  'advlist autolink lists link image charmap print preview anchor textcolor',
+  'searchreplace visualblocks code fullscreen',
+  'insertdatetime media table contextmenu paste code help wordcount'
+    ],
+    toolbar1: 'formatselect | fontselect | fontsizeselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent'
+});
     
         $(function () {
             $("textarea").each(function () {

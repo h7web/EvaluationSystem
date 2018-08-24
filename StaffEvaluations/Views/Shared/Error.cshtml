@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Error";
+    StaffEvaluations.Helpers.Logger.Log.Error(String.Format("Error.cshtml: {0} {1}", Model.ControllerName, Model.ActionName), Model.Exception);
 }
 
 <h1 class="text-danger">Error.</h1>

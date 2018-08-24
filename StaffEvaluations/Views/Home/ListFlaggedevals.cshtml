@@ -1,0 +1,92 @@
+﻿@model IEnumerable<StaffEvaluations.Models.StaffPerformanceEvaluation>
+
+@{
+    ViewBag.Title = "ListFlaggedevals";
+    bool released = false;
+    var processed = "";
+    string sortOrder = (String)ViewData["fesort"];
+}
+
+<h2>List Flagged Evaluations</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("E-Class", "ListFlaggedevals", new { sortOrder = "eclass" }, new { @class = (string)ViewData["fesort"] == "eclass" ? "selected" : "" })
+        </th>
+        <th>
+            @Html.ActionLink("Year", "ListFlaggedevals", new { sortOrder = "year" }, new { @class = (string)ViewData["fesort"] == "year" ? "selected" : "" })
+        </th>
+        <th>
+            @Html.ActionLink("Employee", "ListFlaggedevals", new { sortOrder = "name" }, new { @class = (string)ViewData["fesort"] == "name" ? "selected" : "" })
+        </th>
+        <th>
+            @Html.ActionLink("Supervisor", "ListFlaggedevals", new { sortOrder = "evaluatorname" }, new { @class = (string)ViewData["fesort"] == "evaluatorname" ? "selected" : "" })
+        </th>
+        <th>
+            @Html.ActionLink("Status", "ListFlaggedevals", new { sortOrder = "status" }, new { @class = (string)ViewData["fesort"] == "status" ? "selected" : "" })
+        </th>
+        <th>
+            @Html.ActionLink("Released", "ListFlaggedevals", new { sortOrder = "released" }, new { @class = (string)ViewData["fesort"] == "released" ? "selected" : "" })
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    if(item.released == null)
+    {
+        released = false;
+        processed = "";
+    }
+    else if(item.released == true)
+    {
+        released = true;
+        processed = "background-color:lightgrey;";
+    }
+    else
+    {
+        released = false;
+        processed = "";
+    }
+    <tr style="@processed">
+        <td>
+            @Html.DisplayFor(modelItem => item.EvalCode)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Year)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EvaluatorName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @if (item.Status == "processed")
+            {
+                @Html.CheckBox("released", released, new { @class = "form-control", @disabled = "disabled" })
+            }
+            else
+            {
+            @Html.CheckBox("released", released, new { @class = "form-control", @onclick = "cbonclick(" + item.EvalId + ")" })
+            }
+        </td>
+        <td>
+            @Html.ActionLink("View", "EditEval", new {  id=item.EvalId, @hr = true  }) 
+        </td>
+    </tr>
+}
+
+</table>
+
+@section scripts
+{
+    <script>
+    function cbonclick(id) {
+        window.location.href = '@Url.Action("ReleaseEval")' + '/' + id + '?sortOrder=@sortOrder';
+                           }
+</script>
+}

@@ -64,11 +64,12 @@
                 </p>
             </div>
         </div>
-        <!--
+        @if (HttpContext.Current.IsDebuggingEnabled)
+        {
         <div style="background-color:gold;font-weight:300;">
             This is a test application, NOT FOR USE in production!
         </div>
-            -->
+        }
     </div>
     <div class="alert-danger">@TempData["error"]</div>
     <div class="alert-warning">@TempData["warning"]</div>

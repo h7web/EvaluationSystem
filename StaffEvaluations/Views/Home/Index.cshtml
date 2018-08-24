@@ -45,6 +45,7 @@
             <p><button type="button" onclick="location.href = '@Url.Action("EditEmails", "Home")'" class="btn">Edit Emails</button></p>
             <p><button type="button" onclick="location.href = 'http://mssql_prod3.library.illinois.edu/reports/report/HR%20Reports/Staff%20Performance%20Evaluation%20Counts'" class="btn">Counts Report</button></p>
             <p><button type="button" onclick="location.href = 'http://mssql_prod3.library.illinois.edu/reports/report/HR%20Reports/Staff%20Performance%20Evaluation%20Flags'" class="btn">Flags Report</button></p>
+            <p><button type="button" onclick="location.href = '@Url.Action("ListFlaggedevals", "Home")'" class="btn">Release Flagged Evaluations</button></p>
             <p><button type="button" data-toggle="modal" data-target="#SearchWindow" class="btn">Find Employee</button></p>
         </div>
 </div>
@@ -217,7 +218,7 @@
                             @if (status != null && status != "Deferred" && status != "Submitted to Employee")
                             {
                                 @:|
-                                @Html.ActionLink("Pdf", "Print2Pdf", "CreatePDF", new { id = eid }, null)
+                                @Html.ActionLink("Pdf", "Print2Pdf", "CreatePDF", new { id = eid, ep = true }, null)
                             }
                         </td>
                     }

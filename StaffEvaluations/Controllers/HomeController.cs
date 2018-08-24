@@ -1257,6 +1257,69 @@ namespace StaffEvaluations.Controllers
             return RedirectToAction("EditEmails", new { sortOrder = Order });
         }
 
+        public ActionResult ListFlaggedevals(string sortOrder)
+        {
+            List<string> list = new List<string>() { "Needs Improvement", "Not Acceptable", "Unsatisfactory" };
+            var qs = from q in db.StaffPerformanceQuestions where list.Contains(q.Rating) select q.EvalId;
+            var evals = from e in db.StaffPerformanceEvaluations where qs.Contains(e.EvalId) select e;
+
+            IQueryable<StaffPerformanceEvaluation> sorted;
+
+            switch (sortOrder)
+            {
+                case "eclass":
+                    sorted = evals.OrderBy(j => j.EvalCode);
+                    break;
+                case "year":
+                    sorted = evals.OrderBy(j => j.Year).ThenBy(j => j.Name);
+                    break;
+                case "name":
+                    sorted = evals.OrderByDescending(j => j.Name);
+                    break;
+                case "evaluatorname":
+                    sorted = evals.OrderByDescending(j => j.EvaluatorName).ThenBy(j => j.Name);
+                    break;
+                case "status":
+                    sorted = evals.OrderByDescending(j => j.Status).ThenBy(j => j.Name);
+                    break;
+                case "released":
+                    sorted = evals.OrderByDescending(j => j.released).ThenBy(j => j.Name);
+                    break;
+                default:
+                    sorted = evals.OrderBy(j => j.released).ThenBy(j => j.Name);
+                    break;
+            }
+
+            if (sortOrder == null)
+            {
+                ViewData["fesort"] = "released";
+            }
+            else
+            {
+                ViewData["fesort"] = sortOrder;
+            }
+
+            return View(sorted.ToList());
+        }
+
+        public ActionResult ReleaseEval(int id, string sortOrder)
+        {
+            var eval = (from e in db.StaffPerformanceEvaluations where e.EvalId == id select e).FirstOrDefault();
+
+            if (eval.released == false || eval.released == null)
+            {
+                eval.released = true;
+            }
+            else
+            {
+                eval.released = false;
+            }
+
+            db.SaveChanges();
+
+            return RedirectToAction("ListFlaggedevals", new { @sortOrder = sortOrder });
+        }
+
         public ActionResult Logoff()
         {
             return View();
