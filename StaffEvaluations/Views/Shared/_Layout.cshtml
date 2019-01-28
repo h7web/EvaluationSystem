@@ -40,7 +40,15 @@
                                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                                 </ul>
                     -->
-                @{                var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(User.Identity.Name.Substring(5)).name;
+                @{
+                    var getsup = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(User.Identity.Name.Substring(5));
+                    var showlogin = false;
+                    var evalname = "";
+                    if (getsup != null)
+                    {
+                        evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(User.Identity.Name.Substring(5)).name;
+                        showlogin = true;
+                    }
                     var masquename = "";
                     var mtext = "";
                     var masqueuser = Session["MasqueradeUser"];
@@ -51,18 +59,27 @@
                         mtext = " (as " + masquename + ")";
                         style = "margin-top:20px;";
                     }
-                }
-                <p class="nav navbar-text navbar-right">
-                    Hello, @evalname@mtext!
-                    @if (Session["Masquerade"] != null && Session["Masquerade"].Equals(true))
-                    {
-                        <br />
-                        @Html.ActionLink("Stop Masquerade", "StopMasquerade", "Home", new { @style = "color:red;" })
+
+                    if (showlogin == true) {
+                    <p class="nav navbar-text navbar-right">
+                        Hello, @evalname@mtext!
+                        @if (Session["Masquerade"] != null && Session["Masquerade"].Equals(true))
+                        {
+                            <br />
+                            @Html.ActionLink("Stop Masquerade", "StopMasquerade", "Home", new { @style = "color:red;" })
+                        }
+                        <br/>
+                        <a href="@Url.Action("Logoff", "Home")" onclick="return confirm('Are you sure you saved all work in progress?'); close();">LOGOFF</a>
+                    </p>
                     }
-                    <br/>
-                    <a href="@Url.Action("Logoff", "Home")" onclick="return confirm('Are you sure you saved all work in progress?'); close();">LOGOFF</a>
-                </p>
-            </div>
+                    else
+                    {
+                        <p class="nav navbar-text navbar-right">
+                            Login Incomplete.
+                        </p>
+                    }
+                }
+</div>
         </div>
         @if (HttpContext.Current.IsDebuggingEnabled)
         {

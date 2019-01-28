@@ -23,5 +23,10 @@ namespace StaffEvaluations.Models
             get; set;
         }
 
+        public List<StaffPerformanceEvaluation> MyPreviousStaffEvaluations
+        {
+            get; set;
+        }
+
     }
 }

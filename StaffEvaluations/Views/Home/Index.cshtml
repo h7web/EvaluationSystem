@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Home Page";
     var unit = "";
+    var checksup = StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5));
 
     if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)) && Session["Masquerade"].Equals(false))
     {
@@ -30,6 +31,26 @@
             }
         </style>
     }
+
+    if (LibDirectoryIntegration.LibDirectoryFactory.GetPerson(User.Identity.Name.Substring(5)) == null)
+    {
+      <style>
+        .divbox.nosup {
+            display:block;
+            color:red;
+            font-weight:bold;
+        }
+      </style>
+    }
+    else
+    {
+    <style>
+        .divbox.nosup {
+            display: none;
+        }
+    </style>
+    }
+
 }
 <div class="suswitch">
     <a href="#" onclick="changeview('su');" class="sulink">HR View</a> |
@@ -43,11 +64,14 @@
             <p><button type="button" data-toggle="modal" data-target="#Masquerade" class="btn">Masquerade as Supervisor</button></p>
             <p><button type="button" onclick="location.href = '@Url.Action("EditJDs", "Home")'" class="btn">Edit Job Descriptions</button></p>
             <p><button type="button" onclick="location.href = '@Url.Action("EditEmails", "Home")'" class="btn">Edit Emails</button></p>
-            <p><button type="button" onclick="location.href = 'http://mssql_prod3.library.illinois.edu/reports/report/HR%20Reports/Staff%20Performance%20Evaluation%20Counts'" class="btn">Counts Report</button></p>
-            <p><button type="button" onclick="location.href = 'http://mssql_prod3.library.illinois.edu/reports/report/HR%20Reports/Staff%20Performance%20Evaluation%20Flags'" class="btn">Flags Report</button></p>
+            <p><button type="button" onclick="location.href = 'https://mssql-prod3.library.illinois.edu/reports/report/HR%20Reports/Staff%20Performance%20Evaluation%20Counts'" class="btn">Counts Report</button></p>
+            <p><button type="button" onclick="location.href = 'https://mssql-prod3.library.illinois.edu/reports/report/HR%20Reports/Staff%20Performance%20Evaluation%20Flags'" class="btn">Flags Report</button></p>
             <p><button type="button" onclick="location.href = '@Url.Action("ListFlaggedevals", "Home")'" class="btn">Release Flagged Evaluations</button></p>
             <p><button type="button" data-toggle="modal" data-target="#SearchWindow" class="btn">Find Employee</button></p>
         </div>
+</div>
+<div class="divbox nosup">
+    !! You do not have a supervisor listed in the Library Directory. Please ask your supervisor to login to the Library Directory and assign you one.
 </div>
 <div class="divbox emp">
     <h2>Evaluations from your supervisor</h2>
@@ -63,9 +87,9 @@
             @foreach (StaffEvaluations.Models.StaffPerformanceEvaluation eval in Model.MyEvaluations)
             {
                 var mystatus = "";
-                var evalname = LibDirectoryIntegration.LibDirectoryFactory.GetPerson(eval.EvaluatorNetid).name;
+                var evalname = eval.EvaluatorName;
                 <li>
-                       Evaluation from @evalname.ToString()
+                       @eval.Year Evaluation from @evalname.ToString()
 
                     @if (@eval.Status == "In-Work")
                     {
@@ -85,7 +109,7 @@
                     }
 
                     &nbsp;(@mystatus)
-                    @if (@eval.Status == "Submitted")
+                    @if (@eval.Status == "Submitted" && eval.Year == DateTime.Now.Year)
                     {
                         @Html.ActionLink("Review", "EditEval", new { id = eval.EvalId })
                         @:|
@@ -110,7 +134,7 @@
 <div class="divbox emp">
 
 
-    <h2>Evaluations for your staff</h2>
+    <h2>Current Evaluations for your staff</h2>
     @if (Model.Super.direct_reports.Count > 0)
     {
         <table>
@@ -251,6 +275,72 @@
     {
         <ul><li>No staff found.</li></ul>
     }
+
+</div>
+
+<div class="divbox emp">
+
+<h2>Previous Evaluations for your staff</h2>
+@if (Model.Super.direct_reports.Count > 0)
+{
+<div id="prevevalpanel">
+    <table>
+        <tr><td colspan = "6"> &nbsp;</td></tr>
+            <tr class="table_header"><td><b>Name</b></td><td colspan="2"><b>E-class</b></td><td colspan="2"><b>Evaluation&nbsp;Period&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td><b>Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td><b>view</b></td></tr>
+            @foreach (StaffEvaluations.Models.StaffPerformanceEvaluation prevevals in Model.MyPreviousStaffEvaluations)
+        {
+        <tr>
+
+            @{
+                    var eid = prevevals.EvalId;
+                    var status = prevevals.Status;
+
+                    if (status == "In-Work")
+                    {
+                        status = "In Process";
+                    }
+                    else if (status == "Submitted")
+                    {
+                        status = "Submitted to Employee";
+                    }
+                    else if (status == "Complete")
+                    {
+                        status = "Submitted to HR";
+                    }
+            }
+            <td><strong>@prevevals.Name</strong></td>
+            <td></td>
+            <td>@prevevals.EvalCode</td>
+            <td colspan="2">
+                1/1
+                - 12/31 @(prevevals.Year - 1)
+            </td>
+
+            <!--if the eval is with the employee for comments-->
+            <td @if (status == "Submitted to Employee") { @: colspan="2"
+                                                                                                     }>
+                (@status)
+            </td>
+            <td>
+                @Html.ActionLink("Pdf", "Print2Pdf", "CreatePDF", new { id = eid, ep = true }, null)
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td width="20"></td>
+            <td width="50"></td>
+            <td width="180"></td>
+            <td width="80"></td>
+            <td></td>
+        </tr>
+                    }
+        </table>
+    </div>
+                }
+                else
+                {
+    <ul><li>No staff found.</li></ul>
+}
 
 </div>
 

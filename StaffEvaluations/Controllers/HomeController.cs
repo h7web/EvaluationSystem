@@ -20,6 +20,8 @@ namespace StaffEvaluations.Controllers
         private Models.Entities db = new Models.Entities();
         private Models.HR_DataEntities db1 = new Models.HR_DataEntities();
 
+        int currentYear = DateTime.Now.Year;
+
         public string GetUser()
         {
             string LoggedInUser = System.Web.HttpContext.Current.User.Identity.Name.Substring(5);
@@ -152,7 +154,7 @@ namespace StaffEvaluations.Controllers
                     //mylist.Add(new DirectReport { netid = "gknott63", name = "Greg Knott", employee_type_code = "BA", LibraryStartDate = "09/01/2010" });
                     //mylist.Add(new DirectReport { netid = "jlockmil", name = "John Lockmiller", employee_type_code = "BA", LibraryStartDate = "06/01/2017" });
                 }
-                var myStaffEvals = from e in db.StaffPerformanceEvaluations where e.EvaluatorNetid == usethisnetid select e;
+                var myStaffEvals = from e in db.StaffPerformanceEvaluations where (e.EvaluatorNetid == usethisnetid) && (e.Year == currentYear) select e;
 
                 if (myStaffEvals != null)
                 {
@@ -169,6 +171,14 @@ namespace StaffEvaluations.Controllers
             vm.MyEvaluations = myEvals.ToList();
             vm.Super.direct_reports = mylist;
 
+            if (mylist.Count >= 1) {
+                var myPreviousStaffEvals = from e in db.StaffPerformanceEvaluations where (e.EvaluatorNetid == usethisnetid) && (e.Year != currentYear) select e;
+
+                if (myPreviousStaffEvals != null)
+                {
+                    vm.MyPreviousStaffEvaluations = myPreviousStaffEvals.ToList();
+                }
+            }
             return View(vm);
         }
 
@@ -183,7 +193,7 @@ namespace StaffEvaluations.Controllers
             StaffPerformanceEvaluation newEval = new StaffPerformanceEvaluation();
             newEval.NetId = id;
             newEval.EvalCode = type;
-            newEval.Year = 2018;
+            newEval.Year = DateTime.Now.Year;
 
             var reportinfo = LibDirectoryFactory.GetPerson(id);
 
@@ -217,9 +227,17 @@ namespace StaffEvaluations.Controllers
                 crvm.super = superinfo;
 
                 crvm.eval = newEval;
-                crvm.questions = QuestionHelper.GetQuestions(db, type, reportinfo.netid, supervisorNetid, 2018);
+                crvm.questions = QuestionHelper.GetQuestions(db, type, reportinfo.netid, supervisorNetid, currentYear);
 
-                ViewData["RatingList"] = QuestionHelper.GetRatings(db, type);
+                if (crvm.questions.Count < 1) {
+                    int lastYear = currentYear - 1;
+                    var maxyrs = from y in db.EvaluationQuestionSets where y.QuestionType == type select y;
+                    lastYear = maxyrs.Max(y => y.Year);
+
+                    crvm.questions = QuestionHelper.GetQuestions(db, type, reportinfo.netid, supervisorNetid, lastYear);
+                }
+
+                ViewData["RatingList"] = QuestionHelper.GetRatings(db, type, currentYear);
 
                 return View(crvm);
             }
@@ -235,7 +253,7 @@ namespace StaffEvaluations.Controllers
         [ValidateInput(false)]
         public ActionResult CreateEval(string id, string type, string title, string name, string EvaluatorNetid, string EvaluatorName, string EvaluatorTitle, DateTime libraryStartDate, List<Question> question)
         {
-            var evalexists = from e in db.StaffPerformanceEvaluations where e.NetId == id && e.EvaluatorNetid == EvaluatorNetid select e;
+            var evalexists = from e in db.StaffPerformanceEvaluations where e.NetId == id && e.EvaluatorNetid == EvaluatorNetid && e.Year == currentYear select e;
 
             if (evalexists == null  || evalexists.Count() == 0)
             {
@@ -365,7 +383,7 @@ namespace StaffEvaluations.Controllers
                 crvm.eval = getEval;
                 crvm.questions = QuestionHelper.GetQuestions(db, getEval.EvalCode, id, getEval.StaffPerformanceQuestions.ToList());
 
-                ViewData["RatingList"] = QuestionHelper.GetRatings(db, getEval.EvalCode);
+                ViewData["RatingList"] = QuestionHelper.GetRatings(db, getEval.EvalCode, getEval.Year);
 
                 if (hr == true)
                 {
@@ -950,7 +968,7 @@ namespace StaffEvaluations.Controllers
             {
                 item.Order = sortOrder;
 
-                var jds = (from j in db.JobDescriptions where j.netid == item.empNetId && j.supervisorNetid == item.supNetId select j).SingleOrDefault();
+                var jds = (from j in db.JobDescriptions where j.netid == item.empNetId && j.supervisorNetid == item.supNetId select j).FirstOrDefault();
 
                 if (jds != null)
                 {
@@ -1102,8 +1120,16 @@ namespace StaffEvaluations.Controllers
             if (StaffEvaluations.Models.SuperUserHelper.IsAdSuperUser(User.Identity.Name.Substring(5)))
             {
                 var getJD = (from e in db.JobDescriptions where e.jdid == id select e).SingleOrDefault();
-                getJD.JDName = (from e in db1.employees where e.NETID == getJD.netid select e.FULLNAME).FirstOrDefault().ToString();
-                getJD.JDSuper = (from e in db1.employees where e.NETID == getJD.supervisorNetid select e.FULLNAME).FirstOrDefault().ToString();
+                var name = (from e in db1.employees where e.NETID == getJD.netid select e.FULLNAME).FirstOrDefault();
+                var sup = (from e in db1.employees where e.NETID == getJD.supervisorNetid select e.FULLNAME).FirstOrDefault();
+                if (name != null)
+                {
+                    getJD.JDName = (from e in db1.employees where e.NETID == getJD.netid select e.FULLNAME).FirstOrDefault().ToString();
+                }
+                if (sup != null)
+                {
+                    getJD.JDSuper = (from e in db1.employees where e.NETID == getJD.supervisorNetid select e.FULLNAME).FirstOrDefault().ToString();
+                }
                 getJD.Order = Order;
 
                 return View(getJD);

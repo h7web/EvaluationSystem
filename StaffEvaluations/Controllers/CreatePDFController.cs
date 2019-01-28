@@ -29,8 +29,14 @@ namespace StaffEvaluations.Controllers
             PdfDocument doc = converter.ConvertHtmlString(htmlString);
 
             var eval = (from ev in db.StaffPerformanceEvaluations where ev.EvalId == id select ev).SingleOrDefault();
-            var posn = (from p in db.JobDescriptions where p.netid == eval.NetId && p.supervisorNetid == eval.EvaluatorNetid select p.posn_number).SingleOrDefault();
+            var posn_alt = (from p in db.JobDescriptions where p.netid == eval.NetId && p.supervisorNetid == eval.EvaluatorNetid select p.posn_number).SingleOrDefault();
             var reportinfo = LibDirectoryFactory.GetPerson(eval.NetId);
+            var posn = eval.posn_number;
+
+            if (posn == null)
+            {
+                posn = posn_alt;
+            }
 
             string filename = "PerformEval_" + posn + "_" + reportinfo.last.Replace(" ", "_") + "_" + eval.Year + ".pdf";
 

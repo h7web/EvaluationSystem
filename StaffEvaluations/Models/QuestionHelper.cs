@@ -18,6 +18,15 @@ namespace StaffEvaluations.Models
 
             var unorderedquestionlist = (from q in db.EvaluationQuestionSets where (q.QuestionType == type && q.Year == yr) select q).ToList();
 
+            if (unorderedquestionlist.Count < 1)
+            {
+                int lastyr = yr - 1;
+                var maxyrs = from y in db.EvaluationQuestionSets where y.QuestionType == type select y;
+                lastyr = maxyrs.Max(y => y.Year);
+
+                unorderedquestionlist = (from q in db.EvaluationQuestionSets where (q.QuestionType == type && q.Year == lastyr) select q).ToList();
+            }
+
             var questionlist = unorderedquestionlist
                 .Select(item => new
                 {
@@ -113,11 +122,18 @@ namespace StaffEvaluations.Models
             return JD;
         }
 
-        public static List<SelectListItem> GetRatings(Models.Entities db, string type, string selected = "")
+        public static List<SelectListItem> GetRatings(Models.Entities db, string type, int year, string selected = "")
         {
             List<SelectListItem> ret = new List<SelectListItem>();
 
-            var val = from r in db.Ratings where r.EvalCode == type select r;
+            var val = from r in db.Ratings where (r.EvalCode == type) && r.Year == year select r;
+
+            if (val.Count() < 1)
+            {
+                var maxyrs = from y in db.Ratings where (y.EvalCode == type) select y;
+                int lastyr = maxyrs.Max(y => y.Year);
+                val = from r in db.Ratings where (r.EvalCode == type) && r.Year == lastyr select r;
+            }
 
             foreach (Rating r in val)
             {

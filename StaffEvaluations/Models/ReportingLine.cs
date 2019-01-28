@@ -23,5 +23,6 @@ namespace StaffEvaluations.Models
         public string supFirst { get; set; }
         public string supLast { get; set; }
         public string supName { get; set; }
+        public Nullable<bool> supDeptHead { get; set; }
     }
 }

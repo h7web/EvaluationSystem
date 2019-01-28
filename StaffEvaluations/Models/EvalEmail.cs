@@ -17,9 +17,11 @@ namespace StaffEvaluations.Models
         public int id { get; set; }
         public string list { get; set; }
         public string interval { get; set; }
-        public Nullable<System.DateTime> send_date { get; set; }
+        public System.DateTime send_date { get; set; }
         public string email_subject { get; set; }
         public string email_body { get; set; }
         public Nullable<System.DateTime> last_run_date { get; set; }
+        public string email_desc { get; set; }
+        public Nullable<bool> deptheadsonly { get; set; }
     }
 }

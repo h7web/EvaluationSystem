@@ -18,5 +18,6 @@ namespace StaffEvaluations.Models
         public string EvalCode { get; set; }
         public string Rating1 { get; set; }
         public bool CommentRequired { get; set; }
+        public int Year { get; set; }
     }
 }
