@@ -290,7 +290,7 @@ namespace StaffEvaluations.Controllers
                 catch (Exception ex)
                 {
                     Console.WriteLine("eval err is " + ex.Message);
-                    Logger.Log.Error("eval err is " + ex.Message);
+                    Logger.Log.Error("eval err is " + ex.InnerException);
                 }
 
                 string CommentList = "";
@@ -952,15 +952,18 @@ namespace StaffEvaluations.Controllers
                 foreach (var item2 in item.supervisor.eval_direct_reports)
                 {
                     var newJD = new JDList();
-                    newJD.supNetId = item.supervisor.netid;
-                    newJD.JDSuper = item.supervisor.name;
-                    newJD.SuperLast = item.supervisor.last;
-                    newJD.empNetId = item2.netid;
-                    newJD.JDname = item2.name;
-                    newJD.EmployeeFirst = item2.first;
-                    newJD.EmployeeLast = item2.last;
-                    newJD.Order = sortOrder;
-                    jds1.Add(newJD);
+                    if (item2.unit_name != "Law Library") {
+                        newJD.supNetId = item.supervisor.netid;
+                        newJD.JDSuper = item.supervisor.name;
+                        newJD.SuperLast = item.supervisor.last;
+                        newJD.empNetId = item2.netid;
+                        newJD.JDname = item2.name;
+                        newJD.EmployeeFirst = item2.first;
+                        newJD.EmployeeLast = item2.last;
+                        newJD.EmployeeUnit = item2.unit_name;
+                        newJD.Order = sortOrder;
+                        jds1.Add(newJD);
+                    }
                 }
             }
 
@@ -1023,11 +1026,20 @@ namespace StaffEvaluations.Controllers
                 case "employee":
                     sorted = jds1.OrderBy(j => j.EmployeeLast);
                     break;
+                case "employeedesc":
+                    sorted = jds1.OrderByDescending(j => j.EmployeeLast);
+                    break;
                 case "super":
                     sorted = jds1.OrderBy(j => j.SuperLast).ThenBy(j => j.EmployeeLast);
                     break;
+                case "superdesc":
+                    sorted = jds1.OrderByDescending(j => j.SuperLast).ThenBy(j => j.EmployeeLast);
+                    break;
                 case "date":
                     sorted = jds1.OrderByDescending(j => j.lastUpdatedDate);
+                    break;
+                case "datedesc":
+                    sorted = jds1.OrderBy(j => j.lastUpdatedDate);
                     break;
                 default:
                     sorted = jds1.OrderBy(j => j.EmployeeLast);
@@ -1287,7 +1299,7 @@ namespace StaffEvaluations.Controllers
         {
             List<string> list = new List<string>() { "Needs Improvement", "Not Acceptable", "Unsatisfactory" };
             var qs = from q in db.StaffPerformanceQuestions where list.Contains(q.Rating) select q.EvalId;
-            var evals = from e in db.StaffPerformanceEvaluations where qs.Contains(e.EvalId) select e;
+            var evals = from e in db.StaffPerformanceEvaluations where qs.Contains(e.EvalId) && (e.Status != "Processed") select e;
 
             IQueryable<StaffPerformanceEvaluation> sorted;
 

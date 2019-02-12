@@ -20,13 +20,52 @@
     <table class="table">
         <tr>
             <th>
-                @Html.ActionLink("Name", "EditJDs", "Home", new { sortOrder = "employee" }, new { @class = (string)ViewData["jdsort"] == "employee" ? "selected" : "" })
+                @if ((string)ViewData["jdsort"] == "employee")
+                {
+                    @Html.ActionLink("Name", "EditJDs", new { sortOrder = "employeedesc" }, new { @class = (string)ViewData["jdsort"] == "employeedesc" ? "selected" : "" })
+                    if ((string)ViewData["jdsort"] == "employee" || (string)ViewData["jdsort"] == "")
+                    {
+                    @:&uarr;
+                    }
+                }
+                else 
+                {
+                    @Html.ActionLink("Name", "EditJDs", new { sortOrder = "employee" }, new { @class = (string)ViewData["jdsort"] == "employee" ? "selected" : "" })
+                    if ((string)ViewData["jdsort"] == "employeedesc")
+                    {
+                    @:&darr;
+                    }
+                }
             </th>
             <th>
-                @Html.ActionLink("Supervisor", "EditJDs", new { sortOrder = "super" }, new { @class = (string)ViewData["jdsort"] == "super" ? "selected" : "" })
+                @if ((string)ViewData["jdsort"] == "super")
+                {
+                    @Html.ActionLink("Supervisor", "EditJDs", new { sortOrder = "superdesc" }, new { @class = (string)ViewData["jdsort"] == "superdesc" ? "selected" : "" })
+                    @:&uarr;
+                }
+                else
+                {
+                    @Html.ActionLink("Supervisor", "EditJDs", new { sortOrder = "super" }, new { @class = (string)ViewData["jdsort"] == "super" ? "selected" : "" })
+                    if ((string)ViewData["jdsort"] == "superdesc")
+                    {
+                    @:&darr;
+                    }
+                }
             </th>
             <th>
-                @Html.ActionLink("Last Updated Date", "EditJDs", new { sortOrder = "date" }, new { @class = (string)ViewData["jdsort"] == "date" ? "selected" : "" })
+                @if ((string)ViewData["jdsort"] == "date")
+                {
+                    @Html.ActionLink("Last Updated Date", "EditJDs", new { sortOrder = "datedesc" }, new { @class = (string)ViewData["jdsort"] == "datedesc" ? "selected" : "" })
+                    @:&darr;
+                }
+                else 
+                {
+                     @Html.ActionLink("Last Updated Date", "EditJDs", new { sortOrder = "date" }, new { @class = (string)ViewData["jdsort"] == "date" ? "selected" : "" })
+                    if ((string)ViewData["jdsort"] == "datedesc")
+                    {
+                    @:&darr;
+                    }
+                }
             </th>
             <th></th>
         </tr>
@@ -102,7 +141,7 @@ else
             var gojd = '@ViewData["gojd"]';
 
             if (gojd != null && gojd !='') {
-            document.getElementById("jdid_@ViewData["gojd"]").scrollIntoView();
+                document.getElementById("jdid_@ViewData["gojd"]").scrollIntoView({ block: 'center' });
         }
         });
     </script>
